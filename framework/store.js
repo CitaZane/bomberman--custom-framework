@@ -25,12 +25,5 @@ class Store {
 }
 
 export default function createStore(store) {
-  // fetching data from local storage (if saved)
-  // let pastData = JSON.parse(localStorage.getItem("mf_data"));
-  // if (pastData) {
-  //   // rewrite data with fetched, if exist
-  //   store.state = pastData;
-  //   console.log("store state", store.state);
-  // }
   return new Store(store);
 }

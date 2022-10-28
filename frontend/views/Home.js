@@ -1,9 +1,10 @@
 /* @jsx jsx */
 
 import jsx from "../../framework/vDom/jsx"
+import { store } from "../app";
 
 function createWebSocketConn(e) {
-    console.log("Creating webSocket conn")
+    // console.log("Creating webSocket conn")
 
     e.preventDefault();
 
@@ -17,7 +18,19 @@ function createWebSocketConn(e) {
         console.log("Connection closed")
     }
 
+    ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        switch (data["type"]) {
+            case "NEW_USER": {
+                store.commit("updateUserQueueCount", data.body)
+                // console.log("updating usercount")
 
+            }
+        }
+        // console.log("Msg", data)
+    }
+
+    // console.log("Navigating")
     window.location.href = window.location.origin + "/#/game";
 }
 

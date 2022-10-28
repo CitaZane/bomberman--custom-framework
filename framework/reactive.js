@@ -12,6 +12,7 @@ function reactive(obj) {
     Object.defineProperty(obj, key, {
       get() {
         dep.depend();
+        console.log(dep.subscribers)
         return objValue;
       },
 

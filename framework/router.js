@@ -26,6 +26,7 @@ class Router {
       this.updateView();
       return;
     }
+    // console.log("UPDATING DOM")
     const view = this.currentRoute.component();
     const vNewApp = view.template;
     const patch = diff(this.vApp, vNewApp);
