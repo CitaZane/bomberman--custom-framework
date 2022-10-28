@@ -8,9 +8,10 @@ import (
 )
 
 func main() {
-	wsClients := ws.Clients{Connections: make(map[*ws.Client]bool)}
+	pool := ws.NewPool()
+	go pool.Start()
 
-	http.HandleFunc("/ws", ws.SocketHandler(&wsClients))
+	http.HandleFunc("/ws", ws.SocketHandler(pool))
 
 	fmt.Printf("Server started at http://localhost:8080\n")
 	log.Fatal(http.ListenAndServe(":8080", nil))
