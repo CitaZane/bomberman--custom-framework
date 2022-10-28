@@ -1,11 +1,11 @@
 {
-  "name": "mini-framework",
+  "name": "bomberman-dom",
   "version": "69.1337.420",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx parcel src/index.html"
+    "dev": "npx parcel src/frontend/index.html"
   },
   "repository": {
     "type": "git",
