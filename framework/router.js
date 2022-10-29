@@ -28,6 +28,7 @@ class Router {
     }
     // console.log("UPDATING DOM")
     const view = this.currentRoute.component();
+
     const vNewApp = view.template;
     const patch = diff(this.vApp, vNewApp);
     this.$rootElem = patch(this.$rootElem);
@@ -38,7 +39,7 @@ class Router {
     onMountedStack.length = 0;
 
     this.vApp = vNewApp;
-
+    console.log("DOM UPDATED")
   }
 
   updateView() {

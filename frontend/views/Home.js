@@ -36,6 +36,8 @@ function defineWebSocket(name) {
             }
         }
 
+        console.log("Message", data)
+
     }
 }
 
