@@ -2,18 +2,15 @@
 import jsx from "../../framework/vDom/jsx"
 import { store } from "../app";
 
-function updateCount() {
-    // console.log("CLICKED")
-    // console.log(++store.state.count)
-    // console.log(store.state.userQueueCount)
-}
+// function for getting the user count from backend?
+
 export function GameView() {
     const userQueueCount = store.state.userQueueCount;
-    console.log(userQueueCount)
+
     return {
         template: (
             <div>
-                <h1 onClick={updateCount}>Game room</h1>
+                <h1>Game room</h1>
                 <h3>Users joined: {userQueueCount}</h3>
             </div>
         )

@@ -38,6 +38,7 @@ class Router {
     onMountedStack.length = 0;
 
     this.vApp = vNewApp;
+
   }
 
   updateView() {

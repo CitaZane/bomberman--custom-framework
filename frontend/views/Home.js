@@ -4,12 +4,19 @@ import jsx from "../../framework/vDom/jsx"
 import { store } from "../app";
 
 function createWebSocketConn(e) {
-    // console.log("Creating webSocket conn")
-
     e.preventDefault();
 
     const inputElem = e.target.elements["name"];
-    const ws = new WebSocket(`ws://localhost:8080/ws?username=${inputElem.value}`);
+
+    defineWebSocket(inputElem.value)
+
+    window.location.href = window.location.origin + "/#/game";
+
+}
+
+function defineWebSocket(name) {
+    const ws = new WebSocket(`ws://localhost:8080/ws?username=${name}`);
+
     ws.onopen = () => {
         console.log("Connection initiated")
     }
@@ -23,22 +30,20 @@ function createWebSocketConn(e) {
         switch (data["type"]) {
             case "NEW_USER": {
                 store.commit("updateUserQueueCount", data.body)
-                // console.log("updating usercount")
-
+            }
+            case "USER_LEFT": {
+                store.commit("updateUserQueueCount", data.body)
             }
         }
-        // console.log("Msg", data)
-    }
 
-    // console.log("Navigating")
-    window.location.href = window.location.origin + "/#/game";
+    }
 }
 
 
 export function HomeView() {
     return {
         template: (
-            <form onSubmit={createWebSocketConn} id="create-username">
+            <form onSubmit={createWebSocketConn}>
                 <label for="name">Enter your username: </label>
                 <input type="text" id="name"></input>
                 <button>Start game</button>

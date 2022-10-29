@@ -1,6 +1,8 @@
 // You can read about that reactive implementation from:
 // https://dev.to/themarcba/create-your-own-vue-js-from-scratch-part-3-building-the-reactivity-5162
 
+import router from "../frontend/router/index";
+
 let activeEffect;
 
 // Adds tracking functionality to object properties
@@ -12,7 +14,6 @@ function reactive(obj) {
     Object.defineProperty(obj, key, {
       get() {
         dep.depend();
-        console.log(dep.subscribers)
         return objValue;
       },
 
@@ -48,8 +49,7 @@ class Dep {
 function watchEffect(fn) {
   activeEffect = fn;
   fn();
-  // removed the line for now, watch effect fn run only once
-  activeEffect = null;
+  // activeEffect = null;
 }
 
 export { watchEffect, Dep, reactive };
