@@ -25,20 +25,16 @@ function defineWebSocket(name) {
   ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
     switch (data["type"]) {
-      case "NEW_USER": {
+      case "NEW_USER":
+      case "USER_LEFT":
         store.commit("updateUserQueueCount", data.body);
-      }
-      case "USER_LEFT": {
-        store.commit("updateUserQueueCount", data.body);
-      }
 
-      case "INIT_ROOM": {
+      case "INIT_ROOM":
         store.commit("updateUserQueueCount", data.body);
         window.location.href = window.location.origin + "/#/game";
-      }
     }
 
-    console.log("Message", data);
+    // console.log("Message", data);
   };
 }
 
