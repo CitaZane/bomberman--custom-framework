@@ -2,6 +2,7 @@
 
 import jsx from "../../framework/vDom/jsx";
 import { store } from "../app";
+import { ChatRoom } from "../components/ChatRoom";
 
 function createWebSocketConn(e) {
   e.preventDefault();
@@ -45,6 +46,9 @@ export function HomeView() {
         <label for="name">Enter your username: </label>
         <input type="text" id="name"></input>
         <button>Start game</button>
+
+        <ChatRoom />
+
       </form>
     ),
   };
