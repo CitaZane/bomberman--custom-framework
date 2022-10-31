@@ -1,22 +1,26 @@
 /* @jsx jsx */
-
 import jsx from "../../framework/vDom/jsx"
+import {store} from "../app"
 
-function createWebSocketConn(e) {
-    console.log("Creating webSocket conn")
-    e.preventDefault();
-
-}
-
+import { MonsterSprite } from "../components/MonsterSprite"
+import { BombSprite } from "../components/BombSprite";
+import { FireSprite } from "../components/FireSprite";
 
 export function HomeView() {
+    function switchType(){
+        let monsterType = store.state.monster.type;
+        monsterType = monsterType == 0? 1: 0;
+        store.dispatch("updateMonsterType", monsterType)
+    }
     return {
         template: (
-            <form onSubmit={createWebSocketConn}>
-                <label for="name">Enter your username: </label>
-                <input type="text" id="name"></input>
-                <button>Start game</button>
-            </form>
+            <div id="home">
+                <h1>Hello monster</h1>
+                <button onClick={switchType}>Switch</button>
+                <MonsterSprite/>
+                <BombSprite/>
+                <FireSprite/>
+            </div>
         )
     }
 }
