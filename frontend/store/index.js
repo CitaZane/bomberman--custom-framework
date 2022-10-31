@@ -1,7 +1,8 @@
+
 export default {
     state: {
         userQueueCount: 0,
-        count: 0,
+        messages: []
     },
     mutations: {
         updateUserQueueCount(state, count) {
@@ -9,5 +10,12 @@ export default {
             state.userQueueCount = count
         }
     },
-    actions: {},
+    actions: {
+        // addNewMessage({state, commit}, message) {
+        //     const messages = state.messages;
+        //     messages.push(message);
+
+        // }
+    },
 }
+
