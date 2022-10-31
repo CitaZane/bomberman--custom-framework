@@ -29,12 +29,13 @@ func (pool *Pool) Start() {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for otherClient := range pool.Clients {
 				// fmt.Println(client)
-				if client.ID != otherClient.ID {
+				if client.ID == otherClient.ID {
+					otherClient.Conn.WriteJSON(Message{Type: "INIT_ROOM", Body: strconv.Itoa(len(pool.Clients))})
+				} else {
 					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", Body: strconv.Itoa(len(pool.Clients))})
-
 				}
 			}
 			break

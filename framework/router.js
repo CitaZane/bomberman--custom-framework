@@ -28,7 +28,7 @@ class Router {
     }
     // console.log("UPDATING DOM")
     const view = this.currentRoute.component();
-    view?.created?.getPlayerCount();
+
     const vNewApp = view.template;
     const patch = diff(this.vApp, vNewApp);
     this.$rootElem = patch(this.$rootElem);
@@ -39,7 +39,7 @@ class Router {
     onMountedStack.length = 0;
 
     this.vApp = vNewApp;
-    console.log("DOM UPDATED");
+    // console.log("DOM UPDATED");
   }
 
   updateView() {
@@ -48,6 +48,7 @@ class Router {
     let _res = this.matchRoutes(routeName);
     if (!this.vApp) {
       const view = this.currentRoute.component();
+      view?.created?.getPlayerCount();
       this.vApp = view.template;
       this.$app = render(this.vApp);
       this.$rootElem = mount(this.$app, document.getElementById("root"));

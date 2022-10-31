@@ -49,7 +49,7 @@ function watchEffect(fn, val) {
   activeEffect = fn;
   fn();
 
-  activeEffect = null;
+  // activeEffect = null;
 }
 
 export { watchEffect, Dep, reactive };
