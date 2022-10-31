@@ -47,7 +47,6 @@ class Router {
       const view = this.currentRoute.component();
       this.vApp = view.template;
       this.$app = render(this.vApp);
-      console.log("ROOT", document.body);
       this.$rootElem = mount(this.$app, document.getElementById("root"));
       // trigger noMounted hook
       view?.onMounted?.call(null, refs);
