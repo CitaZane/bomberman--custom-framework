@@ -27,17 +27,15 @@ func (c *Client) Read() {
 	}()
 
 	for {
-
 		// if we get a message, we will read it here
-		err := c.Conn.ReadJSON()
+		var msg Message
+		err := c.Conn.ReadJSON(&msg)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		message := Message{Type: "NEW_USER", Body: string(p)}
-		fmt.Println("Got a message")
 		// send created message to broadcast channel
-		c.Pool.Broadcast <- message
-		fmt.Printf("Message Received: %+v\n", message)
+		c.Pool.Broadcast <- msg
+		fmt.Printf("Text message Received: %+v\n", msg)
 	}
 }

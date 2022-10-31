@@ -9,7 +9,7 @@ function sendMessage(e) {
     const formInput = e.target.elements.message;
 
     const msg = {
-        type: "Message",
+        type: "TEXT_MESSAGE",
         body: formInput.value,
     }
 
