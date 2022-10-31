@@ -23,7 +23,6 @@ function reactive(obj) {
       },
     });
   });
-
   return obj;
 }
 
@@ -46,10 +45,11 @@ class Dep {
   }
 }
 
-function watchEffect(fn) {
+function watchEffect(fn, val) {
   activeEffect = fn;
   fn();
-  // activeEffect = null;
+
+  activeEffect = null;
 }
 
 export { watchEffect, Dep, reactive };
