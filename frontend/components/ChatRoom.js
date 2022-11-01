@@ -1,6 +1,7 @@
 /* @jsx jsx */
 
 import jsx from "../../framework/vDom/jsx"
+import { store } from "../app";
 import { ws } from "../websocket";
 
 function sendMessage(e) {
@@ -19,6 +20,9 @@ function sendMessage(e) {
 }
 
 export function ChatRoom() {
+    const messages = store.state.messages
+    console.log("messages:",messages)
+    
     return {
         template: (
             <div id="chatroom">
@@ -27,7 +31,9 @@ export function ChatRoom() {
                     <p>Connected as: John Doe</p>
                 </header>
 
-                <div id="chat"></div>
+                <div id="chat">
+                    <p>{messages}</p>
+                </div>
                 <form id="send-message" onSubmit={sendMessage}>
                     <input type="text" name="message" placeholder="Write a message..."></input>
                     <button>Send</button>

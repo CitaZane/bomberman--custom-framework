@@ -25,7 +25,8 @@ export function defineWebSocket(name) {
                 window.location.href = window.location.origin + "/#/game";
                 break
             case "TEXT_MESSAGE":
-                console.log("Got text message", data.body)
+                console.log("Got text message", data.body);
+                store.commit("addNewMessage", data.body);
         }
     };
 
