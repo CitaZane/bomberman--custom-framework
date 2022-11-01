@@ -13,6 +13,10 @@ let monster ={
     staggerFrames:5, //slow animation down
 }
 
+function changeDirection(e){
+    console.log(e)
+}
+
 function animate(){
     if (refs.monster){
         // change monster animation
@@ -33,7 +37,7 @@ export function MonsterSprite() {
     animate()
     return {
         template: (
-            <div ref="monster" class="monster" ></div>
+            <div ref="monster" class="monster"></div>
         )
     }
 }

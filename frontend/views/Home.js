@@ -9,7 +9,11 @@ import { FireSprite } from "../components/FireSprite";
 export function HomeView() {
     function switchType(){
         let monsterType = store.state.monster.type;
-        monsterType = monsterType == 0? 1: 0;
+        monsterType +=1
+        if (monsterType > 3){
+             monsterType = 0
+        }
+        // monsterType = monsterType == 0? 1: 0;
         store.dispatch("updateMonsterType", monsterType)
     }
     return {
