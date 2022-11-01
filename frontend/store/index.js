@@ -1,26 +1,21 @@
-
 export default {
-    state: {
-        userQueueCount: 0,
-        messages: []
+  state: {
+    userQueueCount: 0,
+    messages: [],
+  },
+  mutations: {
+    updateUserQueueCount(state, count) {
+      state.userQueueCount = count;
     },
-    mutations: {
-        updateUserQueueCount(state, count) {
-            // console.log("UPDATED USER COUNT")
-            state.userQueueCount = count
-        },
-        addNewMessage(state, message){
-            const messages = state.messages;
-            messages.push(message);
-            console.log(state.messages)
-        }
+    updateMessages(state, messages) {
+      state.messages = messages;
     },
-    actions: {
-        // addNewMessage({state, commit}, message) {
-        //     const messages = state.messages;
-        //     messages.push(message);
-
-        // }
+  },
+  actions: {
+    addNewMessage({ state, commit }, message) {
+      const messages = state.messages;
+      messages.push(message);
+      commit("updateMessages", messages);
     },
-}
-
+  },
+};
