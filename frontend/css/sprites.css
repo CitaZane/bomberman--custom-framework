@@ -16,13 +16,19 @@ display:flex;
     transform: translate(calc(var(--x-movement) * 1px), calc(var(--y-movement) * 1px));
     height:64px;
     width:64px;
+    z-index: 10;
 }
 
 .bomb{
     --x:0;
     
+    --x-pos:0;
+    --y-pos:0;
+
+    position:absolute;
     background-image:url('../assets/bomb.png');
     background-position: calc(var(--x) * -1px) 0px;
+    transform: translate(calc(var(--x-pos) * 1px), calc(var(--y-pos) * 1px));
     height:64px;
     width:64px;
 }
