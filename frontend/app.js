@@ -34,7 +34,7 @@ const BOMB_SIZE = 64
 let bomb = {
     frame:0,
     frameCount:2,
-    staggerFrames:10,
+    staggerFrames:5,
 }
 
 const monsterStates = {ArrowLeft:0, ArrowDown:1,ArrowRight:2,ArrowUp:3}
@@ -89,24 +89,27 @@ function animate(){
     }
     // update bomb
      if (inputs['Space']){
-        console.log("BOMBBB")
         let bombActive = store.state.bomb.drop;
         if (!bombActive){
             store.dispatch('updateBombDrop', true)
-            // change bomb animation 
-            refs.bomb.style.setProperty("--x", bomb.frame*BOMB_SIZE)
-            refs.bomb.style.setProperty("--y-pos", monster.y)
-            refs.bomb.style.setProperty("--x-pos", monster.x)
-
-            if(gameFrame%bomb.staggerFrames == 0){
-            // loop for aniation based on frames
-            bomb.frame = bomb.frame >= bomb.frameCount? 0:bomb.frame +=1;
-            }
             setTimeout(()=>{ 
                 store.dispatch('updateBombDrop', false)
                 
             }, 2000)
+            // // change bomb animation 
+            refs.bomb.style.setProperty("--y-pos", monster.y)
+            refs.bomb.style.setProperty("--x-pos", monster.x)
         }
+     }
+     if (refs.bomb){
+        // change bomb animation 
+            refs.bomb.style.setProperty("--x", bomb.frame*BOMB_SIZE)
+            
+            if(gameFrame%bomb.staggerFrames == 0){
+            // loop for aniation based on frames
+            bomb.frame = bomb.frame >= bomb.frameCount? 0: bomb.frame +=1;
+            }
+
      }
     gameFrame++;
 
