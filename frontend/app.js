@@ -1,8 +1,10 @@
 import createRouter from "../framework/router";
-import router from "./router";
+import createStore from "../framework/store"
+import routes from "./router/index";
+import storeObj from "./store/index";
 
-createRouter(router);
+const store = createStore(storeObj);
+const router = createRouter(routes);
 
-window.addEventListener("DOMContentLoaded", () => {
-    // make sure user can be on the game page only if he has a websocket connection
-})
+export { store, router }
+

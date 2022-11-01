@@ -27,6 +27,7 @@ class Router {
       return;
     }
     const view = this.currentRoute.component();
+
     const vNewApp = view.template;
     const patch = diff(this.vApp, vNewApp);
     this.$rootElem = patch(this.$rootElem);
@@ -45,6 +46,7 @@ class Router {
     let _res = this.matchRoutes(routeName);
     if (!this.vApp) {
       const view = this.currentRoute.component();
+      view?.created?.getPlayerCount();
       this.vApp = view.template;
       this.$app = render(this.vApp);
       this.$rootElem = mount(this.$app, document.getElementById("root"));

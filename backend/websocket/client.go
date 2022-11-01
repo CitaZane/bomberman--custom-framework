@@ -14,7 +14,7 @@ type Client struct {
 }
 
 type Message struct {
-	Type int    `json:"type"`
+	Type string `json:"type"`
 	Body string `json:"body"`
 }
 
@@ -29,12 +29,12 @@ func (c *Client) Read() {
 	for {
 
 		// if we get a message, we will read it here
-		messageType, p, err := c.Conn.ReadMessage()
+		_, p, err := c.Conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		message := Message{Type: messageType, Body: string(p)}
+		message := Message{Type: "NEW_USER", Body: string(p)}
 
 		// send created message to broadcast channel
 		c.Pool.Broadcast <- message
