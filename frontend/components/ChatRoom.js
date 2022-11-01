@@ -11,7 +11,12 @@ function sendMessage(e) {
 
   const msg = {
     type: "TEXT_MESSAGE",
+    creator: store.state.currentPlayerName,
     body: formInput.value,
+    // body: {
+    //     username: store.state.currentPlayerName,
+    //     message: formInput.value
+    // }
   };
 
   ws.send(JSON.stringify(msg));
@@ -21,20 +26,21 @@ function sendMessage(e) {
 
 export function ChatRoom() {
   const messages = store.state.messages;
-//   console.log("messages:", messages);
+  const currentPlayername = store.state.currentPlayerName
+  console.log("messages:", messages);
 
   return {
     template: (
       <div id="chatroom">
         <header>
           <h2>Chat room</h2>
-          <p>Connected as: John Doe</p>
+          <p>Connected as: {currentPlayername}</p>
         </header>
 
         <div id="chat">
           <ul>
             {messages.map((message) => {
-              return <p>{message}</p>;
+              return <p>{message.creator}: {message.body}</p>;
             })}
           </ul>
         </div>

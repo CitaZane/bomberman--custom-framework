@@ -2,6 +2,7 @@
 
 import jsx from "../../framework/vDom/jsx";
 import { defineWebSocket } from "../websocket";
+import { store } from "../app";
 
 function createWebSocketConn(e) {
   e.preventDefault();
@@ -9,6 +10,9 @@ function createWebSocketConn(e) {
   const inputElem = e.target.elements["name"];
 
   defineWebSocket(inputElem.value);
+
+  store.dispatch("savePlayerName", inputElem.value)
+  // console.log(store.state.currentPlayerName)
 }
 
 
