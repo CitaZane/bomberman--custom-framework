@@ -16,6 +16,7 @@ export function HomeView() {
         // monsterType = monsterType == 0? 1: 0;
         store.dispatch("updateMonsterType", monsterType)
     }
+    
     return {
         template: (
             <div id="home">

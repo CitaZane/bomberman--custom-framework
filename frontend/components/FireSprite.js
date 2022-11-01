@@ -1,7 +1,7 @@
 import jsx from "../../framework/vDom/jsx"
 import {refs} from '../../framework/vDom/render'
 
-const FIRE_SIZE = 532;
+const FIRE_SIZE = 320;
 let gameFrame = 0;
 
 let fire ={

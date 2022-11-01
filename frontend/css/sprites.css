@@ -7,10 +7,10 @@ display:flex;
     --x:0;
     --y:0;
     
-    background-image:url('../assets/monsters.png');
+    background-image:url('../assets/monster.png');
     background-position: calc(var(--x) * -1px) calc(var(--y) * -1px);
-    height:266px;
-    width:266px;
+    height:64px;
+    width:64px;
 }
 
 .bomb{
@@ -18,8 +18,8 @@ display:flex;
     
     background-image:url('../assets/bomb.png');
     background-position: calc(var(--x) * -1px) 0px;
-    height:266px;
-    width:266px;
+    height:64px;
+    width:64px;
 }
 
 .fire{
@@ -27,7 +27,7 @@ display:flex;
     
     background-image:url('../assets/fire.png');
     background-position: calc(var(--x) * -1px) 0px;
-    background-size: 2128px;
-    height:532px;
-    width:532px;
+    /* background-size: 2128px; */
+    height:320px;
+    width:320px;
 }

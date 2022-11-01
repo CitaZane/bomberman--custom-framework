@@ -3,7 +3,7 @@ import jsx from "../../framework/vDom/jsx"
 import {refs} from '../../framework/vDom/render'
 import {store} from "../app"
 
-const MONSTER_SIZE = 266
+const MONSTER_SIZE = 64
 let gameFrame = 0;
 
 let monster ={
@@ -13,14 +13,24 @@ let monster ={
     staggerFrames:5, //slow animation down
 }
 
-function changeDirection(e){
-    console.log(e)
-}
+const monsterStates = {ArrowLeft:0, ArrowDown:1,ArrowRight:2,ArrowUp:3}
+
 
 function animate(){
     if (refs.monster){
         // change monster animation
-        monster.type = store.state.monster.type;     
+
+        let inputs = store.state.inputs
+        if (inputs['ArrowLeft']){
+            monster.type = monsterStates['ArrowLeft']
+        }else if(inputs['ArrowDown']){
+             monster.type = monsterStates['ArrowDown']
+        } else if(inputs['ArrowUp']){
+            monster.type = monsterStates['ArrowUp']
+        }  else if(inputs['ArrowRight']){
+            monster.type = monsterStates['ArrowRight']
+        }
+        
         refs.monster.style.setProperty("--y", monster.type*MONSTER_SIZE)
         refs.monster.style.setProperty("--x", monster.frame*MONSTER_SIZE)
     }

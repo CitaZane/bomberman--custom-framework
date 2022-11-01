@@ -2,7 +2,7 @@
 import jsx from "../../framework/vDom/jsx"
 import {refs} from '../../framework/vDom/render'
 
-const BOMB_SIZE = 266
+const BOMB_SIZE = 64
 let gameFrame = 0;
 
 let bomb = {
