@@ -1,7 +1,7 @@
 const storeObj = {
   state: {
     monster:{
-        type:0
+        type:0,
     },
     inputs:{}
   },

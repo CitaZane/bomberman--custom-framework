@@ -6,9 +6,14 @@ display:flex;
 .monster{
     --x:0;
     --y:0;
+
+    --x-movement:0;
+    --y-movement:0;
     
+    position:absolute;
     background-image:url('../assets/monster.png');
     background-position: calc(var(--x) * -1px) calc(var(--y) * -1px);
+    transform: translate(calc(var(--x-movement) * 1px), calc(var(--y-movement) * 1px));
     height:64px;
     width:64px;
 }
