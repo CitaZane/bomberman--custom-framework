@@ -22,7 +22,7 @@ export function defineWebSocket(name) {
         data.gameState.players.forEach((playerName, i) => {
           const player = new Player(playerName);
           player.y = i * 50;
-          players.push(new Player(playerName))
+          players.push(player)
         })
 
         setupGame();
