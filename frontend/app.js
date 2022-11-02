@@ -7,13 +7,27 @@ import { refs } from '../framework/vDom/render'
 const store = createStore(storeObj);
 const router = createRouter(routes);
 
+export class Player {
+    constructor(name) {
+        this.name = name
+        this.type = 0
+        this.frame = 0
+        this.frameCount = 5 //total frames per animation
+        this.staggerFrames = 5 //slow animation down
+        this.x = 0
+        this.y = 0
+        this.speed = 1
+    }
+}
+export class Game {
+    constructor() {
+        this.players = []
+    }
 
-document.addEventListener("keyup", (e) => {
-    store.dispatch('registerKeyUp', e.code)
-})
-document.addEventListener("keydown", (e) => {
-    store.dispatch('registerKeyDown', e.code)
-})
+    addPlayer(player) {
+        this.players.push(player)
+    }
+}
 
 
 
@@ -38,6 +52,21 @@ let bomb = {
 }
 
 const monsterStates = { ArrowLeft: 0, ArrowDown: 1, ArrowRight: 2, ArrowUp: 3 }
+
+function createMonster() {
+    return {
+        type: 0,
+        frame: 0,
+        frameCount: 5, //total frames per animation
+        staggerFrames: 5, //slow animation down
+        x: 0,
+        y: 0,
+        speed: 1
+    }
+}
+
+const players = [];
+
 
 
 function animate() {
@@ -112,9 +141,24 @@ function animate() {
 
     }
     gameFrame++;
-
+    console.log("animating")
     requestAnimationFrame(animate);
 }
-animate()
+// let gameStarted = false;
+
+
+// document.addEventListener("keyup", (e) => {
+//     store.dispatch('registerKeyUp', e.code)
+// })
+// document.addEventListener("keydown", (e) => {
+//     if (!gameStarted) {
+//         gameStarted = true
+//         animate()
+//     }
+//     store.dispatch('registerKeyDown', e.code)
+// })
+
+
+// animate()
 
 export { store, router };

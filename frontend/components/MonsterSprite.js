@@ -1,7 +1,18 @@
 /* @jsx jsx */
 import jsx from "../../framework/vDom/jsx"
-import {refs} from '../../framework/vDom/render'
-import {store} from "../app"
+import { refs } from '../../framework/vDom/render'
+import { store } from "../app"
+
+
+
+export function MonsterSprite() {
+    // animate()
+    return {
+        template: (
+            <div ref="monster" class="monster"></div>
+        )
+    }
+}
 
 // const MONSTER_SIZE = 64
 // let gameFrame = 0;
@@ -71,11 +82,3 @@ import {store} from "../app"
 //     requestAnimationFrame(animate);
 // }
 
-export function MonsterSprite() {
-    // animate()
-    return {
-        template: (
-            <div ref="monster" class="monster"></div>
-        )
-    }
-}

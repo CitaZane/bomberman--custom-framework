@@ -14,9 +14,10 @@ type Client struct {
 }
 
 type Message struct {
-	Type    string `json:"type"`
-	Creator string `json:"creator"`
-	Body    string `json:"body"`
+	Type      string `json:"type"`
+	Creator   string `json:"creator"`
+	Body      string `json:"body"`
+	GameState Game   `json:"gameState"`
 }
 
 // keep listening for messages from websocket

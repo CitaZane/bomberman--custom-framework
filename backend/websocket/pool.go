@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type Pool struct {
@@ -21,6 +20,18 @@ func NewPool() *Pool {
 	}
 }
 
+func (pool *Pool) getClientNames() []string {
+	keys := make([]string, len(pool.Clients))
+
+	i := 0
+	for client := range pool.Clients {
+		keys[i] = client.ID
+		i++
+	}
+
+	return keys
+}
+
 func (pool *Pool) Start() {
 	// listen for every message in every pools channel
 	for {
@@ -29,19 +40,26 @@ func (pool *Pool) Start() {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
+			game.Players = pool.getClientNames()
+
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
-					otherClient.Conn.WriteJSON(Message{Type: "INIT_ROOM", Body: strconv.Itoa(len(pool.Clients))})
+					err := otherClient.Conn.WriteJSON(Message{Type: "INIT_ROOM", GameState: game})
+					if err != nil {
+						fmt.Println("JSON MARSHAL ERR", err)
+					}
 				} else {
-					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", Body: strconv.Itoa(len(pool.Clients))})
+					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", GameState: game})
 				}
 			}
 			break
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
+			game.Players = pool.getClientNames()
+
 			// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client, _ := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
+				client.Conn.WriteJSON(Message{Type: "USER_LEFT", GameState: game})
 			}
 			break
 		case message := <-pool.Broadcast:
