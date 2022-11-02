@@ -42,7 +42,7 @@ export function HomeView() {
       <form onSubmit={createWebSocketConn}>
         <label for="name">Enter your username: </label>
         <input type="text" id="name"></input>
-        <button>Start game</button>
+        <button>Enter queue</button>
       </form>
     ),
   };

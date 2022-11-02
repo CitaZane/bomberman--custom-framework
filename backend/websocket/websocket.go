@@ -34,7 +34,7 @@ func SocketHandler(pool *Pool) http.HandlerFunc {
 		if !game.created {
 			game.created = true
 		}
-		game.Players = append(game.Players, username)
+		// game.Players = append(game.Players, username)
 
 		client := Client{
 			ID:   username,

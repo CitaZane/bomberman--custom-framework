@@ -37,6 +37,7 @@ func (pool *Pool) Start() {
 	for {
 		// select will execute whichever channel sends data first
 		// channels can only send data when they have received it
+	S:
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
@@ -44,7 +45,7 @@ func (pool *Pool) Start() {
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
-					err := otherClient.Conn.WriteJSON(Message{Type: "INIT_ROOM", GameState: game})
+					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", GameState: game})
 					if err != nil {
 						fmt.Println("JSON MARSHAL ERR", err)
 					}
@@ -52,19 +53,20 @@ func (pool *Pool) Start() {
 					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", GameState: game})
 				}
 			}
-			break
+			break S
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
 			game.Players = pool.getClientNames()
 
 			// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-			for client, _ := range pool.Clients {
+			for client := range pool.Clients {
 				client.Conn.WriteJSON(Message{Type: "USER_LEFT", GameState: game})
 			}
-			break
+			break S
 		case message := <-pool.Broadcast:
 			// fmt.Println("Sending message to all clients in Pool")
-			for client, _ := range pool.Clients {
+			message.GameState = game
+			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)
 					return
