@@ -1,7 +1,7 @@
-import { Player, store } from "./app";
-import { setupGame } from "./app";
+import { store } from "./app";
+import { setupGame, gameFrame } from "./app";
 export let ws;
-export let players = [];
+// export let players = [];
 export function defineWebSocket(name) {
   ws = new WebSocket(`ws://localhost:8080/ws?username=${name}`);
 
@@ -18,19 +18,15 @@ export function defineWebSocket(name) {
     // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
-
-        data.gameState.players.forEach((playerName, i) => {
-          const player = new Player(playerName);
-          player.y = i * 50;
-          players.push(player)
+        data.gameState.players.forEach((playerName) => {
+          store.dispatch('registerPlayer', playerName)
         })
+        store.dispatch('registerCurrentPlayer', store.state.currentPlayerName)
 
         window.location.href = window.location.origin + "/#/game";
-
         setupGame();
         break
 
-      // console.log("Players", players)
       // queue cases  
       case "NEW_USER":
       case "USER_LEFT":
@@ -44,6 +40,19 @@ export function defineWebSocket(name) {
 
       case "TEXT_MESSAGE":
         store.dispatch("addNewMessage", data);
+        break;
+        // game  stuff
+      case "PLAYER_MOVE":
+        let index= Number(data.creator) //index of player sending the movement
+        if(data.body == 'LEFT'){
+          store.dispatch('movePlayerLeft', {index, gameFrame})
+        }else if (data.body == 'RIGHT'){
+          store.dispatch('movePlayerRight', {index, gameFrame})
+        }else if (data.body == 'UP'){
+          store.dispatch('movePlayerUp', {index, gameFrame})
+        }else if (data.body == 'DOWN'){
+          store.dispatch('movePlayerDown', {index, gameFrame})
+        }
     }
   };
 }

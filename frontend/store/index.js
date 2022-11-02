@@ -1,3 +1,4 @@
+import inputs from "./inputs"
 import gameState from "./game"
 
 export default {
@@ -5,6 +6,7 @@ export default {
     userQueueCount: 0,
     messages: [],
     currentPlayerName: "",
+    ...inputs.state,
     ...gameState.state
   },
 
@@ -18,6 +20,7 @@ export default {
     changePlayerName(state, name) {
       state.currentPlayerName = name;
     },
+    ...inputs.mutations,
     ...gameState.mutations
   },
 
@@ -32,7 +35,7 @@ export default {
       name = newName
       commit("changePlayerName", name);
     },
-
+    ...inputs.actions,
     ...gameState.actions
   },
 };

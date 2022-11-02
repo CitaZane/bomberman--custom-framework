@@ -10,12 +10,25 @@
     --y-movement: 0;
 
     position: absolute;
-    background-image: url('../assets/monster.png');
+    /* background-image: url('../assets/monster.png'); */
     background-position: calc(var(--x) * -1px) calc(var(--y) * -1px);
     transform: translate(calc(var(--x-movement) * 1px), calc(var(--y-movement) * 1px));
     height: 64px;
     width: 64px;
     z-index: 10;
+}
+
+#monster-1{
+   background-image: url('../assets/monster_1.png'); 
+}
+#monster-2{
+   background-image: url('../assets/monster_2.png'); 
+}
+#monster-3{
+   background-image: url('../assets/monster_3.png'); 
+}
+#monster-0{
+   background-image: url('../assets/monster_4.png'); 
 }
 
 .bomb {

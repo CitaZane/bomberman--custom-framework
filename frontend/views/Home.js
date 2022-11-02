@@ -13,7 +13,6 @@ function createWebSocketConn(e) {
   defineWebSocket(inputElem.value);
 
   store.dispatch("savePlayerName", inputElem.value)
-  // console.log(store.state.currentPlayerName)
 }
 
 
