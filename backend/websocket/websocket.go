@@ -21,14 +21,16 @@ func SocketHandler(pool *Pool) http.HandlerFunc {
 			return
 		}
 
+		username := r.URL.Query()["username"][0]
 		client := Client{
-			ID:   "helloWorld",
+			ID:   username,
 			Conn: conn,
 			Pool: pool,
 		}
-		client.Read()
 
 		pool.Register <- &client
+
+		client.Read()
 
 	}
 }

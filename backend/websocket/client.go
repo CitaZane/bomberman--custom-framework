@@ -14,8 +14,9 @@ type Client struct {
 }
 
 type Message struct {
-	Type int    `json:"type"`
-	Body string `json:"body"`
+	Type    string `json:"type"`
+	Creator string `json:"creator"`
+	Body    string `json:"body"`
 }
 
 // keep listening for messages from websocket
@@ -27,17 +28,15 @@ func (c *Client) Read() {
 	}()
 
 	for {
-
 		// if we get a message, we will read it here
-		messageType, p, err := c.Conn.ReadMessage()
+		var msg Message
+		err := c.Conn.ReadJSON(&msg)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		message := Message{Type: messageType, Body: string(p)}
-
 		// send created message to broadcast channel
-		c.Pool.Broadcast <- message
-		fmt.Printf("Message Received: %+v\n", message)
+		c.Pool.Broadcast <- msg
+		fmt.Printf("Text message Received: %+v\n", msg)
 	}
 }
