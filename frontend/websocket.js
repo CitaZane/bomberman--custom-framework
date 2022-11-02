@@ -18,14 +18,17 @@ export function defineWebSocket(name) {
     // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
-        window.location.href = window.location.origin + "/#/game";
+
         data.gameState.players.forEach((playerName, i) => {
           const player = new Player(playerName);
           player.y = i * 50;
           players.push(new Player(playerName))
         })
 
+        window.location.href = window.location.origin + "/#/game";
+
         setupGame();
+        break
 
       // console.log("Players", players)
       // queue cases  

@@ -4,7 +4,6 @@ import { MonsterSprite } from "../components/MonsterSprite";
 import { store } from "../app";
 import { players } from "../websocket";
 export function GameView() {
-
     return {
         template: (
             <div id="home">

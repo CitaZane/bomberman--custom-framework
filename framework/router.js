@@ -26,6 +26,9 @@ class Router {
       this.updateView();
       return;
     }
+
+    // console.log("dom updated");
+
     const view = this.currentRoute.component();
 
     const vNewApp = view.template;
@@ -36,7 +39,6 @@ class Router {
 
     onMountedStack.forEach((fn) => fn.call(null, refs));
     onMountedStack.length = 0;
-    console.log("dom updated");
     this.vApp = vNewApp;
   }
 
