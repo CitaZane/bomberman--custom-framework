@@ -22,16 +22,14 @@ func NewPool() *Pool {
 }
 
 func (pool *Pool) Start() {
-	// listen for every message in pools channel
+	// listen for every message in every pools channel
 	for {
 		// select will execute whichever channel sends data first
 		// channels can only send data when they have received it
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for otherClient := range pool.Clients {
-				// fmt.Println(client)
 				if client.ID == otherClient.ID {
 					otherClient.Conn.WriteJSON(Message{Type: "INIT_ROOM", Body: strconv.Itoa(len(pool.Clients))})
 				} else {
@@ -47,7 +45,7 @@ func (pool *Pool) Start() {
 			}
 			break
 		case message := <-pool.Broadcast:
-			fmt.Println("Sending message to all clients in Pool")
+			// fmt.Println("Sending message to all clients in Pool")
 			for client, _ := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)
@@ -55,5 +53,8 @@ func (pool *Pool) Start() {
 				}
 			}
 		}
+
+		fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+
 	}
 }

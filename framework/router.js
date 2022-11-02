@@ -36,7 +36,7 @@ class Router {
 
     onMountedStack.forEach((fn) => fn.call(null, refs));
     onMountedStack.length = 0;
-
+    console.log("dom updated");
     this.vApp = vNewApp;
   }
 
