@@ -29,10 +29,12 @@ export class Game {
     }
 }
 
+let gameStarted = false;
+let gameFrame = 0;
 
 
 const MONSTER_SIZE = 64
-let gameFrame = 0;
+const monsterStates = { ArrowLeft: 0, ArrowDown: 1, ArrowRight: 2, ArrowUp: 3 }
 
 let monster = {
     type: 0,
@@ -43,29 +45,26 @@ let monster = {
     y: 0,
     speed: 1
 }
-const BOMB_SIZE = 64
 
+const BOMB_SIZE = 64
 let bomb = {
     frame: 0,
     frameCount: 2,
     staggerFrames: 5,
 }
 
-const monsterStates = { ArrowLeft: 0, ArrowDown: 1, ArrowRight: 2, ArrowUp: 3 }
-
-function createMonster() {
-    return {
-        type: 0,
-        frame: 0,
-        frameCount: 5, //total frames per animation
-        staggerFrames: 5, //slow animation down
-        x: 0,
-        y: 0,
-        speed: 1
-    }
+export function setupGame() {
+    document.addEventListener("keyup", (e) => {
+        store.dispatch('registerKeyUp', e.code)
+    })
+    document.addEventListener("keydown", (e) => {
+        if (!gameStarted) {
+            gameStarted = true
+            animate()
+        }
+        store.dispatch('registerKeyDown', e.code)
+    })
 }
-
-const players = [];
 
 
 
@@ -141,24 +140,13 @@ function animate() {
 
     }
     gameFrame++;
-    console.log("animating")
+    // console.log("animating")
     requestAnimationFrame(animate);
 }
-// let gameStarted = false;
 
 
-// document.addEventListener("keyup", (e) => {
-//     store.dispatch('registerKeyUp', e.code)
-// })
-// document.addEventListener("keydown", (e) => {
-//     if (!gameStarted) {
-//         gameStarted = true
-//         animate()
-//     }
-//     store.dispatch('registerKeyDown', e.code)
-// })
 
 
-// animate()
+
 
 export { store, router };

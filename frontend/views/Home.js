@@ -9,17 +9,17 @@ import { BombSprite } from "../components/BombSprite";
 
 // export function HomeView() {
 
-//   let bombDrop = store.state.bomb.drop;
-//   return {
-//     template: (
-//       <div id="home">
-//         <h1>Hello monster</h1>
-//         <MonsterSprite />
-//         {/* {bombDrop && <BombSprite />} */}
-//         {/* <FireSprite/> */}
-//       </div>
-//     )
-//   }
+// let bombDrop = store.state.bomb.drop;
+// return {
+//   template: (
+//     <div id="home">
+//       <h1>Hello monster</h1>
+//       <MonsterSprite />
+//       {/* {bombDrop && <BombSprite />} */}
+//       {/* <FireSprite/> */}
+//     </div>
+//   )
+// }
 // }
 
 

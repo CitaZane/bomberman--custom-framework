@@ -1,44 +1,43 @@
-
-#home{
-display:flex;
+#home {
+    display: flex;
 }
 
-.monster{
-    --x:0;
-    --y:0;
+.monster {
+    --x: 0;
+    --y: 0;
 
-    --x-movement:0;
-    --y-movement:0;
-    
-    position:absolute;
-    background-image:url('../assets/monster.png');
+    --x-movement: 0;
+    --y-movement: 0;
+
+    position: absolute;
+    background-image: url('../assets/monster.png');
     background-position: calc(var(--x) * -1px) calc(var(--y) * -1px);
     transform: translate(calc(var(--x-movement) * 1px), calc(var(--y-movement) * 1px));
-    height:64px;
-    width:64px;
+    height: 64px;
+    width: 64px;
     z-index: 10;
 }
 
-.bomb{
-    --x:0;
-    
-    --x-pos:0;
-    --y-pos:0;
+.bomb {
+    --x: 0;
 
-    position:absolute;
-    background-image:url('../assets/bomb.png');
+    --x-pos: 0;
+    --y-pos: 0;
+
+    position: absolute;
+    background-image: url('../assets/bomb.png');
     background-position: calc(var(--x) * -1px) 0px;
     transform: translate(calc(var(--x-pos) * 1px), calc(var(--y-pos) * 1px));
-    height:64px;
-    width:64px;
+    height: 64px;
+    width: 64px;
 }
 
-.fire{
-    --x:0;
-    
-    background-image:url('../assets/fire.png');
+.fire {
+    --x: 0;
+
+    background-image: url('../assets/fire.png');
     background-position: calc(var(--x) * -1px) 0px;
     /* background-size: 2128px; */
-    height:320px;
-    width:320px;
+    height: 320px;
+    width: 320px;
 }
