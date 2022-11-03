@@ -30,7 +30,6 @@ function renderElem(node) {
 }
 
 const render = (vNode) => {
-  // console.log("vNode", vNode)
   // return text node if element is just a string
   if (typeof vNode === "string") {
     return document.createTextNode(vNode);

@@ -1,7 +1,6 @@
 /* @jsx jsx */
 import jsx from "../../framework/vDom/jsx"
 import { refs } from '../../framework/vDom/render'
-// import store from "../store"
 
 const MONSTER_SIZE = 64
 

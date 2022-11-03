@@ -6,6 +6,8 @@
 
 import render from "./render";
 import { onMountedStack } from "./render";
+import {refs} from './render'
+
 const zip = (xs, ys) => {
   const zipped = [];
   for (let i = 0; i < Math.min(xs.length, ys.length); i++) {
@@ -42,7 +44,9 @@ const diffAttrs = (oldAttrs, newAttrs) => {
       } else if (k == "checked") {
         //add checked attribute
         $node.checked = v;
-      } else {
+      } else if(k == 'ref'){
+        refs[v] = $node;
+      }else{
         $node.setAttribute(k, v);
       }
       return $node;
@@ -89,7 +93,6 @@ const diffChildren = (oldVChildren, newVChildren) => {
 };
 
 const diff = (oldVTree, newVTree) => {
-  // console.log("Diff", oldVTree, newVTree)
   // CASE : newVTree is undefined
   //  simply remove the $node passing into the patch
   if (!newVTree) {
@@ -102,13 +105,11 @@ const diff = (oldVTree, newVTree) => {
     };
   }
 
-  let mountedFn;
-
   // in case of component, unwrap the template as newVtree
   if (newVTree.template) {
     // save component onMounted function
     if (newVTree.onMounted) {
-      mountedFn = newVTree.onMounted;
+        onMountedStack.push(newVTree.onMounted);
     }
     newVTree = newVTree.template;
   }
@@ -129,11 +130,6 @@ const diff = (oldVTree, newVTree) => {
       return ($node) => {
         const $newNode = render(newVTree);
         $node.replaceWith($newNode);
-
-        if (mountedFn) {
-          onMountedStack.push(mountedFn);
-        }
-
         return $newNode;
       };
     } else {
@@ -150,10 +146,6 @@ const diff = (oldVTree, newVTree) => {
     return ($node) => {
       const $newNode = render(newVTree);
       $node.replaceWith($newNode);
-
-      if (mountedFn) {
-        onMountedStack.push(mountedFn);
-      }
       return $newNode;
     };
   }
