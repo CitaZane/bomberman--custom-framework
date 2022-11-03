@@ -1,6 +1,5 @@
 export default {
     state: {
-        playerCount:0,
         currentPlayer:0,
         players:[
             {
@@ -55,19 +54,14 @@ export default {
         updatePlayers(state, players) {
             state.players = players
         },
-        updatePlayerCount(state, count) {
-            state.playerCount = count
-        },
         updateCurrentPlayer(state, index) {
             state.currentPlayer = index
         }
     },
     actions: {
-        registerPlayer({ state, commit }, name) {
+        registerPlayer({ state, commit }, {playerName, i}) {
             let players = state.players;
-            let index = state.playerCount
-            players[index].name = name
-            commit('updatePlayerCount', index+=1)
+            players[i].name = playerName
             commit('updatePlayers', players)
         },
         registerCurrentPlayer({ state, commit }, name){

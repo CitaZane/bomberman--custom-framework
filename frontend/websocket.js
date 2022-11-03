@@ -18,8 +18,8 @@ export function defineWebSocket(name) {
     // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
-        data.gameState.players.forEach((playerName) => {
-          store.dispatch('registerPlayer', playerName)
+        data.gameState.players.forEach((playerName, i) => {
+          store.dispatch('registerPlayer', {playerName,i})
         })
         store.dispatch('registerCurrentPlayer', store.state.currentPlayerName)
 
