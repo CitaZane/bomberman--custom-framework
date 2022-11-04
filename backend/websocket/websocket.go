@@ -13,20 +13,6 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-// holds game state to send it to all players
-type Game struct {
-	Players []Player `json:"players"`
-	// created bool
-}
-
-type Player struct {
-	X    int    `json:"x"`
-	Y    int    `json:"y"`
-	Name string `json:"name"`
-}
-
-var game Game
-
 func SocketHandler(pool *Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

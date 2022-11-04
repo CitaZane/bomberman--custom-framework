@@ -1,6 +1,6 @@
 export default {
   state: {
-    currentPlayer: 0,
+    // currentPlayerIndex: 0,
     players: [],
     setup: {
       stagger: 5,
@@ -17,61 +17,63 @@ export default {
     updatePlayers(state, players) {
       state.players = players;
     },
-    updateCurrentPlayer(state, index) {
-      state.currentPlayer = index;
+    updateCurrentPlayerIndex(state, index) {
+      state.currentPlayerIndex = index;
     },
   },
   actions: {
-    registerPlayer({ state, commit }, { x, y, name }) {
+    registerPlayer({ state, commit }, player) {
       let players = state.players;
-      players[name] = { x, y };
+      players.push(player);
       commit("updatePlayers", players);
     },
-    registerCurrentPlayer({ state, commit }, name) {
-      let currentPlayerIndex = state.players.findIndex(
-        (player) => player.name == state.store.currentPlayerName
-      );
-      commit("updateCurrentPlayer", currentPlayerIndex);
-    },
-    movePlayerLeft({ state, commit }, { index, gameFrame }) {
-      let players = state.players;
-      players[index].x = players[index].x - players[index].speed;
-      players[index].state = 0;
+    // registerCurrentPlayer({ state, commit }, name) {
+    //   let currentPlayerIndex = state.players.findIndex(
+    //     (player) => player.name === name
+    //   );
 
-      if (gameFrame % state.setup.stagger == 0) {
-        players[index].frame =
-          players[index].frame >= players[index].frameCount
-            ? 0
-            : (players[index].frame += 1);
-      }
-      commit("updatePlayers", players);
-    },
-    movePlayerRight({ state, commit }, { index, gameFrame }) {
-      let players = state.players;
-      players[index].x = players[index].x + players[index].speed;
-      players[index].state = 2;
+    //   commit("updateCurrentPlayerIndex", currentPlayerIndex);
+    // },
+    // movePlayerLeft({ state, commit }, { index, gameFrame }) {
+    //   let players = state.players;
+    //   players[index].x = players[index].x - players[index].speed;
+    //   players[index].state = 0;
 
-      if (gameFrame % state.setup.stagger == 0) {
-        players[index].frame =
-          players[index].frame >= players[index].frameCount
-            ? 0
-            : (players[index].frame += 1);
-      }
-      commit("updatePlayers", players);
-    },
-    movePlayerUp({ state, commit }, { index, gameFrame }) {
-      let players = state.players;
-      players[index].y = players[index].y - players[index].speed;
-      players[index].state = 3;
+    //   if (gameFrame % state.setup.stagger == 0) {
+    //     players[index].frame =
+    //       players[index].frame >= players[index].frameCount
+    //         ? 0
+    //         : (players[index].frame += 1);
+    //   }
+    //   commit("updatePlayers", players);
+    // },
+    // movePlayerRight({ state, commit }, data) {
+    //   let players = state.players;
+    //   let index = Number(data.creator);
+    //   players[index].x = data.players[index].x;
+    //   players[index].state = 2;
 
-      if (gameFrame % state.setup.stagger == 0) {
-        players[index].frame =
-          players[index].frame >= players[index].frameCount
-            ? 0
-            : (players[index].frame += 1);
-      }
-      commit("updatePlayers", players);
-    },
+    //   if (gameFrame % state.setup.stagger == 0) {
+    //     players[index].frame =
+    //       players[index].frame >= players[index].frameCount
+    //         ? 0
+    //         : (players[index].frame += 1);
+    //   }
+    //   commit("updatePlayers", players);
+    // },
+    // movePlayerUp({ state, commit }, { index, gameFrame }) {
+    //   let players = state.players;
+    //   players[index].y = players[index].y - players[index].speed;
+    //   players[index].state = 3;
+
+    //   if (gameFrame % state.setup.stagger == 0) {
+    //     players[index].frame =
+    //       players[index].frame >= players[index].frameCount
+    //         ? 0
+    //         : (players[index].frame += 1);
+    //   }
+    //   commit("updatePlayers", players);
+    // },
     movePlayerDown({ state, commit }, { index, gameFrame }) {
       let players = state.players;
       players[index].y = players[index].y + players[index].speed;

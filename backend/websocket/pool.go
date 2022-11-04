@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"bomberman-dom/game"
 	"fmt"
 )
 
@@ -20,19 +21,19 @@ func NewPool() *Pool {
 	}
 }
 
-func (pool *Pool) createPlayers() []Player {
-	keys := make([]Player, len(pool.Clients))
+func (pool *Pool) createPlayers() []game.Player {
+	keys := make([]game.Player, len(pool.Clients))
 
 	i := 0
 	for client := range pool.Clients {
-		keys[i] = Player{X: 0, Y: 0, Name: client.ID}
+		keys[i] = game.Player{X: 0, Y: 0, Name: client.ID}
 		i++
 	}
 
 	return keys
 }
 
-func (pool *Pool) Start() {
+func (pool *Pool) Start(gameState *game.GameState) {
 	// listen for every message in every pools channel
 	for {
 		// select will execute whichever channel sends data first
@@ -41,39 +42,47 @@ func (pool *Pool) Start() {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			game.Players = pool.createPlayers()
+			gameState.Players = pool.createPlayers()
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
-					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", GameState: game})
+					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", GameState: gameState})
 					if err != nil {
 						fmt.Println("JSON MARSHAL ERR", err)
 					}
 				} else {
-					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", GameState: game})
+					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", GameState: gameState})
 				}
 			}
 			break S
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
-			game.Players = pool.createPlayers()
+			gameState.Players = pool.createPlayers()
 
 			// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: "USER_LEFT", GameState: game})
+				client.Conn.WriteJSON(Message{Type: "USER_LEFT", GameState: gameState})
 			}
 			break S
 		case message := <-pool.Broadcast:
 			// fmt.Println("Sending message to all clients in Pool")
-			message.GameState = game
 
-			switch message.Type {
-			case "PLAYER_MOVE":
-				fmt.Println("Received player move", message)
-				// if message.Body == "RIGHT" {
-				// 	game.Players[0].X += 1
-				// }
+			if message.Type == "PLAYER_MOVE" {
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+
+				switch message.Body {
+				case "UP":
+					gameState.Players[currentPlayerIndex].Y -= 1
+				case "DOWN":
+					gameState.Players[currentPlayerIndex].Y += 1
+				case "RIGHT":
+					gameState.Players[currentPlayerIndex].X += 1
+				case "LEFT":
+					gameState.Players[currentPlayerIndex].X -= 1
+				}
 			}
+
+			message.GameState = gameState
 
 			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
@@ -83,7 +92,7 @@ func (pool *Pool) Start() {
 			}
 		}
 
-		fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+		// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 
 	}
 }

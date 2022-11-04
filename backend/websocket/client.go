@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	g "bomberman-dom/game"
 	"fmt"
 	"log"
 
@@ -14,10 +15,10 @@ type Client struct {
 }
 
 type Message struct {
-	Type      string `json:"type"`
-	Creator   string `json:"creator"`
-	Body      string `json:"body"`
-	GameState Game   `json:"gameState"`
+	Type      string       `json:"type"`
+	Creator   string       `json:"creator"`
+	Body      string       `json:"body"`
+	GameState *g.GameState `json:"gameState"`
 }
 
 // keep listening for messages from websocket

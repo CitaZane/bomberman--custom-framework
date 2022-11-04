@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bomberman-dom/game"
 	ws "bomberman-dom/websocket"
 	"fmt"
 	"log"
@@ -9,7 +10,9 @@ import (
 
 func main() {
 	pool := ws.NewPool()
-	go pool.Start()
+	game := game.GameState{}
+
+	go pool.Start(&game)
 
 	http.HandleFunc("/ws", ws.SocketHandler(pool))
 	fmt.Printf("Server started at http://localhost:8080\n")
