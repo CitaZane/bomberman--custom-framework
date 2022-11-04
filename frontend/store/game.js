@@ -28,8 +28,10 @@ export default {
       commit("updatePlayers", players);
     },
     registerCurrentPlayer({ state, commit }, name) {
-      let currentPlayer = state.players.filter((player) => player.name == name);
-      commit("updateCurrentPlayer", currentPlayer[0].name);
+      let currentPlayerIndex = state.players.findIndex(
+        (player) => player.name == state.store.currentPlayerName
+      );
+      commit("updateCurrentPlayer", currentPlayerIndex);
     },
     movePlayerLeft({ state, commit }, { index, gameFrame }) {
       let players = state.players;
