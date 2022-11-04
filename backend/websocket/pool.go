@@ -20,12 +20,12 @@ func NewPool() *Pool {
 	}
 }
 
-func (pool *Pool) getClientNames() []string {
-	keys := make([]string, len(pool.Clients))
+func (pool *Pool) createPlayers() []Player {
+	keys := make([]Player, len(pool.Clients))
 
 	i := 0
 	for client := range pool.Clients {
-		keys[i] = client.ID
+		keys[i] = Player{X: 0, Y: 0, Name: client.ID}
 		i++
 	}
 
@@ -41,7 +41,7 @@ func (pool *Pool) Start() {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			game.Players = pool.getClientNames()
+			game.Players = pool.createPlayers()
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
@@ -56,7 +56,7 @@ func (pool *Pool) Start() {
 			break S
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
-			game.Players = pool.getClientNames()
+			game.Players = pool.createPlayers()
 
 			// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client := range pool.Clients {
@@ -66,6 +66,15 @@ func (pool *Pool) Start() {
 		case message := <-pool.Broadcast:
 			// fmt.Println("Sending message to all clients in Pool")
 			message.GameState = game
+
+			switch message.Type {
+			case "PLAYER_MOVE":
+				fmt.Println("Received player move", message)
+				// if message.Body == "RIGHT" {
+				// 	game.Players[0].X += 1
+				// }
+			}
+
 			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)

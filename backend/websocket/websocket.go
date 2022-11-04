@@ -15,8 +15,14 @@ var upgrader = websocket.Upgrader{
 
 // holds game state to send it to all players
 type Game struct {
-	Players []string `json:"players"`
-	created bool
+	Players []Player `json:"players"`
+	// created bool
+}
+
+type Player struct {
+	X    int    `json:"x"`
+	Y    int    `json:"y"`
+	Name string `json:"name"`
 }
 
 var game Game
@@ -30,11 +36,6 @@ func SocketHandler(pool *Pool) http.HandlerFunc {
 		}
 
 		username := r.URL.Query()["username"][0]
-
-		if !game.created {
-			game.created = true
-		}
-		// game.Players = append(game.Players, username)
 
 		client := Client{
 			ID:   username,
