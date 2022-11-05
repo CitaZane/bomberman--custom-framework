@@ -9,8 +9,8 @@ function updateMovement(player, id) {
   refs[`monster-${id}`].style.setProperty("--y-movement", player.y);
   refs[`monster-${id}`].style.setProperty("--x-movement", player.x);
 
-  refs[`monster-${id}`].style.setProperty("--y", player.state * MONSTER_SIZE);
-  refs[`monster-${id}`].style.setProperty("--x", player.frame * MONSTER_SIZE);
+//   refs[`monster-${id}`].style.setProperty("--y", player.state * MONSTER_SIZE);
+//   refs[`monster-${id}`].style.setProperty("--x", player.frame * MONSTER_SIZE);
 }
 
 export function MonsterSprite({ player, id }) {

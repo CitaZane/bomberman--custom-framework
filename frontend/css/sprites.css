@@ -3,19 +3,24 @@
 }
 
 .monster {
-    --x: 0;
-    --y: 0;
+    /* --x: 0;
+    --y: 0; */
 
     --x-movement: 0;
     --y-movement: 0;
 
     position: absolute;
     /* background-image: url('../assets/monster.png'); */
-    background-position: calc(var(--x) * -1px) calc(var(--y) * -1px);
+    /* background-position: calc(var(--x) * -1px) calc(var(--y) * -1px); */
     transform: translate(calc(var(--x-movement) * 1px), calc(var(--y-movement) * 1px));
     height: 64px;
     width: 64px;
     z-index: 10;
+
+    animation-duration: 0.5s;
+    animation-timing-function: steps(6);
+    animation-iteration-count: infinite;
+    /* animation: monster-down 0.5s steps(6) infinite; */
 }
 
 #monster-1{
@@ -29,6 +34,39 @@
 }
 #monster-0{
    background-image: url('../assets/monster_4.png'); 
+}
+
+.monster-left{
+    animation-name: monster-left;
+}
+.monster-right{
+    animation-name: monster-right;
+}
+.monster-up{
+    animation-name: monster-up;
+}
+.monster-down{
+    animation-name: monster-down;
+}
+/* animations for monster movement in spritesheet */
+@keyframes monster-left {
+  from { background-position: 0px 0px; }
+  to { background-position: -384px 0px; }
+}
+
+@keyframes monster-up {
+  from { background-position: 0px 64px; }
+  to { background-position: -384px 64px; }
+}
+
+@keyframes monster-right {
+  from { background-position: 0px 128px; }
+  to { background-position: -384px 128px; }
+}
+
+@keyframes monster-down {
+  from { background-position: 0px 192px; }
+  to { background-position: -384px 192px; }
 }
 
 .bomb {
