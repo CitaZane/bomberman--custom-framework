@@ -26,7 +26,8 @@ func (pool *Pool) createPlayers() []game.Player {
 
 	i := 0
 	for client := range pool.Clients {
-		keys[i] = game.Player{X: 0, Y: 0, Name: client.ID}
+		keys[i] = game.CreatePlayer(client.ID, i)
+		// keys[i] = game.Player{X: 0, Y: 0, Name: client.ID, Speed:1}
 		i++
 	}
 
@@ -69,17 +70,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 
 			if message.Type == "PLAYER_MOVE" {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-
-				switch message.Body {
-				case "UP":
-					gameState.Players[currentPlayerIndex].Y -= 1
-				case "DOWN":
-					gameState.Players[currentPlayerIndex].Y += 1
-				case "RIGHT":
-					gameState.Players[currentPlayerIndex].X += 1
-				case "LEFT":
-					gameState.Players[currentPlayerIndex].X -= 1
-				}
+				gameState.Players[currentPlayerIndex].Move( message.Body )
 			}
 
 			message.GameState = gameState

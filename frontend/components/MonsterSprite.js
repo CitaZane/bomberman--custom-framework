@@ -1,6 +1,7 @@
 /* @jsx jsx */
 import jsx from "../../framework/vDom/jsx";
 import { refs } from "../../framework/vDom/render";
+import {store} from '../app'
 
 const MONSTER_SIZE = 64;
 
@@ -8,9 +9,13 @@ function updateMovement(player, id) {
   if (!refs[`monster-${id}`]) return;
   refs[`monster-${id}`].style.setProperty("--y-movement", player.y);
   refs[`monster-${id}`].style.setProperty("--x-movement", player.x);
+  
+    updateAnimation(player,id)
 
-//   refs[`monster-${id}`].style.setProperty("--y", player.state * MONSTER_SIZE);
-//   refs[`monster-${id}`].style.setProperty("--x", player.frame * MONSTER_SIZE);
+}
+
+function updateAnimation(player, id){
+    refs[`monster-${id}`].classList.add(`monster-${player.movement}`)
 }
 
 export function MonsterSprite({ player, id }) {

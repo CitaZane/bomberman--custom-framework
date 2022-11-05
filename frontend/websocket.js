@@ -44,19 +44,6 @@ export function defineWebSocket(name) {
         break;
       // game  stuff
       case "PLAYER_MOVE":
-        // let index = Number(data.creator); //index of player sending the movement
-        // if (data.body == "LEFT") {
-        //   store.dispatch("movePlayerLeft", { index, gameFrame });
-        // } else if (data.body == "RIGHT") {
-        //   console.log("MOVING PLAYER RIGHT");
-        //   store.dispatch("movePlayerRight", { index, gameFrame });
-        //   store.dispatch("movePlayerRight", data);
-        // } else if (data.body == "UP") {
-        //   store.dispatch("movePlayerUp", { index, gameFrame });
-        // } else if (data.body == "DOWN") {
-        //   store.dispatch("movePlayerDown", { index, gameFrame });
-        // }
-
         store.commit("updatePlayers", data.gameState.players);
     }
   };

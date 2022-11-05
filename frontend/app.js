@@ -25,47 +25,28 @@ export function setupGame() {
 // main game loop
 let gameFrame = 0;
 function animate() {
-  let inputs = store.state.inputs;
+  let movement = store.state.movement;
   let currentPlayerName = store.state.currentPlayerName;
-
-  // let index = store.state.currentPlayerIndex;
-
-  if (inputs["ArrowLeft"]) {
-    ws.send(
-      JSON.stringify({
-        type: "PLAYER_MOVE",
-        creator: currentPlayerName,
-        body: "LEFT",
-      })
-    );
-  } else if (inputs["ArrowDown"]) {
-    ws.send(
-      JSON.stringify({
-        type: "PLAYER_MOVE",
-        creator: currentPlayerName,
-        body: "DOWN",
-      })
-    );
-  } else if (inputs["ArrowUp"]) {
-    ws.send(
-      JSON.stringify({
-        type: "PLAYER_MOVE",
-        creator: currentPlayerName,
-        body: "UP",
-      })
-    );
-  } else if (inputs["ArrowRight"]) {
-    ws.send(
-      JSON.stringify({
-        type: "PLAYER_MOVE",
-        creator: currentPlayerName,
-        body: "RIGHT",
-      })
-    );
-  } else if (inputs["Space"]) {
-    console.log("Bomb drop");
-    // ws.send(JSON.stringify({type: 'PLAYER_DROP_BOMB',creator: String(index), body: '?coordinates?'}))
-  }
+    // sends all 4 movements
+    if(movement.move){
+        ws.send(
+            JSON.stringify({
+                type: "PLAYER_MOVE",
+                creator: currentPlayerName,
+                body: movement.move,
+            })
+        );
+    }else if(movement.stop){
+        ws.send(
+            JSON.stringify({
+                type: "PLAYER_MOVE",
+                creator: currentPlayerName,
+                body: movement.stop,
+            })
+        );
+         //send movement stop only once, so clear the variable after sending
+        store.dispatch('clearStopMovement')
+    }
 
   gameFrame++;
   requestAnimationFrame(animate);

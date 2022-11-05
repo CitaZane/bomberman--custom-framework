@@ -15,9 +15,3 @@ func (g *GameState) FindPlayer(name string) int {
 
 	return -1
 }
-
-type Player struct {
-	X    int    `json:"x"`
-	Y    int    `json:"y"`
-	Name string `json:"name"`
-}
