@@ -14,12 +14,12 @@ export function setupGame() {
     store.dispatch("registerKeyUp", e.code);
   });
   document.addEventListener("keydown", (e) => {
+      store.dispatch("registerKeyDown", e.code);
+    });
     if (!gameStarted) {
-      gameStarted = true;
-      animate();
+        gameStarted = true;
+        animate();
     }
-    store.dispatch("registerKeyDown", e.code);
-  });
 }
 
 // main game loop

@@ -21,9 +21,6 @@ export function defineWebSocket(name) {
           store.dispatch("registerPlayer", player);
         });
 
-        // store.dispatch("registerCurrentPlayer", store.state.currentPlayerName);
-        // console.log(store.state.currentPlayerIndex);
-
         window.location.href = window.location.origin + "/#/game";
         setupGame();
         break;
