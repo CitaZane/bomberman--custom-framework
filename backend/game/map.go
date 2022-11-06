@@ -2,7 +2,6 @@ package game
 
 import "math/rand"
 
-
 //function for creating starting map with random placed breakable blocks.
 // 0 is floor tile
 // 1 is breakable block
@@ -24,3 +23,36 @@ func CreateBaseMap() []int {
 	}
 	return m
 }
+
+/* ---------------------- maybe base map could help -> ---------------------- */
+// predifined walls, empty corners for monsters and first breakable walls around monsters
+// all places where int ==3 should be replaced
+
+// var mapBase = []int{
+// 	2,2,2,2,2,2,2,2,2,2,2,
+// 	2,0,0,1,3,3,3,1,0,0,2,
+// 	2,0,2,3,2,3,2,3,2,0,2,
+// 	2,1,3,3,3,3,3,3,3,1,2,
+// 	2,3,2,3,2,3,2,3,2,3,2,
+// 	2,3,3,3,3,3,3,3,3,3,2,
+// 	2,3,2,3,2,3,2,3,2,3,2,
+// 	2,1,3,3,3,3,3,3,3,1,2,
+// 	2,0,2,3,2,3,2,3,2,0,2,
+// 	2,0,0,1,3,3,3,1,0,0,2,
+// 	2,2,2,2,2,2,2,2,2,2,2,
+// }
+
+// map withouth 3s look like this-> 
+// var mapBase = []int{
+// 	2,2,2,2,2,2,2,2,2,2,2,
+// 	2,0,0,1,.,.,.,1,0,0,2,
+// 	2,0,2,.,2,.,2,.,2,0,2,
+// 	2,1,.,.,.,.,.,.,.,1,2,
+// 	2,.,2,.,2,.,2,.,2,.,2,
+// 	2,.,.,.,.,.,.,.,.,.,2,
+// 	2,.,2,.,2,.,2,.,2,.,2,
+// 	2,1,.,.,.,.,.,.,.,1,2,
+// 	2,0,2,.,2,.,2,.,2,0,2,
+// 	2,0,0,1,.,.,.,1,0,0,2,
+// 	2,2,2,2,2,2,2,2,2,2,2,
+// }

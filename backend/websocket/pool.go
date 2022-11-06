@@ -27,7 +27,6 @@ func (pool *Pool) createPlayers() []game.Player {
 	i := 0
 	for client := range pool.Clients {
 		keys[i] = game.CreatePlayer(client.ID, i)
-		// keys[i] = game.Player{X: 0, Y: 0, Name: client.ID, Speed:1}
 		i++
 	}
 
@@ -72,7 +71,6 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				gameState.Players[currentPlayerIndex].Move( message.Body )
 			}else if message.Type == "START_GAME"{
-				fmt.Println("Game STRATED")
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers()
 			}

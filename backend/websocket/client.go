@@ -2,7 +2,6 @@ package websocket
 
 import (
 	g "bomberman-dom/game"
-	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -39,6 +38,6 @@ func (c *Client) Read() {
 		}
 		// send created message to broadcast channel
 		c.Pool.Broadcast <- msg
-		fmt.Printf("Text message Received: %+v\n", msg)
+		// fmt.Printf("Text message Received: %+v\n", msg)
 	}
 }
