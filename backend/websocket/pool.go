@@ -44,7 +44,6 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 			gameState.Players = pool.createPlayers()
-
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
 					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", GameState: gameState})
@@ -66,11 +65,16 @@ func (pool *Pool) Start(gameState *game.GameState) {
 			}
 			break S
 		case message := <-pool.Broadcast:
-			// fmt.Println("Sending message to all clients in Pool")
+
+			// fmt.Println("Sending message to all clients in Pool", message.Type)
 
 			if message.Type == "PLAYER_MOVE" {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				gameState.Players[currentPlayerIndex].Move( message.Body )
+			}else if message.Type == "START_GAME"{
+				fmt.Println("Game STRATED")
+				gameState.Map = game.CreateBaseMap()
+				gameState.Players = pool.createPlayers()
 			}
 
 			message.GameState = gameState

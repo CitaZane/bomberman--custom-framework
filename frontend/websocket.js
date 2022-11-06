@@ -20,7 +20,8 @@ export function defineWebSocket(name) {
         data.gameState.players.forEach((player) => {
           store.dispatch("registerPlayer", player);
         });
-
+        store.commit('updateMap', data.gameState.map)
+        // console.log("Game started with: ", data.gameState.map)
         window.location.href = window.location.origin + "/#/game";
         setupGame();
         break;
