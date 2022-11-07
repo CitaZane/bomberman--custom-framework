@@ -29,11 +29,11 @@ export function defineWebSocket(name) {
       // queue cases
       case "NEW_USER":
       case "USER_LEFT":
-        store.commit("updateUserQueueCount", data.gameState.players.length);
+        store.commit("updateUserQueueCount", data.body);
         break;
 
       case "JOIN_QUEUE":
-        store.commit("updateUserQueueCount", data.gameState.players.length);
+        store.commit("updateUserQueueCount", data.body);
         window.location.href = window.location.origin + "/#/queue";
         break;
 

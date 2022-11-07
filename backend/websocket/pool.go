@@ -3,6 +3,7 @@ package websocket
 import (
 	"bomberman-dom/game"
 	"fmt"
+	"strconv"
 )
 
 type Pool struct {
@@ -42,25 +43,22 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			gameState.Players = pool.createPlayers()
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
-					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", GameState: gameState})
+					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", Body: strconv.Itoa(len(pool.Clients))})
 					if err != nil {
 						fmt.Println("JSON MARSHAL ERR", err)
 					}
 				} else {
-					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", GameState: gameState})
+					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", Body: strconv.Itoa(len(pool.Clients))})
 				}
 			}
 			break S
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
-			gameState.Players = pool.createPlayers()
 
-			// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: "USER_LEFT", GameState: gameState})
+				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
 			}
 			break S
 		case message := <-pool.Broadcast:
@@ -69,8 +67,8 @@ func (pool *Pool) Start(gameState *game.GameState) {
 
 			if message.Type == "PLAYER_MOVE" {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				gameState.Players[currentPlayerIndex].Move( message.Body )
-			}else if message.Type == "START_GAME"{
+				gameState.Players[currentPlayerIndex].Move(message.Body)
+			} else if message.Type == "START_GAME" {
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers()
 			}
