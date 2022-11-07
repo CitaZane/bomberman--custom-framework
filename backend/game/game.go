@@ -5,6 +5,7 @@ type GameState struct {
 	Players []Player `json:"players"`
 	Map     []int    `json:"map"`
 	Bombs   []Bomb   `json:"bombs"`
+	Started bool
 }
 
 type Bomb struct {

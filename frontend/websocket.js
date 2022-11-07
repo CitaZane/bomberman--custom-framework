@@ -17,12 +17,17 @@ export function defineWebSocket(name) {
     // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
+        if (data.body === "me") {
+          store.commit("changePlayerName", data.creator);
+        }
+        store.commit("updatePlayers", []);
+
         data.gameState.players.forEach((player) => {
           store.dispatch("registerPlayer", player);
         });
         store.commit('updateMap', data.gameState.map)
         // console.log("Game started with: ", data.gameState.map)
-        window.location.href = window.location.origin + "/#/game";
+        // window.location.href = window.location.origin + "/#/game";
         setupGame();
         break;
 
@@ -33,8 +38,18 @@ export function defineWebSocket(name) {
         break;
 
       case "JOIN_QUEUE":
-        store.commit("updateUserQueueCount", data.body);
-        window.location.href = window.location.origin + "/#/queue";
+        // store.commit("updateUserQueueCount", data.body);
+        // window.location.href = window.location.origin + "/#/queue";
+
+        // create new game and update players
+        store.commit("updatePlayers", []);
+
+        data.gameState.players.forEach((player) => {
+          store.dispatch("registerPlayer", player);
+        });
+        store.commit('updateMap', data.gameState.map)
+        setupGame();
+        // ---------------
         break;
 
       case "TEXT_MESSAGE":

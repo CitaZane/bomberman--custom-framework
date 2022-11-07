@@ -15,7 +15,7 @@ export function GameView() {
           <MonsterSprite player={player} id={i} />
         ))}
 
-        {bombs.map(<BombSprite />)}
+        {/* {bombs.map(<BombSprite />)} */}
       </div>
     ),
   };

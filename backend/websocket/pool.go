@@ -43,16 +43,17 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
+
+			gameState.Map = game.CreateBaseMap()
+			gameState.Players = pool.createPlayers()
+
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
-					err := otherClient.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", Body: strconv.Itoa(len(pool.Clients))})
-					if err != nil {
-						fmt.Println("JSON MARSHAL ERR", err)
-					}
-				} else {
-					otherClient.Conn.WriteJSON(Message{Type: "NEW_USER", Body: strconv.Itoa(len(pool.Clients))})
+					otherClient.Conn.WriteJSON(Message{Type: "START_GAME", Body: "me", GameState: gameState, Creator: client.ID})
 				}
+				otherClient.Conn.WriteJSON(Message{Type: "START_GAME", Body: strconv.Itoa(len(pool.Clients)), GameState: gameState, Creator: client.ID})
 			}
+
 			break S
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
@@ -66,6 +67,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 			// fmt.Println("Sending message to all clients in Pool", message.Type)
 
 			if message.Type == "PLAYER_MOVE" {
+				fmt.Println(message.Creator)
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				gameState.Players[currentPlayerIndex].Move(message.Body)
 			} else if message.Type == "START_GAME" {

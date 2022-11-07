@@ -3,6 +3,7 @@ package websocket
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -12,6 +13,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
+var counter = 0
 
 func SocketHandler(pool *Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -21,14 +23,19 @@ func SocketHandler(pool *Pool) http.HandlerFunc {
 			return
 		}
 
-		username := r.URL.Query()["username"][0]
+		// username := r.URL.Query()["username"][0]
 
+		// client := Client{
+		// 	ID:   username,
+		// 	Conn: conn,
+		// 	Pool: pool,
+		// }
+		counter++
 		client := Client{
-			ID:   username,
+			ID:   strconv.Itoa(counter),
 			Conn: conn,
 			Pool: pool,
 		}
-
 		pool.Register <- &client
 
 		client.Read()
