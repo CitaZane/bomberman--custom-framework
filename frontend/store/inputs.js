@@ -1,7 +1,7 @@
 export default {
     state: {
         inputs: {},
-        movement:{move:"", stop:""}
+        movement: { move: "", stop: "" }
     },
     mutations: {
         updateInputs(state, inputs) {
@@ -15,28 +15,28 @@ export default {
         registerKeyUp({ state, commit }, key) {
             let inputs = state.inputs;
             inputs[key] = false
-            
+
             let movement = state.movement
-            if(key == "ArrowLeft"){
-                if (movement.move == "LEFT"){
+            if (key == "ArrowLeft") {
+                if (movement.move == "LEFT") {
                     movement.move = ""
-                    movement.stop="LEFT-STOP"
+                    movement.stop = "LEFT-STOP"
                 }
-            }else if (key =="ArrowDown"){
-                 if (movement.move == "DOWN"){
-                     movement.move = ""
-                     movement.stop ="DOWN-STOP"
-                 }
-            }else if (key =="ArrowRight"){
-                 if (movement.move == "RIGHT"){
-                     movement.move = ""
-                     movement.stop="RIGHT-STOP"
-                 }
-            }else if (key =="ArrowUp"){
-                 if (movement.move == "UP"){
-                     movement.move = ""
-                     movement.stop="UP-STOP"
-                 }
+            } else if (key == "ArrowDown") {
+                if (movement.move == "DOWN") {
+                    movement.move = ""
+                    movement.stop = "DOWN-STOP"
+                }
+            } else if (key == "ArrowRight") {
+                if (movement.move == "RIGHT") {
+                    movement.move = ""
+                    movement.stop = "RIGHT-STOP"
+                }
+            } else if (key == "ArrowUp") {
+                if (movement.move == "UP") {
+                    movement.move = ""
+                    movement.stop = "UP-STOP"
+                }
             }
             commit('updateInputs', inputs)
             commit('updateMovement', movement)
@@ -44,25 +44,27 @@ export default {
         registerKeyDown({ state, commit }, key) {
             let inputs = state.inputs;
             inputs[key] = true
-            
+
             let movement = state.movement
-            if(key == "ArrowLeft"){
+            if (key == "ArrowLeft") {
                 movement.stop = ""
-                movement.move="LEFT"
-            }else if (key =="ArrowDown"){
+                movement.move = "LEFT"
+            } else if (key == "ArrowDown") {
                 movement.stop = ""
-                movement.move="DOWN"
-            }else if (key =="ArrowRight"){
+                movement.move = "DOWN"
+            } else if (key == "ArrowRight") {
                 movement.stop = ""
-                movement.move="RIGHT"
-            }else if (key =="ArrowUp"){
+                movement.move = "RIGHT"
+            } else if (key == "ArrowUp") {
                 movement.stop = ""
-                movement.move="UP"
+                movement.move = "UP"
+            } else if (key == "Space") {
+                movement.move = "DROP_BOMB"
             }
             commit('updateInputs', inputs)
             commit('updateMovement', movement)
         },
-        clearStopMovement({ state, commit }){
+        clearStopMovement({ state, commit }) {
             let movement = state.movement
             movement.stop = "";
             commit('updateMovement', movement)
