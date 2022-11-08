@@ -1,23 +1,23 @@
 package game
 
 // movement enum
-// Movement enup used to provide possible monster actions
+// Movement enum used to provide possible monster actions
 type Movement string
 
 const (
-	Up Movement 		= "up"
-	Down Movement       = "down"
-	Left Movement       = "left"
-	Right Movement      = "right"
-	
-	UpStop Movement 		= "up-stop"
-	DownStop Movement       = "down-stop"
-	LeftStop Movement       = "left-stop"
-	RightStop Movement      = "right-stop"
+	Up    Movement = "up"
+	Down  Movement = "down"
+	Left  Movement = "left"
+	Right Movement = "right"
+
+	UpStop    Movement = "up-stop"
+	DownStop  Movement = "down-stop"
+	LeftStop  Movement = "left-stop"
+	RightStop Movement = "right-stop"
 )
 
 // Translate monster movement from string to one of registerd movements
-func translateMovement(movement string)Movement{
+func translateMovement(movement string) Movement {
 	switch movement {
 	case "DOWN":
 		return Down
