@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type Pool struct {
@@ -79,6 +81,15 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					time.Sleep(3000)
 					gameState.Players[currentPlayerIndex].BombsLeft++
 					gameState.Players[currentPlayerIndex].Bombs = gameState.Players[currentPlayerIndex].Bombs[1:]
+					keys := make([]*websocket.Conn, len(pool.Clients))
+
+					i := 0
+					for k := range pool.Clients {
+						keys[i] = k.Conn
+						i++
+					}
+
+					keys[currentPlayerIndex].WriteJSON(Message{Type: "BOMB_EXPLODED", GameState: gameState})
 				}()
 				//gameState.Bombs = append(gameState.Bombs, game.Bomb{X: currentPlayer.X, Y: currentPlayer.Y})
 			} else if message.Type == "START_GAME" {

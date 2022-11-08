@@ -24,7 +24,7 @@ export function setupGame() {
 	}
 }
 
-let throttleDropBomb = advThrottle(dropBomb, 3000, { leading: true });
+//let throttleDropBomb = advThrottle(dropBomb, 3000, { leading: true });
 
 function dropBomb(currentPlayerName) {
 	ws.send(
@@ -66,8 +66,14 @@ function animate() {
 
 	if (inputs?.Space) {
 		// console.log("here");
-		throttleDropBomb(currentPlayerName);
+		//throttleDropBomb(currentPlayerName);
 		// console.log("dropping bomb!");
+		const playerIndex = store.state.players.findIndex(
+			(player) => player.name === currentPlayerName
+		);
+		if (store.state.players[playerIndex].bombsLeft > 0) {
+			console.log("DROP THE MOTHERFUCKING BOMB");
+		}
 	}
 
 	gameFrame++;

@@ -61,8 +61,12 @@ export function defineWebSocket(name) {
 				break;
 
 			case "PLAYER_DROPPED_BOMB":
+				store.commit("updatePlayers", data.gameState.players);
 				console.log(data.gameState.players);
-				console.log(data.gameState.bombs);
+			//console.log(data.gameState.bombs);
+			case "BOMB_EXPLODED":
+				store.commit("updatePlayers", data.gameState.players);
+				console.log(data.gameState.players);
 		}
 	};
 }
