@@ -3,6 +3,7 @@ import createStore from "../framework/store";
 import routes from "./router";
 import storeObj from "./store/index";
 import { ws } from "./websocket";
+import { advThrottle } from "./throttle";
 
 import { defineWebSocket } from "./websocket";
 const store = createStore(storeObj);
@@ -23,6 +24,16 @@ export function setupGame() {
   }
 }
 
+let throttleDropBomb = advThrottle(dropBomb, 3000, { leading: true });
+
+function dropBomb(currentPlayerName) {
+  ws.send(
+    JSON.stringify({
+      type: "PLAYER_DROPPED_BOMB",
+      creator: currentPlayerName,
+    })
+  );
+}
 // name provided by backend
 defineWebSocket("user");
 
@@ -31,6 +42,7 @@ let gameFrame = 0;
 function animate() {
   let movement = store.state.movement;
   let currentPlayerName = store.state.currentPlayerName;
+  let inputs = store.state.inputs;
   // sends all 4 movements
   if (movement.move) {
     ws.send(
@@ -49,7 +61,13 @@ function animate() {
       })
     );
     //send movement stop only once, so clear the variable after sending
-    store.dispatch('clearStopMovement')
+    store.dispatch("clearStopMovement");
+  }
+
+  if (inputs?.Space) {
+    // console.log("here");
+    throttleDropBomb(currentPlayerName);
+    // console.log("dropping bomb!");
   }
 
   gameFrame++;

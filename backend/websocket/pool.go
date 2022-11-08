@@ -65,11 +65,13 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		case message := <-pool.Broadcast:
 
 			// fmt.Println("Sending message to all clients in Pool", message.Type)
-
+			currentPlayerIndex := gameState.FindPlayer(message.Creator)
+			currentPlayer := gameState.Players[currentPlayerIndex]
 			if message.Type == "PLAYER_MOVE" {
 				fmt.Println(message.Creator)
-				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				gameState.Players[currentPlayerIndex].Move(message.Body)
+			} else if message.Type == "PLAYER_DROPPED_BOMB" {
+				gameState.Bombs = append(gameState.Bombs, game.Bomb{X: currentPlayer.X, Y: currentPlayer.Y})
 			} else if message.Type == "START_GAME" {
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers()

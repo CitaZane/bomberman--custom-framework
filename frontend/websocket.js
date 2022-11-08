@@ -25,7 +25,7 @@ export function defineWebSocket(name) {
         data.gameState.players.forEach((player) => {
           store.dispatch("registerPlayer", player);
         });
-        store.commit('updateMap', data.gameState.map)
+        store.commit("updateMap", data.gameState.map);
         // console.log("Game started with: ", data.gameState.map)
         // window.location.href = window.location.origin + "/#/game";
         setupGame();
@@ -47,7 +47,7 @@ export function defineWebSocket(name) {
         data.gameState.players.forEach((player) => {
           store.dispatch("registerPlayer", player);
         });
-        store.commit('updateMap', data.gameState.map)
+        store.commit("updateMap", data.gameState.map);
         setupGame();
         // ---------------
         break;
@@ -58,6 +58,10 @@ export function defineWebSocket(name) {
       // game  stuff
       case "PLAYER_MOVE":
         store.commit("updatePlayers", data.gameState.players);
+        break;
+
+      case "PLAYER_DROPPED_BOMB":
+        console.log(data.gameState.bombs);
     }
   };
 }
