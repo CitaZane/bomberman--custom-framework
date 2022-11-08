@@ -4,6 +4,7 @@ import (
 	"bomberman-dom/game"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 type Pool struct {
@@ -71,7 +72,15 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				fmt.Println(message.Creator)
 				gameState.Players[currentPlayerIndex].Move(message.Body)
 			} else if message.Type == "PLAYER_DROPPED_BOMB" {
-				gameState.Bombs = append(gameState.Bombs, game.Bomb{X: currentPlayer.X, Y: currentPlayer.Y})
+				//currentPlayer.Bombs
+				gameState.Players[currentPlayerIndex].Bombs = append(gameState.Players[currentPlayerIndex].Bombs, game.Bomb{X: currentPlayer.X, Y: currentPlayer.Y})
+				gameState.Players[currentPlayerIndex].BombsLeft--
+				go func() {
+					time.Sleep(3000)
+					gameState.Players[currentPlayerIndex].BombsLeft++
+					gameState.Players[currentPlayerIndex].Bombs = gameState.Players[currentPlayerIndex].Bombs[1:]
+				}()
+				//gameState.Bombs = append(gameState.Bombs, game.Bomb{X: currentPlayer.X, Y: currentPlayer.Y})
 			} else if message.Type == "START_GAME" {
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers()

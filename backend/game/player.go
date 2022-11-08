@@ -1,11 +1,18 @@
 package game
 
 type Player struct {
-	X        int      `json:"x"`
-	Y        int      `json:"y"`
-	Name     string   `json:"name"`
-	Movement Movement `json:"movement"`
-	Speed    int      `json:"-"` //for changing how fas is movement
+	X         int      `json:"x"`
+	Y         int      `json:"y"`
+	Name      string   `json:"name"`
+	Movement  Movement `json:"movement"`
+	Speed     int      `json:"-"` //for changing how fas is movement
+	BombsLeft int      `json:"bombsLeft"`
+	Bombs     []Bomb   `json:"bombs"`
+}
+
+type Bomb struct {
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 // initialization functions returns palyer with initial state and position in  11x11 field
@@ -32,11 +39,12 @@ func CreatePlayer(name string, index int) Player {
 		movement = LeftStop
 	}
 	return Player{
-		Name:     name,
-		Speed:    1,
-		Movement: movement,
-		X:        x,
-		Y:        y,
+		Name:      name,
+		Speed:     1,
+		Movement:  movement,
+		X:         x,
+		Y:         y,
+		BombsLeft: 1,
 	}
 }
 
