@@ -10,9 +10,8 @@ import (
 
 func main() {
 	pool := ws.NewPool()
-	game := game.GameState{}
 
-	go pool.Start(&game)
+	go pool.Start(&game.State)
 
 	http.HandleFunc("/ws", ws.SocketHandler(pool))
 	fmt.Printf("Server started at http://localhost:8080\n")
