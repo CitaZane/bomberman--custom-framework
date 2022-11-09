@@ -12,10 +12,8 @@
 	--y-movement: 0;
 
 	position: absolute;
-	transform: translate(
-		calc(var(--x-movement) * 1px),
-		calc(var(--y-movement) * 1px)
-	);
+	transform: translate(calc(var(--x-movement) * 1px),
+			calc(var(--y-movement) * 1px));
 	height: 64px;
 	width: 64px;
 	z-index: 10;
@@ -23,16 +21,20 @@
 	animation-duration: 0.5s;
 	animation-iteration-count: infinite;
 }
+
 /* -------------------------- change monster color -------------------------- */
 #monster-1 {
 	background-image: url("../assets/monster_1.png");
 }
+
 #monster-2 {
 	background-image: url("../assets/monster_2.png");
 }
+
 #monster-3 {
 	background-image: url("../assets/monster_3.png");
 }
+
 #monster-0 {
 	background-image: url("../assets/monster_4.png");
 }
@@ -44,6 +46,7 @@
 .monster-right {
 	animation-timing-function: steps(6);
 }
+
 .monster-up-stop,
 .monster-down-stop,
 .monster-left-stop,
@@ -56,14 +59,17 @@
 .monster-up-stop {
 	animation-name: monster-up;
 }
+
 .monster-down,
 .monster-down-stop {
 	animation-name: monster-down;
 }
+
 .monster-right,
 .monster-right-stop {
 	animation-name: monster-right;
 }
+
 .monster-left,
 .monster-left-stop {
 	animation-name: monster-left;
@@ -74,6 +80,7 @@
 	from {
 		background-position: 0px 0px;
 	}
+
 	to {
 		background-position: -384px 0px;
 	}
@@ -83,6 +90,7 @@
 	from {
 		background-position: 0px 64px;
 	}
+
 	to {
 		background-position: -384px 64px;
 	}
@@ -92,6 +100,7 @@
 	from {
 		background-position: 0px 128px;
 	}
+
 	to {
 		background-position: -384px 128px;
 	}
@@ -101,6 +110,7 @@
 	from {
 		background-position: 0px 192px;
 	}
+
 	to {
 		background-position: -384px 192px;
 	}
@@ -125,16 +135,19 @@
 	animation-name: bombAnimation;
 	animation-duration: 500ms;
 	animation-timing-function: step-end;
-	animation-iteration-count: 6;
+	animation-iteration-count: infinite;
+
 }
 
 @keyframes bombAnimation {
 	0% {
 		background-position: 0px 0px;
 	}
+
 	33% {
 		background-position: 64px 0px;
 	}
+
 	66% {
 		background-position: 128px 0px;
 	}
