@@ -1,14 +1,14 @@
 package game
 
 type Player struct {
-	X         int      `json:"x"`
-	Y         int      `json:"y"`
-	Name      string   `json:"name"`
-	Movement  Movement `json:"movement"`
-	Speed     int      `json:"-"` //for changing how fas is movement
-	BombsLeft int      `json:"bombsLeft"`
-	Bombs     []Bomb   `json:"bombs"`
-	ExplosionRange int `json:"-"`
+	X              int      `json:"x"`
+	Y              int      `json:"y"`
+	Name           string   `json:"name"`
+	Movement       Movement `json:"movement"`
+	Speed          int      `json:"-"` //for changing how fas is movement
+	BombsLeft      int      `json:"bombsLeft"`
+	Bombs          []Bomb   `json:"bombs"`
+	ExplosionRange int      `json:"-"`
 }
 
 type Bomb struct {
@@ -40,14 +40,14 @@ func CreatePlayer(name string, index int) Player {
 		movement = LeftStop
 	}
 	return Player{
-		Name: name,
-		Speed: 1,
-		Movement: movement,
-		X:x,
-		Y:y,
+		Name:           name,
+		Speed:          1,
+		Movement:       movement,
+		X:              x,
+		Y:              y,
 		ExplosionRange: 1,
-		BombsLeft: 1,
-		Bombs:     make([]Bomb, 0),
+		BombsLeft:      1,
+		Bombs:          make([]Bomb, 0),
 	}
 }
 
@@ -86,4 +86,20 @@ func (player *Player) MoveRight() {
 }
 func (player *Player) MoveLeft() {
 	player.X -= player.Speed
+}
+
+func (player *Player) GetCurrentCoordinates() (int, int) {
+	var baseX = getBase(player.X)
+	var baseY = getBase(player.Y)
+	return baseX, baseY
+}
+func getBase(x int) int {
+	var base = x
+	var remainder = x % 64
+	if remainder > 32 { //base is next tile
+		base += 64 - remainder
+	} else { //base is previous tile
+		base -= remainder
+	}
+	return base
 }

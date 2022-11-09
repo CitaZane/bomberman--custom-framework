@@ -76,8 +76,8 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				if gameState.Players[currentPlayerIndex].BombsLeft <= 0 {
 					break S
 				}
-
-				gameState.Players[currentPlayerIndex].Bombs = append(gameState.Players[currentPlayerIndex].Bombs, game.Bomb{X: currentPlayer.X, Y: currentPlayer.Y})
+				baseX, baseY := currentPlayer.GetCurrentCoordinates()
+				gameState.Players[currentPlayerIndex].Bombs = append(gameState.Players[currentPlayerIndex].Bombs, game.Bomb{X: baseX, Y: baseY})
 				gameState.Players[currentPlayerIndex].BombsLeft--
 
 				go func() {
