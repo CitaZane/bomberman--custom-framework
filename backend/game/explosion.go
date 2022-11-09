@@ -1,6 +1,9 @@
 package game
 
-type Explosion struct {
+
+type Explosion []Fire
+
+type Fire struct {
 	X    int `json:"x"`
 	Y    int `json:"y"`
 	Type int `json:"type"`
@@ -51,12 +54,12 @@ func (manager *ExplosionManager) incrementRange() {
 // calculate new explosion based on bobm coordinates, base map and players explosion range
 // return []Explosion tiles that makes 1 explosion and
 // []indexes for bushes destroyed int the explosion
-func NewExplosion(bomb *Bomb, m []int, player *Player) ([]Explosion, []int) {
-	explosion := []Explosion{} //hold end explosion
+func NewExplosion(bomb *Bomb, m []int, player *Player) (Explosion, []int) {
+	explosion := Explosion{}   //hold end explosion
 	destroyedBlocks := []int{} //hold index of destroyed blocks
 
 	// add base in place of bomb
-	var base = Explosion{X: bomb.X, Y: bomb.Y, Type: 0}
+	var base = Fire{X: bomb.X, Y: bomb.Y, Type: 0}
 	explosion = append(explosion, base)
 
 	// create explosion manager
@@ -70,7 +73,7 @@ func NewExplosion(bomb *Bomb, m []int, player *Player) ([]Explosion, []int) {
 			if !manager.FireAlive[direction] {
 				continue
 			}
-			if fire, destroyed, ok := manager.configExplosion(direction); ok {
+			if fire, destroyed, ok := manager.configFire(direction); ok {
 				explosion = append(explosion, fire)
 				if destroyed != -1 {
 					destroyedBlocks = append(destroyedBlocks, destroyed)
@@ -83,7 +86,7 @@ func NewExplosion(bomb *Bomb, m []int, player *Player) ([]Explosion, []int) {
 }
 
 // Configure explosin x and y coordinates based on directiona and range
-func (manager *ExplosionManager) configExplosion(direction string) (Explosion, int, bool) {
+func (manager *ExplosionManager) configFire(direction string) (Fire, int, bool) {
 	var x = manager.Base["x"]
 	var y = manager.Base["y"]
 	switch direction {
@@ -96,36 +99,36 @@ func (manager *ExplosionManager) configExplosion(direction string) (Explosion, i
 	case "RIGHT":
 		x += 64 * manager.CurrentRange
 	}
-	return manager.findExplosion(direction, x, y)
+	return manager.findFire(direction, x, y)
 }
 
 // return false if explosion not found
 // if destroyed != -1 then bush burned
-func (manager *ExplosionManager) findExplosion(direction string, x, y int) (Explosion, int, bool) {
-	explosion := Explosion{X: x, Y: y, Type: manager.TypeMap[direction]}
+func (manager *ExplosionManager) findFire(direction string, x, y int) (Fire, int, bool) {
+	fire := Fire{X: x, Y: y, Type: manager.TypeMap[direction]}
 	blockDestroyed := -1
 	// check if coordinates are not out of game board
 	if x < 0 || x > 11*64 || y < 0 || y > 11*64 {
 		manager.FireAlive[direction] = false
-		return explosion, blockDestroyed, false
+		return fire, blockDestroyed, false
 	}
 	// check if block is destroyable
 	var mapIndex = findMapIndex(x, y)
 	if manager.BaseMap[mapIndex] == 2 {
 		manager.FireAlive[direction] = false
-		return explosion, blockDestroyed, false
+		return fire, blockDestroyed, false
 	}
 	var mapIndexNext = findmapNextIndex(x, y, direction)
 	// make changes to type if end of the fire
 	if manager.BaseMap[mapIndex] == 1 || manager.Range == manager.CurrentRange || manager.BaseMap[mapIndexNext] == 2 {
 		manager.FireAlive[direction] = false
-		explosion.Type = manager.TypeMap[direction] + manager.EndValue
+		fire.Type = manager.TypeMap[direction] + manager.EndValue
 	}
 	// bush destroyed -> set index
 	if manager.BaseMap[mapIndex] == 1 {
 		blockDestroyed = mapIndex
 	}
-	return explosion, blockDestroyed, true
+	return fire, blockDestroyed, true
 }
 
 func findMapIndex(x, y int) int {

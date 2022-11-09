@@ -1,15 +1,15 @@
 package game
 
 type Player struct {
-	X              int           `json:"x"`
-	Y              int           `json:"y"`
-	Name           string        `json:"name"`
-	Movement       Movement      `json:"movement"`
-	Speed          int           `json:"-"` //for changing how fas is movement
-	BombsLeft      int           `json:"bombsLeft"`
-	Bombs          []Bomb        `json:"bombs"`
-	ExplosionRange int           `json:"-"`
-	Explosions     [][]Explosion `json:"explosions"`
+	X              int         `json:"x"`
+	Y              int         `json:"y"`
+	Name           string      `json:"name"`
+	Movement       Movement    `json:"movement"`
+	Speed          int         `json:"-"` //for changing how fas is movement
+	BombsLeft      int         `json:"bombsLeft"`
+	Bombs          []Bomb      `json:"bombs"`
+	ExplosionRange int         `json:"-"`
+	Explosions     []Explosion `json:"explosions"`
 }
 
 type Bomb struct {
@@ -49,7 +49,7 @@ func CreatePlayer(name string, index int) Player {
 		ExplosionRange: 1,
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
-		Explosions:     [][]Explosion{},
+		Explosions:     []Explosion{},
 	}
 }
 
