@@ -51,7 +51,7 @@ func (manager *ExplosionManager) incrementRange() {
 // calculate new explosion based on bobm coordinates, base map and players explosion range
 // return []Explosion tiles that makes 1 explosion and
 // []indexes for bushes destroyed int the explosion
-func newExplosion(bomb *Bomb, m []int, player *Player) ([]Explosion, []int) {
+func NewExplosion(bomb *Bomb, m []int, player *Player) ([]Explosion, []int) {
 	explosion := []Explosion{} //hold end explosion
 	destroyedBlocks := []int{} //hold index of destroyed blocks
 

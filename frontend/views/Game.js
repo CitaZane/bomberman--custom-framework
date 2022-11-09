@@ -8,12 +8,12 @@ import { store } from "../app";
 
 export function GameView() {
   let players = store.state.players;
-  let explosions = store.state.explosions;
+  let allExplosions = players.reduce((prev, current) => {
+    return prev.concat(current.explosions);
+  }, []);
   const allBombs = players.reduce((prev, current) => {
     return prev.concat(current?.bombs);
   }, []);
-
-  // console.log("AllBombs", allBombs)
 
   return {
     template: (
@@ -26,7 +26,7 @@ export function GameView() {
           <BombSprite bomb={bomb} id={i} />
         ))}
 
-         {explosions.map((explosion, i) => (
+         {allExplosions.map((explosion, i) => (
           <ExplosionSprite explosion={explosion} id={i} />))}
       </div>
     ),

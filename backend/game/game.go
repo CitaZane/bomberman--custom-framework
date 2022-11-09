@@ -5,7 +5,7 @@ type GameState struct {
 	Players []Player `json:"players"`
 	Map []int `json:"map"`
 	Bombs   []Bomb   `json:"bombs"`
-	Explosions[]Explosion `json:"explosions"`
+	// Explosions[][]Explosion `json:"explosions"`
 	// created bool
 }
 
@@ -19,6 +19,6 @@ func (g *GameState) FindPlayer(name string) int {
 
 	return -1
 }
-func (g *GameState) ClearExplosions() {
-	g.Explosions = []Explosion{}
-}
+// func (g *GameState) ClearExplosions() {
+// 	g.Explosions = [][]Explosion{}
+// }

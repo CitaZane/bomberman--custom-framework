@@ -2,6 +2,7 @@ import jsx from "../../framework/vDom/jsx"
 import {FireSprite} from "./FireSprite"
 
 export function ExplosionSprite({explosion, id}) {
+    console.log("Explosion:", explosion, id)
     let ref = `explosion-${id}`;
     return {
         template: (

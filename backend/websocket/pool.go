@@ -13,6 +13,7 @@ type Pool struct {
 	Clients      map[*Client]bool
 	Broadcast    chan Message
 	BombExploded chan Message
+	ExplosionCompleted chan Message
 }
 
 func NewPool() *Pool {
@@ -22,6 +23,7 @@ func NewPool() *Pool {
 		Clients:      make(map[*Client]bool),
 		Broadcast:    make(chan Message),
 		BombExploded: make(chan Message),
+		ExplosionCompleted: make(chan Message),
 	}
 }
 
@@ -79,10 +81,14 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				baseX, baseY := currentPlayer.GetCurrentCoordinates()
 				gameState.Players[currentPlayerIndex].Bombs = append(gameState.Players[currentPlayerIndex].Bombs, game.Bomb{X: baseX, Y: baseY})
 				gameState.Players[currentPlayerIndex].BombsLeft--
-
+				
 				go func() {
 					time.Sleep(3000 * time.Millisecond)
 					message.Type = "BOMB_EXPLODED"
+					// create explosion
+					currentPlayerIndex := gameState.FindPlayer(message.Creator)
+					var explosion,_ = game.NewExplosion(&gameState.Players[currentPlayerIndex].Bombs[0],gameState.Map, &gameState.Players[currentPlayerIndex])
+					gameState.Players[currentPlayerIndex].Explosions = append(gameState.Players[currentPlayerIndex].Explosions, explosion)
 					message.GameState = gameState
 					pool.BombExploded <- message
 				}()
@@ -96,14 +102,29 @@ func (pool *Pool) Start(gameState *game.GameState) {
 
 			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
 					return
 				}
 			}
 		case message := <-pool.BombExploded:
 			currentPlayerIndex := gameState.FindPlayer(message.Creator)
+
 			gameState.Players[currentPlayerIndex].BombsLeft++
 			gameState.Players[currentPlayerIndex].Bombs = gameState.Players[currentPlayerIndex].Bombs[1:]
+			for client := range pool.Clients {
+				if err := client.Conn.WriteJSON(message); err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
+			go func() {
+					time.Sleep(1200 * time.Millisecond)
+					message.Type = "EXPLOSION_COMPLETED"	
+					message.GameState = gameState
+					pool.ExplosionCompleted <- message
+				}()
+		case message := <-pool.ExplosionCompleted:
+			currentPlayerIndex := gameState.FindPlayer(message.Creator)
+			gameState.Players[currentPlayerIndex].Explosions = gameState.Players[currentPlayerIndex].Explosions[1:]
 
 			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {

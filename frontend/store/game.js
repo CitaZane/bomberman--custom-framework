@@ -2,7 +2,6 @@ export default {
   state: {
     players: [],
     map:[],
-    explosions:[]
   },
   mutations: {
     updatePlayers(state, players) {
