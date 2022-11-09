@@ -45,6 +45,7 @@ func CreatePlayer(name string, index int) Player {
 		X:         x,
 		Y:         y,
 		BombsLeft: 1,
+		Bombs:     make([]Bomb, 0),
 	}
 }
 
