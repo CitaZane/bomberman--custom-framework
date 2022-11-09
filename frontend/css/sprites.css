@@ -1,5 +1,5 @@
 #home {
-    display: flex;
+	display: flex;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -8,91 +8,149 @@
 /* use --x-movement varibale to move monster around screen  on x axis*/
 /* use --y-movement varibale to move monster around screen  on y-axis*/
 .monster {
-    --x-movement: 0;
-    --y-movement: 0;
+	--x-movement: 0;
+	--y-movement: 0;
 
-    position: absolute;
-    transform: translate(calc(var(--x-movement) * 1px), calc(var(--y-movement) * 1px));
-    height: 64px;
-    width: 64px;
-    z-index: 10;
+	position: absolute;
+	transform: translate(calc(var(--x-movement) * 1px),
+			calc(var(--y-movement) * 1px));
+	height: 64px;
+	width: 64px;
+	z-index: 10;
 
-    animation-duration:0.5s;
-    animation-iteration-count: infinite;
+	animation-duration: 0.5s;
+	animation-iteration-count: infinite;
 }
+
 /* -------------------------- change monster color -------------------------- */
-#monster-1{
-   background-image: url('../assets/monster_1.png'); 
-}
-#monster-2{
-   background-image: url('../assets/monster_2.png'); 
-}
-#monster-3{
-   background-image: url('../assets/monster_3.png'); 
-}
-#monster-0{
-   background-image: url('../assets/monster_4.png'); 
+#monster-1 {
+	background-image: url("../assets/monster_1.png");
 }
 
+#monster-2 {
+	background-image: url("../assets/monster_2.png");
+}
+
+#monster-3 {
+	background-image: url("../assets/monster_3.png");
+}
+
+#monster-0 {
+	background-image: url("../assets/monster_4.png");
+}
 
 /* ---------- animation timing helps start or stop the animation ---------- */
-.monster-up, .monster-down, .monster-left,.monster-right{
-    animation-timing-function: steps(6);
+.monster-up,
+.monster-down,
+.monster-left,
+.monster-right {
+	animation-timing-function: steps(6);
 }
-.monster-up-stop, .monster-down-stop, .monster-left-stop,.monster-right-stop{
-    animation-timing-function: steps(1);
+
+.monster-up-stop,
+.monster-down-stop,
+.monster-left-stop,
+.monster-right-stop {
+	animation-timing-function: steps(1);
 }
 
 /* ----------- animation name controlls which animation is played ----------- */
-.monster-up, .monster-up-stop{
-    animation-name: monster-up;
+.monster-up,
+.monster-up-stop {
+	animation-name: monster-up;
 }
-.monster-down, .monster-down-stop{
-    animation-name: monster-down;
+
+.monster-down,
+.monster-down-stop {
+	animation-name: monster-down;
 }
-.monster-right, .monster-right-stop{
-    animation-name: monster-right;
+
+.monster-right,
+.monster-right-stop {
+	animation-name: monster-right;
 }
-.monster-left, .monster-left-stop{
-    animation-name: monster-left;
+
+.monster-left,
+.monster-left-stop {
+	animation-name: monster-left;
 }
 
 /* -------------------- loop through monster spritesheet -------------------- */
 @keyframes monster-left {
-  from { background-position: 0px 0px; }
-  to { background-position: -384px 0px; }
+	from {
+		background-position: 0px 0px;
+	}
+
+	to {
+		background-position: -384px 0px;
+	}
 }
 
 @keyframes monster-up {
-  from { background-position: 0px 64px; }
-  to { background-position: -384px 64px; }
+	from {
+		background-position: 0px 64px;
+	}
+
+	to {
+		background-position: -384px 64px;
+	}
 }
 
 @keyframes monster-right {
-  from { background-position: 0px 128px; }
-  to { background-position: -384px 128px; }
+	from {
+		background-position: 0px 128px;
+	}
+
+	to {
+		background-position: -384px 128px;
+	}
 }
 
 @keyframes monster-down {
-  from { background-position: 0px 192px; }
-  to { background-position: -384px 192px; }
+	from {
+		background-position: 0px 192px;
+	}
+
+	to {
+		background-position: -384px 192px;
+	}
 }
 
 /* -------------------------------------------------------------------------- */
 /*                                     bomb                                   */
 /* -------------------------------------------------------------------------- */
 .bomb {
-    --x: 0;
+	--x: 0;
 
-    --x-pos: 0;
-    --y-pos: 0;
+	--x-pos: 0;
+	--y-pos: 0;
 
-    position: absolute;
-    background-image: url('../assets/bomb.png');
-    background-position: calc(var(--x) * -1px) 0px;
-    transform: translate(calc(var(--x-pos) * 1px), calc(var(--y-pos) * 1px));
-    height: 64px;
-    width: 64px;
+	position: absolute;
+	background-image: url("../assets/bomb.png");
+	background-position: calc(var(--x) * -1px) 0px;
+	transform: translate(calc(var(--x-pos) * 1px), calc(var(--y-pos) * 1px));
+	height: 64px;
+	width: 64px;
+	z-index: 11;
+	animation-name: bombAnimation;
+	animation-duration: 500ms;
+	animation-timing-function: step-end;
+	animation-iteration-count: infinite;
+
+}
+
+@keyframes bombAnimation {
+	0% {
+		background-position: 0px 0px;
+	}
+
+	33% {
+		background-position: 64px 0px;
+	}
+
+	66% {
+		background-position: 128px 0px;
+	}
 }
 
 /* -------------------------------------------------------------------------- */
@@ -100,11 +158,11 @@
 /* -------------------------------------------------------------------------- */
 
 .fire {
-    --x: 0;
+	--x: 0;
 
-    background-image: url('../assets/fire.png');
-    background-position: calc(var(--x) * -1px) 0px;
-    /* background-size: 2128px; */
-    height: 320px;
-    width: 320px;
+	background-image: url("../assets/fire.png");
+	background-position: calc(var(--x) * -1px) 0px;
+	/* background-size: 2128px; */
+	height: 320px;
+	width: 320px;
 }

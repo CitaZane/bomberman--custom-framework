@@ -5,19 +5,20 @@ package game
 type Movement string
 
 const (
-	Up Movement 		= "up"
-	Down Movement       = "down"
-	Left Movement       = "left"
-	Right Movement      = "right"
-	
-	UpStop Movement 		= "up-stop"
-	DownStop Movement       = "down-stop"
-	LeftStop Movement       = "left-stop"
-	RightStop Movement      = "right-stop"
+	Up    Movement = "up"
+	Down  Movement = "down"
+	Left  Movement = "left"
+	Right Movement = "right"
+
+	UpStop    Movement = "up-stop"
+	DownStop  Movement = "down-stop"
+	LeftStop  Movement = "left-stop"
+	RightStop Movement = "right-stop"
+	DropBomb  Movement = "drop-bomb"
 )
 
 // Translate monster movement from string to one of registerd movements
-func translateMovement(movement string)Movement{
+func translateMovement(movement string) Movement {
 	switch movement {
 	case "DOWN":
 		return Down
@@ -33,6 +34,8 @@ func translateMovement(movement string)Movement{
 		return UpStop
 	case "LEFT-STOP":
 		return LeftStop
+	case "DROP-BOMB":
+		return DropBomb
 	default:
 		return RightStop
 	}
