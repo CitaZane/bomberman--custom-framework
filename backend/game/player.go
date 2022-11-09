@@ -8,6 +8,7 @@ type Player struct {
 	Speed     int      `json:"-"` //for changing how fas is movement
 	BombsLeft int      `json:"bombsLeft"`
 	Bombs     []Bomb   `json:"bombs"`
+	ExplosionRange int `json:"-"`
 }
 
 type Bomb struct {
@@ -39,11 +40,12 @@ func CreatePlayer(name string, index int) Player {
 		movement = LeftStop
 	}
 	return Player{
-		Name:      name,
-		Speed:     1,
-		Movement:  movement,
-		X:         x,
-		Y:         y,
+		Name: name,
+		Speed: 1,
+		Movement: movement,
+		X:x,
+		Y:y,
+		ExplosionRange: 1,
 		BombsLeft: 1,
 		Bombs:     make([]Bomb, 0),
 	}

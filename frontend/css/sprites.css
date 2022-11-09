@@ -157,12 +157,110 @@
 /*                                    fire                                    */
 /* -------------------------------------------------------------------------- */
 
-.fire {
-	--x: 0;
+.explosion {
+    position:absolute;
+}
+.fire-0{
+     background-position: -128px -128px;
+     animation-name: explosion-0;
+}
+@keyframes explosion-0 {
+  from{ background-position: -128px -128px;}
+  50%{ background-position: -1088px -128px;}
+  90%{background-position: -128px -128px;}
+  to{visibility: hidden;}
+}
+.fire-1{
+     background-position: -128px -64px;
+     animation-name: explosion-1;
+}
+@keyframes explosion-1 {
+  0%{ background-position: -128px -64px;}
+  50%{ background-position: -1088px -64px;}
+  90%{background-position: -128px -64px;}
+  to{visibility: hidden;}
+}
+.fire-2{
+     background-position: -192px -128px;
+     animation-name: explosion-2;
+}
+@keyframes explosion-2 {
+  0%{ background-position: -192px -128px;}
+  50%{ background-position: -1152px -128px;}
+  90%{background-position: -192px -128px;}
+  to{visibility: hidden;}
+}
+.fire-3{
+     background-position: -128px -192px;
+     animation-name: explosion-3;
+}
+@keyframes explosion-3 {
+  0%{ background-position: -128px -192px;}
+  50%{ background-position: -1088px -192px;}
+  90%{background-position: -128px -192px;}
+  to{visibility: hidden;}
+}
+.fire-4{
+     background-position: -64px -128px;
+     animation-name: explosion-4;
+}
+@keyframes explosion-4 {
+  0%{ background-position: -64px -128px;}
+  50%{ background-position: -1024px -128px;}
+  90%{background-position: -64px -128px;}
+  to{visibility: hidden;}
+}
+.fire-5{
+     background-position: -128px -0px;
+     animation-name: explosion-5;
+}
+@keyframes explosion-5 {
+  0%{ background-position: -128px -0px;}
+  50%{ background-position: -1088px -0px;}
+  90%{background-position: -128px -0px;}
+  to{visibility: hidden;}
+}
+.fire-6{
+     background-position: -256px -128px;
+     animation-name: explosion-6;
+}
+@keyframes explosion-6{
+  0%{ background-position: -256px -128px;}
+  50%{ background-position: -1216px -128px;}
+  90%{background-position: -256px -128px;}
+  to{visibility: hidden;}
+}
+.fire-7{
+     background-position: -128px -256px;
+     animation-name: explosion-7;
+}
+@keyframes explosion-7{
+  0%{ background-position: -128px -256px;}
+  50%{ background-position: -1088px -256px;}
+  90%{background-position: -128px -256px;}
+  to{visibility: hidden;}
+}
+.fire-8{
+     background-position: -0px -128px;
+     animation-name: explosion-8;
+}
+@keyframes explosion-8{
+  0%{ background-position: -0px -128px;}
+  50%{ background-position: -960px -128px;}
+  90%{background-position:-0px -128px;}
+  to{visibility: hidden;}
+}
+.explosion div{
+    --x: 0;
+    --y: 0;
+    position:absolute;
+    transform: translate(calc(var(--x) * 1px), calc(var(--y) * 1px));
+     background-image: url('../assets/fire.png');
+    height: 64px;
+    width: 64px;
 
-	background-image: url("../assets/fire.png");
-	background-position: calc(var(--x) * -1px) 0px;
-	/* background-size: 2128px; */
-	height: 320px;
-	width: 320px;
+    animation-timing-function: steps(3);
+    animation-duration:1.2s;
+    animation-iteration-count: 1;
+    animation-fill-mode:forwards;
 }

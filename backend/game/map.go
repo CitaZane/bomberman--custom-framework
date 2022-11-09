@@ -57,6 +57,8 @@ var mapBase = []int{
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 }
 
+
+
 func CreateBaseMap() []int {
 	basemap := mapBase
 	for i, tile := range basemap {
