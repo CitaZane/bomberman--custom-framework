@@ -12,6 +12,8 @@ export function GameView() {
     return prev.concat(current?.bombs);
   }, []);
 
+  // console.log("AllBombs", allBombs)
+
   return {
     template: (
       <div id="home">
