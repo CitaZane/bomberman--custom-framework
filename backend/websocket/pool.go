@@ -12,8 +12,6 @@ type Pool struct {
 	Unregister   chan *Client
 	Clients      map[*Client]bool
 	Broadcast    chan Message
-	BombExploded chan Message
-	ExplosionCompleted chan Message
 }
 
 func NewPool() *Pool {
@@ -22,8 +20,6 @@ func NewPool() *Pool {
 		Unregister:   make(chan *Client),
 		Clients:      make(map[*Client]bool),
 		Broadcast:    make(chan Message),
-		BombExploded: make(chan Message),
-		ExplosionCompleted: make(chan Message),
 	}
 }
 
@@ -68,72 +64,45 @@ func (pool *Pool) Start(gameState *game.GameState) {
 			}
 			break S
 		case message := <-pool.Broadcast:
-
-			// fmt.Println("Sending message to all clients in Pool", message.Type)
 			currentPlayerIndex := gameState.FindPlayer(message.Creator)
-			currentPlayer := gameState.Players[currentPlayerIndex]
-			if message.Type == "PLAYER_MOVE" {
-				gameState.Players[currentPlayerIndex].Move(message.Body)
-			} else if message.Type == "PLAYER_DROPPED_BOMB" {
-				if gameState.Players[currentPlayerIndex].BombsLeft <= 0 {
+			player := &gameState.Players[currentPlayerIndex]
+
+			switch message.Type {
+			case "START_GAME":
+				gameState.Map = game.CreateBaseMap()
+				gameState.Players = pool.createPlayers()
+			case "PLAYER_MOVE": //update player movement
+				player.Move(message.Body)
+			case "PLAYER_DROPPED_BOMB" : 
+				if player.BombsLeft <= 0 {
 					break S
 				}
-				baseX, baseY := currentPlayer.GetCurrentCoordinates()
-				gameState.Players[currentPlayerIndex].Bombs = append(gameState.Players[currentPlayerIndex].Bombs, game.Bomb{X: baseX, Y: baseY})
-				gameState.Players[currentPlayerIndex].BombsLeft--
-				
+				player.DropBomb()
 				go func() {
 					time.Sleep(3000 * time.Millisecond)
 					message.Type = "BOMB_EXPLODED"
-					// create explosion
-					currentPlayerIndex := gameState.FindPlayer(message.Creator)
-					var explosion,_ = game.NewExplosion(&gameState.Players[currentPlayerIndex].Bombs[0],gameState.Map, &gameState.Players[currentPlayerIndex])
-					gameState.Players[currentPlayerIndex].Explosions = append(gameState.Players[currentPlayerIndex].Explosions, explosion)
-					message.GameState = gameState
-					pool.BombExploded <- message
+					pool.Broadcast <- message
 				}()
-
-			} else if message.Type == "START_GAME" {
-				gameState.Map = game.CreateBaseMap()
-				gameState.Players = pool.createPlayers()
+			case "BOMB_EXPLODED":
+				player.MakeExplosion(gameState.Map)
+				player.BombExplosionComplete()
+				go func() {
+						time.Sleep(1200 * time.Millisecond)
+						message.Type = "EXPLOSION_COMPLETED"	
+						pool.Broadcast <- message
+					}()
+			case "EXPLOSION_COMPLETED":
+				player.ExplosionComplete()			
 			}
 
 			message.GameState = gameState
-
 			for client := range pool.Clients {
-				if err := client.Conn.WriteJSON(message); err != nil {
-					return
-				}
+			if err := client.Conn.WriteJSON(message); err != nil {
+				fmt.Println(err)
+				return
 			}
-		case message := <-pool.BombExploded:
-			currentPlayerIndex := gameState.FindPlayer(message.Creator)
-
-			gameState.Players[currentPlayerIndex].BombsLeft++
-			gameState.Players[currentPlayerIndex].Bombs = gameState.Players[currentPlayerIndex].Bombs[1:]
-			for client := range pool.Clients {
-				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
-					return
-				}
-			}
-			go func() {
-					time.Sleep(1200 * time.Millisecond)
-					message.Type = "EXPLOSION_COMPLETED"	
-					message.GameState = gameState
-					pool.ExplosionCompleted <- message
-				}()
-		case message := <-pool.ExplosionCompleted:
-			currentPlayerIndex := gameState.FindPlayer(message.Creator)
-			gameState.Players[currentPlayerIndex].Explosions = gameState.Players[currentPlayerIndex].Explosions[1:]
-
-			for client := range pool.Clients {
-				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
-					return
-				}
 			}
 		}
-		// fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 
 	}
 }

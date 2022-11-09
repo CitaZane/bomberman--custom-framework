@@ -73,7 +73,22 @@ func (player *Player) Move(input string) {
 
 // player drops the  bomb
 func (player *Player) DropBomb() {
+	baseX, baseY := player.GetCurrentCoordinates()
+	player.Bombs = append(player.Bombs, Bomb{X: baseX, Y: baseY})
+	player.BombsLeft--
+}
+func (player *Player) BombExplosionComplete() {
+	player.BombsLeft++
+	player.Bombs = player.Bombs[1:]
+}
 
+// player create explosion
+func (player *Player) MakeExplosion(gameMap []int) {
+	var explosion, _ = NewExplosion(&player.Bombs[0], gameMap, player)
+	player.Explosions = append(player.Explosions, explosion)
+}
+func (player *Player) ExplosionComplete() {
+	player.Explosions = player.Explosions[1:]
 }
 
 // Base movement functions
