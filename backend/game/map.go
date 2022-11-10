@@ -72,3 +72,10 @@ func CreateBaseMap() []int {
 	}
 	return mapBase
 }
+
+func DestroyBlocks(original []int, indexList []int)[]int{
+	for _, v := range indexList {
+		original[v] = 0
+	}
+	return original
+}

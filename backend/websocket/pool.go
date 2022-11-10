@@ -84,15 +84,25 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					pool.Broadcast <- message
 				}()
 			case "BOMB_EXPLODED":
-				player.MakeExplosion(gameState.Map)
+				destroyedBlocks := player.MakeExplosion(gameState.Map)
 				player.BombExplosionComplete()
-				go func() {
+				if len(destroyedBlocks)!=0{
+					go func() { //trigger map update
+							time.Sleep(600 * time.Millisecond)
+							message.Type = "MAP_UPDATE"	
+							message.GameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
+							pool.Broadcast <- message
+						}()
+				}
+				go func() { //trigger end of explosion
 						time.Sleep(1200 * time.Millisecond)
 						message.Type = "EXPLOSION_COMPLETED"	
 						pool.Broadcast <- message
 					}()
 			case "EXPLOSION_COMPLETED":
-				player.ExplosionComplete()			
+				player.ExplosionComplete()	
+			case "MAP_UPDATE":
+				gameState.Map = message.GameState.Map
 			}
 
 			message.GameState = gameState

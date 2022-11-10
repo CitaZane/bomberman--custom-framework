@@ -66,6 +66,9 @@ export function defineWebSocket(name) {
 			case "BOMB_EXPLODED":
 				store.commit("updatePlayers", data.gameState.players);
 				break
+			case "MAP_UPDATE":
+				store.commit("updateMap", data.gameState.map);
+				break
 		}
 	};
 }
