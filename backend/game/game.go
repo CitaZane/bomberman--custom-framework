@@ -2,13 +2,12 @@ package game
 
 // holds game state to send it to all players
 type GameState struct {
-	Players []Player `json:"players"`
-	Map []int `json:"map"`
-	Bombs   []Bomb   `json:"bombs"`
+	Players  []Player  `json:"players"`
+	Map      []int     `json:"map"`
+	PowerUps []PowerUp `json:"powerUps"`
 	// Explosions[][]Explosion `json:"explosions"`
 	// created bool
 }
-
 
 func (g *GameState) FindPlayer(name string) int {
 	for index, player := range g.Players {
@@ -19,6 +18,7 @@ func (g *GameState) FindPlayer(name string) int {
 
 	return -1
 }
+
 // func (g *GameState) ClearExplosions() {
 // 	g.Explosions = [][]Explosion{}
 // }

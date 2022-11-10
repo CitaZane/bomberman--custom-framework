@@ -1,0 +1,12 @@
+.powerup {
+    position: absolute;
+    height: 64px;
+    width: 64px;
+    background-image: url("../assets/power_ups.png");
+}
+
+
+.powerup.increase-bombs {
+    background-position: -128px 0;
+}
+

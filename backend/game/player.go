@@ -10,6 +10,7 @@ type Player struct {
 	Bombs          []Bomb      `json:"bombs"`
 	ExplosionRange int         `json:"-"`
 	Explosions     []Explosion `json:"explosions"`
+	ActivePowerUp  PowerUpType `json:"active_powerup"`
 }
 
 type Bomb struct {

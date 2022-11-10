@@ -3,8 +3,9 @@ import jsx from "../../framework/vDom/jsx";
 import { MonsterSprite } from "../components/MonsterSprite";
 import { ExplosionSprite } from "../components/ExplosionSprite";
 import { BombSprite } from "../components/BombSprite";
-import {GameMap} from "../components/GameMap";
+import { GameMap } from "../components/GameMap";
 import { store } from "../app";
+import { PowerUpBombSprite } from "../components/powerUpSprites/Bomb";
 
 export function GameView() {
   let players = store.state.players;
@@ -26,8 +27,11 @@ export function GameView() {
           <BombSprite bomb={bomb} id={i} />
         ))}
 
-         {allExplosions.map((explosion, i) => (
-          <ExplosionSprite explosion={explosion} id={i} />))}
+        {allExplosions.map((explosion, i) => (
+          <ExplosionSprite explosion={explosion} id={i} />
+        ))}
+
+        <PowerUpBombSprite />
       </div>
     ),
   };

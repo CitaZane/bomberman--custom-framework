@@ -1,6 +1,5 @@
 package game
 
-
 type Explosion []Fire
 
 type Fire struct {
