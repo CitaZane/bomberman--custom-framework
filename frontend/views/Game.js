@@ -5,14 +5,15 @@ import { ExplosionSprite } from "../components/ExplosionSprite";
 import { BombSprite } from "../components/BombSprite";
 import { GameMap } from "../components/GameMap";
 import { store } from "../app";
-import { PowerUpBombSprite } from "../components/powerUpSprites/Bomb";
+import { PowerUp } from "../components/PowerUp";
 
 export function GameView() {
   let players = store.state.players;
+  let powerUps = store.state.powerUps;
   let allExplosions = players.reduce((prev, current) => {
     return prev.concat(current.explosions);
   }, []);
-  const allBombs = players.reduce((prev, current) => {
+  let allBombs = players.reduce((prev, current) => {
     return prev.concat(current?.bombs);
   }, []);
 
@@ -20,6 +21,7 @@ export function GameView() {
     template: (
       <div id="home">
         <GameMap />
+
         {players.map((player, i) => (
           <MonsterSprite player={player} id={i} />
         ))}
@@ -31,7 +33,9 @@ export function GameView() {
           <ExplosionSprite explosion={explosion} id={i} />
         ))}
 
-        <PowerUpBombSprite />
+        {powerUps.map((powerUp, i) => (
+          <PowerUp powerUp={powerUp} id={i} />
+        ))}
       </div>
     ),
   };

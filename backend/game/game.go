@@ -4,7 +4,7 @@ package game
 type GameState struct {
 	Players  []Player  `json:"players"`
 	Map      []int     `json:"map"`
-	PowerUps []PowerUp `json:"powerUps"`
+	PowerUps []PowerUp `json:"power_ups"`
 	// Explosions[][]Explosion `json:"explosions"`
 	// created bool
 }

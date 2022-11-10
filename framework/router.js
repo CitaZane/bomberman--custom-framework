@@ -30,7 +30,6 @@ class Router {
     // console.log("dom updated");
 
     const view = this.currentRoute.component();
-
     const vNewApp = view.template;
     const patch = diff(this.vApp, vNewApp);
     this.$rootElem = patch(this.$rootElem);
@@ -54,7 +53,7 @@ class Router {
       this.$rootElem = mount(this.$app, document.getElementById("root"));
       // trigger noMounted hook
       view?.onMounted?.call(null, refs);
-      onMountedStack.forEach((fn) => fn());
+      onMountedStack.forEach((fn) => fn.call(null, refs));
       onMountedStack.length = 0; //clear
     } else {
       this.updateDom();
