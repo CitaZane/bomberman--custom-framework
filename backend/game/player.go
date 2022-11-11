@@ -83,10 +83,10 @@ func (player *Player) BombExplosionComplete() {
 }
 
 // player create explosion
-func (player *Player) MakeExplosion(gameMap []int) []int {
+func (player *Player) MakeExplosion(gameMap []int) ([]int, Explosion) {
 	var explosion, destroyedBlocks = NewExplosion(&player.Bombs[0], gameMap, player)
 	player.Explosions = append(player.Explosions, explosion)
-	return destroyedBlocks
+	return destroyedBlocks, explosion
 }
 func (player *Player) ExplosionComplete() {
 	player.Explosions = player.Explosions[1:]

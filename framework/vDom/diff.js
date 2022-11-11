@@ -45,6 +45,7 @@ const diffAttrs = (oldAttrs, newAttrs) => {
         //add checked attribute
         $node.checked = v;
       } else if(k == 'ref'){
+        $node.setAttribute(k, v);
         refs[v] = $node;
       }else{
         $node.setAttribute(k, v);
