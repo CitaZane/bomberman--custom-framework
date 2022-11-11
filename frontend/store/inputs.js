@@ -1,7 +1,7 @@
 export default {
   state: {
     inputs: {},
-    movement: { move: "", stop: "", bombDropped: false },
+    movement: { move: "", stop: "", bomb: "" },
   },
   mutations: {
     updateInputs(state, inputs) {
@@ -37,6 +37,8 @@ export default {
           movement.move = "";
           movement.stop = "UP-STOP";
         }
+      }else if (key == "Space"){
+        movement.bomb = ""
       }
 
       commit("updateInputs", inputs);
@@ -59,6 +61,8 @@ export default {
       } else if (key == "ArrowUp") {
         movement.stop = "";
         movement.move = "UP";
+      } else if (key == "Space") {
+        movement.bomb = "REGISTER";
       }
       commit("updateInputs", inputs);
       commit("updateMovement", movement);
@@ -66,6 +70,11 @@ export default {
     clearStopMovement({ state, commit }) {
       let movement = state.movement;
       movement.stop = "";
+      commit("updateMovement", movement);
+    },
+    clearBombDrop({ state, commit }) {
+      let movement = state.movement;
+      movement.bomb = "";
       commit("updateMovement", movement);
     },
   },

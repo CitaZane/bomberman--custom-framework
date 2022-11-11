@@ -75,3 +75,13 @@ export function defineWebSocket(name) {
 		}
 	};
 }
+
+export function SendWsMessage(type,creator, body){
+	ws.send(
+		JSON.stringify({
+        type: type,
+        creator: creator,
+        body: body,
+      })
+	)
+}
