@@ -89,6 +89,9 @@ func (player *Player) MakeExplosion(gameMap []int) ([]int, Explosion) {
 	return destroyedBlocks, explosion
 }
 func (player *Player) ExplosionComplete() {
+	if len(player.Explosions) == 0 {
+		return
+	}
 	player.Explosions = player.Explosions[1:]
 }
 

@@ -8,11 +8,10 @@ import { store } from "../app";
 
 export function GameView() {
   let players = store.state.players;
-  let allExplosions = store.state.explosions;
-
-  // let allExplosions = players.reduce((prev, current) => {
-  //   return prev.concat(current.explosions);
-  // }, []);
+  // let allExplosions = store.state.explosions;
+  const allExplosions = players.reduce((prev, current) => {
+    return prev.concat(current?.explosions);
+  }, []);
   const allBombs = players.reduce((prev, current) => {
     return prev.concat(current?.bombs);
   }, []);
@@ -24,11 +23,14 @@ export function GameView() {
         {players.map((player, i) => (
           <MonsterSprite player={player} id={i} />
         ))}
+
         {allExplosions.map((explosion, i) => (
           <ExplosionSprite explosion={explosion} />))}
+        
         {allBombs.map((bomb, i) => (
           <BombSprite bomb={bomb} id={i} />
         ))}
+
          
 
       </div>

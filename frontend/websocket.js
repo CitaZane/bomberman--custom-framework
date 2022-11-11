@@ -65,7 +65,6 @@ export function defineWebSocket(name) {
 				break
 			case "BOMB_EXPLODED":
 				store.commit("updatePlayers", data.gameState.players);
-				store.dispatch("addExplosion", data.gameState.explosion)
 				break
 			case "MAP_UPDATE":
 				store.commit("updateMap", data.gameState.map);

@@ -2,7 +2,7 @@ export default {
   state: {
     players: [],
     map:[],
-    explosions:[],
+    explosionTime:{}
   },
   mutations: {
     updatePlayers(state, players) {
@@ -11,8 +11,8 @@ export default {
     updateMap(state, map) {
       state.map = map;
     },
-    updateExplosions(state, explosions){
-      state.explosions = explosions
+    updateExplosionTime(state, explosionTime){
+      state.explosionTime = explosionTime
     }
   },
   actions: {
@@ -21,10 +21,15 @@ export default {
       players.push(player);
       commit("updatePlayers", players);
     },
-    addExplosion({state, commit}, explosion){
-      let explosions = state.explosions
-      explosions.push(explosion)
-      commit('updateExplosions', explosions)
+    addStartTime({state, commit}, {time,explosionId}){
+      let explosionTime = state.explosionTime
+      explosionTime[explosionId] = time
+      commit('updateExplosionTime', explosionTime)
+    },
+    removeStartTime({state, commit}, explosionId){
+      let explosionTime = state.explosionTime
+      delete explosionTime[explosionId]
+      commit('updateExplosionTime', explosionTime)
     }
   },
 };
