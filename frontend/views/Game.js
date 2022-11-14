@@ -9,15 +9,11 @@ import { PowerUp } from "../components/PowerUp";
 
 export function GameView() {
   let players = store.state.players;
-<<<<<<< HEAD
   let powerUps = store.state.powerUps;
-  let allExplosions = players.reduce((prev, current) => {
-    return prev.concat(current.explosions);
-=======
+
   // let allExplosions = store.state.explosions;
   const allExplosions = players.reduce((prev, current) => {
     return prev.concat(current?.explosions);
->>>>>>> master
   }, []);
   let allBombs = players.reduce((prev, current) => {
     return prev.concat(current?.bombs);
@@ -34,24 +30,14 @@ export function GameView() {
 
         {allExplosions.map((explosion, i) => (
           <ExplosionSprite explosion={explosion} />))}
-        
+
         {allBombs.map((bomb, i) => (
           <BombSprite bomb={bomb} id={i} />
         ))}
 
-<<<<<<< HEAD
-        {allExplosions.map((explosion, i) => (
-          <ExplosionSprite explosion={explosion} id={i} />
-        ))}
 
-        {powerUps.map((powerUp, i) => (
-          <PowerUp powerUp={powerUp} id={i} />
-        ))}
-=======
-         
 
->>>>>>> master
-      </div>
+      </div >
     ),
   };
 }
