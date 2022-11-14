@@ -1,6 +1,11 @@
 package game
 
-type Explosion []Fire
+import "strconv"
+
+type Explosion struct {
+	Fires []Fire `json:"fires"`
+	Id    string `json:"id"`
+}
 
 type Fire struct {
 	X    int `json:"x"`
@@ -54,12 +59,13 @@ func (manager *ExplosionManager) incrementRange() {
 // return []Explosion tiles that makes 1 explosion and
 // []indexes for bushes destroyed int the explosion
 func NewExplosion(bomb *Bomb, m []int, player *Player) (Explosion, []int) {
-	explosion := Explosion{}   //hold end explosion
-	destroyedBlocks := []int{} //hold index of destroyed blocks
+	var id = "explosion-" + player.Name + "-" + strconv.Itoa(len(player.Explosions))
+	explosion := Explosion{Id: id} //hold end explosion
+	destroyedBlocks := []int{}     //hold index of destroyed blocks
 
 	// add base in place of bomb
 	var base = Fire{X: bomb.X, Y: bomb.Y, Type: 0}
-	explosion = append(explosion, base)
+	explosion.Fires = append(explosion.Fires, base)
 
 	// create explosion manager
 	manager := setupManager(player.ExplosionRange, bomb.X, bomb.Y, m)
@@ -73,7 +79,7 @@ func NewExplosion(bomb *Bomb, m []int, player *Player) (Explosion, []int) {
 				continue
 			}
 			if fire, destroyed, ok := manager.configFire(direction); ok {
-				explosion = append(explosion, fire)
+				explosion.Fires = append(explosion.Fires, fire)
 				if destroyed != -1 {
 					destroyedBlocks = append(destroyedBlocks, destroyed)
 				}

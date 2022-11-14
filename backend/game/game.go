@@ -2,10 +2,10 @@ package game
 
 // holds game state to send it to all players
 type GameState struct {
-	Players  []Player  `json:"players"`
-	Map      []int     `json:"map"`
-	PowerUps []PowerUp `json:"power_ups"`
-	// Explosions[][]Explosion `json:"explosions"`
+	Players   []Player  `json:"players"`
+	Map       []int     `json:"map"`
+	Bombs     []Bomb    `json:"bombs"`
+	Explosion Explosion `json:"explosion"`
 	// created bool
 }
 

@@ -49,23 +49,23 @@ func (pool *Pool) Start(gameState *game.GameState) {
 			gameState.Players = pool.createPlayers()
 
 			// generate random power ups
-			gameState.PowerUps = []game.PowerUp{
-				{
-					Type: game.INCREASE_BOMBS,
-					X:    128,
-					Y:    128,
-				},
-				{
-					Type: game.INCREASE_FLAMES,
-					X:    256,
-					Y:    256,
-				},
-				{
-					Type: game.INCREASE_SPEED,
-					X:    384,
-					Y:    384,
-				},
-			}
+			// gameState.PowerUps = []game.PowerUp{
+			// 	{
+			// 		Type: game.INCREASE_BOMBS,
+			// 		X:    128,
+			// 		Y:    128,
+			// 	},
+			// 	{
+			// 		Type: game.INCREASE_FLAMES,
+			// 		X:    256,
+			// 		Y:    256,
+			// 	},
+			// 	{
+			// 		Type: game.INCREASE_SPEED,
+			// 		X:    384,
+			// 		Y:    384,
+			// 	},
+			// }
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
@@ -114,10 +114,11 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					}()
 				}
 				go func() { //trigger end of explosion
-					time.Sleep(1200 * time.Millisecond)
+					time.Sleep(900 * time.Millisecond)
 					message.Type = "EXPLOSION_COMPLETED"
 					pool.Broadcast <- message
 				}()
+
 			case "EXPLOSION_COMPLETED":
 				player.ExplosionComplete()
 			case "MAP_UPDATE":
@@ -131,6 +132,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					return
 				}
 			}
+
 		}
 
 	}
