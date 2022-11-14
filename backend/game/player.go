@@ -1,5 +1,7 @@
 package game
 
+import "fmt"
+
 type Player struct {
 	X              int         `json:"x"`
 	Y              int         `json:"y"`
@@ -83,10 +85,10 @@ func (player *Player) BombExplosionComplete() {
 }
 
 // player create explosion
-func (player *Player) MakeExplosion(gameMap []int) []int {
+func (player *Player) MakeExplosion(gameMap []int) ([]int, Explosion) {
 	var explosion, destroyedBlocks = NewExplosion(&player.Bombs[0], gameMap, player)
 	player.Explosions = append(player.Explosions, explosion)
-	return destroyedBlocks
+	return destroyedBlocks, explosion
 }
 func (player *Player) ExplosionComplete() {
 	if len(player.Explosions) == 0 {
@@ -123,4 +125,19 @@ func getBase(x int) int {
 		base -= remainder
 	}
 	return base
+}
+
+func (player *Player) CheckIfIDie(explosion *Explosion) {
+	fmt.Println("I am", player.Name)
+	var playerDied = false
+	// for each fire in explosion, check if monster is inside it
+	for  _,fire := range explosion.Fires {
+		var monsterBurned = fire.IsMonsterInside(player.X, player.Y);
+		// if monster is inside the fire -> 
+		if monsterBurned{
+			playerDied = true
+			break
+		}
+    }
+	fmt.Println("Did I die?", playerDied)
 }

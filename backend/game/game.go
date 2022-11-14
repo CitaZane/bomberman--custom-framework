@@ -19,6 +19,10 @@ func (g *GameState) FindPlayer(name string) int {
 
 	return -1
 }
-// func (g *GameState) ClearExplosions() {
-// 	g.Explosions = [][]Explosion{}
-// }
+// Loop through all players in game and check if somebody is in the explosion
+func (g *GameState) CheckIfSomebodyDie(explosion *Explosion) {
+	for i:=0 ; i<len(g.Players); i++{
+		g.Players[i].CheckIfIDie(explosion)
+	}
+	// g.Explosions = [][]Explosion{}
+}
