@@ -95,7 +95,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 						}()
 				}
 				go func() { //trigger end of explosion
-						time.Sleep(1200 * time.Millisecond)
+						time.Sleep(900 * time.Millisecond)
 						message.Type = "EXPLOSION_COMPLETED"	
 						pool.Broadcast <- message
 					}()

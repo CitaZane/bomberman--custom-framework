@@ -257,7 +257,7 @@
     width: 64px;
 
     animation-timing-function: steps(3);
-    animation-duration:1.2s;
+    animation-duration:0.9s;
 	animation-fill-mode: forwards;
 	animation-iteration-count: 1;
 }

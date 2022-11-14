@@ -19,7 +19,7 @@ function updateFire(fire, ref, explosionId){
     if (!startTime){
         let time = refs[ref].getAnimations()[0].timeline.currentTime
         store.dispatch('addStartTime', {time, explosionId})
-        setTimeout(()=>{store.dispatch('removeStartTime', explosionId)}, 1200)
+        setTimeout(()=>{store.dispatch('removeStartTime', explosionId)}, 900)
     }else{
         refs[ref].getAnimations()[0].startTime = startTime
     }
