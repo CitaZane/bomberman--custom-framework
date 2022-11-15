@@ -44,9 +44,10 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
+			fmt.Println("Registering client")
 
 			gameState.Map = game.CreateBaseMap(gameState)
-			fmt.Println("MAP", gameState.PowerUps)
+			fmt.Println("MAP", gameState.Map)
 			gameState.Players = pool.createPlayers()
 
 			// generate random power ups

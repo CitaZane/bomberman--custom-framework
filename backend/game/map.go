@@ -46,41 +46,83 @@ import (
 // }
 
 // map withouth 3s look like this->
+// var mapBase = []int{
+// 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+// 	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
+// 	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
+// 	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
+// 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
+// 	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
+// 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
+// 	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
+// 	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
+// 	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
+// 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+// }
+
 var mapBase = []int{
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
+	2, 0, 0, 9, 9, 9, 9, 9, 0, 0, 2,
 	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
-	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
+	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
 	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
-	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
+	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
 	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
-	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
+	2, 0, 0, 9, 9, 9, 9, 9, 0, 0, 2,
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 }
 
 func generatePowerUp(tile int, gameState *GameState) {
-	if rand.Intn(10) < 2 {
-		powerUpX := tile % 11 * 64
-		powerUpY := math.Floor(float64(tile)/11) * 64
-		gameState.PowerUps = append(gameState.PowerUps, PowerUp{X: powerUpX, Y: int(powerUpY)})
+
+	powerUpX := tile % 11 * 64
+	powerUpY := math.Floor(float64(tile)/11) * 64
+
+	amountOfPowerUps := len(gameState.PowerUps)
+	var powerUpType PowerUpType
+
+	switch amountOfPowerUps % 3 {
+	case 0:
+		powerUpType = INCREASE_BOMBS
+	case 1:
+		powerUpType = INCREASE_FLAMES
+	case 2:
+		powerUpType = INCREASE_SPEED
 	}
+	gameState.PowerUps = append(gameState.PowerUps, PowerUp{Type: powerUpType, X: powerUpX, Y: int(powerUpY)})
+
 }
 
 func CreateBaseMap(game *GameState) []int {
-	basemap := mapBase
+	basemap := append([]int{}, mapBase...)
+	game.PowerUps = nil
+	breakableBricks := []int{}
 	for i, tile := range basemap {
 		if tile == 9 {
-			if rand.Intn(10) > 5 {
-				mapBase[i] = 1
-				generatePowerUp(i, game)
+			if rand.Intn(10) < 6 {
+				basemap[i] = 1
+				breakableBricks = append(breakableBricks, i)
+
+				// breakableBricks++
+
+				// fmt.Println("breakableBricks: ", breakableBricks)
+				// if breakableBricks%6 == 0 {
+				// 	generatePowerUp(i, game)
+
+				// }
 			} else {
-				mapBase[i] = 0
+				basemap[i] = 0
 			}
 		}
 	}
-	return mapBase
+
+	// generatePowerUp()
+	for i := 0; i < 6; i++ {
+		randomPos := rand.Intn(len(breakableBricks))
+		generatePowerUp(breakableBricks[randomPos], game)
+	}
+	return basemap
 }
 
 func DestroyBlocks(original []int, indexList []int) []int {
