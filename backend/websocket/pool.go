@@ -36,38 +36,14 @@ func (pool *Pool) createPlayers() []game.Player {
 }
 
 func (pool *Pool) Start(gameState *game.GameState) {
-	// listen for every message in every pools channel
 	for {
-		// select will execute whichever channel sends data first
-		// channels can only send data when they have received it
 	S:
 		select {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
-			fmt.Println("Registering client")
 
 			gameState.Map = game.CreateBaseMap(gameState)
-			fmt.Println("MAP", gameState.Map)
 			gameState.Players = pool.createPlayers()
-
-			// generate random power ups
-			// gameState.PowerUps = []game.PowerUp{
-			// 	{
-			// 		Type: game.INCREASE_BOMBS,
-			// 		X:    128,
-			// 		Y:    128,
-			// 	},
-			// 	{
-			// 		Type: game.INCREASE_FLAMES,
-			// 		X:    256,
-			// 		Y:    256,
-			// 	},
-			// 	{
-			// 		Type: game.INCREASE_SPEED,
-			// 		X:    384,
-			// 		Y:    384,
-			// 	},
-			// }
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {

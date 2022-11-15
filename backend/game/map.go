@@ -78,7 +78,6 @@ func generatePowerUp(tile int, gameState *GameState) {
 
 	powerUpX := tile % 11 * 64
 	powerUpY := math.Floor(float64(tile)/11) * 64
-
 	amountOfPowerUps := len(gameState.PowerUps)
 	var powerUpType PowerUpType
 
@@ -90,6 +89,7 @@ func generatePowerUp(tile int, gameState *GameState) {
 	case 2:
 		powerUpType = INCREASE_SPEED
 	}
+
 	gameState.PowerUps = append(gameState.PowerUps, PowerUp{Type: powerUpType, X: powerUpX, Y: int(powerUpY)})
 
 }
@@ -103,21 +103,12 @@ func CreateBaseMap(game *GameState) []int {
 			if rand.Intn(10) < 6 {
 				basemap[i] = 1
 				breakableBricks = append(breakableBricks, i)
-
-				// breakableBricks++
-
-				// fmt.Println("breakableBricks: ", breakableBricks)
-				// if breakableBricks%6 == 0 {
-				// 	generatePowerUp(i, game)
-
-				// }
 			} else {
 				basemap[i] = 0
 			}
 		}
 	}
 
-	// generatePowerUp()
 	for i := 0; i < 6; i++ {
 		powerUpPlaced := false
 		for !powerUpPlaced {
@@ -125,30 +116,45 @@ func CreateBaseMap(game *GameState) []int {
 			if basemap[breakableBricks[randomPos]] == 1 {
 				generatePowerUp(breakableBricks[randomPos], game)
 				basemap[breakableBricks[randomPos]] = 3
+
+				// left 1 tile
 				if basemap[breakableBricks[randomPos]-1] == 1 {
 					basemap[breakableBricks[randomPos]-1] = 3
 				}
+
+				// left 2 tiles
 				if basemap[breakableBricks[randomPos]-2] == 1 {
 					basemap[breakableBricks[randomPos]-2] = 3
 				}
+
+				// right 1 tile
 				if basemap[breakableBricks[randomPos]+1] == 1 {
 					basemap[breakableBricks[randomPos]+1] = 3
 				}
+
+				// right 2 tiles
 				if basemap[breakableBricks[randomPos]+2] == 1 {
 					basemap[breakableBricks[randomPos]+2] = 3
 				}
 
 				if breakableBricks[randomPos] > 12 {
+					// up 1 tile
 					if basemap[breakableBricks[randomPos]-11] == 1 {
 						basemap[breakableBricks[randomPos]-11] = 3
 					}
+
+					// diagonal up right
 					if basemap[breakableBricks[randomPos]-10] == 1 {
 						basemap[breakableBricks[randomPos]-10] = 3
 					}
+
+					// diagonal up left
 					if basemap[breakableBricks[randomPos]-12] == 1 {
 						basemap[breakableBricks[randomPos]-12] = 3
 					}
+
 					if breakableBricks[randomPos] > 22 {
+						// up 2 tiles
 						if basemap[breakableBricks[randomPos]-22] == 1 {
 							basemap[breakableBricks[randomPos]-22] = 3
 						}
@@ -156,16 +162,23 @@ func CreateBaseMap(game *GameState) []int {
 				}
 
 				if breakableBricks[randomPos]+12 < len(basemap) {
+					// down 1 tile
 					if basemap[breakableBricks[randomPos]+11] == 1 {
 						basemap[breakableBricks[randomPos]+11] = 3
 					}
+
+					// diagonal down left 1 tile
 					if basemap[breakableBricks[randomPos]+10] == 1 {
 						basemap[breakableBricks[randomPos]+10] = 3
 					}
+
+					// diagonal right 1 tile
 					if basemap[breakableBricks[randomPos]+12] == 1 {
 						basemap[breakableBricks[randomPos]+12] = 3
 					}
+
 					if breakableBricks[randomPos]+22 < len(basemap) {
+						// down 2 tile
 						if basemap[breakableBricks[randomPos]+22] == 1 {
 							basemap[breakableBricks[randomPos]+22] = 3
 						}
@@ -174,9 +187,9 @@ func CreateBaseMap(game *GameState) []int {
 				powerUpPlaced = true
 			}
 		}
-		// randomPos := rand.Intn(len(breakableBricks))
-		// generatePowerUp(breakableBricks[randomPos], game)
 	}
+
+	// restore breakable bricks in map array
 	for i, tile := range basemap {
 		if tile == 3 {
 			basemap[i] = 1
