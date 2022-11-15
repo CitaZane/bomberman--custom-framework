@@ -148,15 +148,9 @@ func CreateBaseMap(game *GameState) []int {
 					if basemap[breakableBricks[randomPos]-12] == 1 {
 						basemap[breakableBricks[randomPos]-12] = 3
 					}
-					if breakableBricks[randomPos] > 23 {
+					if breakableBricks[randomPos] > 22 {
 						if basemap[breakableBricks[randomPos]-22] == 1 {
 							basemap[breakableBricks[randomPos]-22] = 3
-						}
-						if basemap[breakableBricks[randomPos]-21] == 1 {
-							basemap[breakableBricks[randomPos]-21] = 3
-						}
-						if basemap[breakableBricks[randomPos]-23] == 1 {
-							basemap[breakableBricks[randomPos]-23] = 3
 						}
 					}
 				}
@@ -171,15 +165,9 @@ func CreateBaseMap(game *GameState) []int {
 					if basemap[breakableBricks[randomPos]+12] == 1 {
 						basemap[breakableBricks[randomPos]+12] = 3
 					}
-					if breakableBricks[randomPos]+23 < len(basemap) {
+					if breakableBricks[randomPos]+22 < len(basemap) {
 						if basemap[breakableBricks[randomPos]+22] == 1 {
 							basemap[breakableBricks[randomPos]+22] = 3
-						}
-						if basemap[breakableBricks[randomPos]+21] == 1 {
-							basemap[breakableBricks[randomPos]+21] = 3
-						}
-						if basemap[breakableBricks[randomPos]+23] == 1 {
-							basemap[breakableBricks[randomPos]+23] = 3
 						}
 					}
 				}
