@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 )
@@ -139,24 +138,48 @@ func CreateBaseMap(game *GameState) []int {
 					basemap[breakableBricks[randomPos]+2] = 3
 				}
 
-				if randomPos > 11 {
+				if breakableBricks[randomPos] > 12 {
 					if basemap[breakableBricks[randomPos]-11] == 1 {
 						basemap[breakableBricks[randomPos]-11] = 3
-						if randomPos > 22 {
-							if basemap[breakableBricks[randomPos]-22] == 1 {
-								basemap[breakableBricks[randomPos]-22] = 3
-							}
+					}
+					if basemap[breakableBricks[randomPos]-10] == 1 {
+						basemap[breakableBricks[randomPos]-10] = 3
+					}
+					if basemap[breakableBricks[randomPos]-12] == 1 {
+						basemap[breakableBricks[randomPos]-12] = 3
+					}
+					if breakableBricks[randomPos] > 23 {
+						if basemap[breakableBricks[randomPos]-22] == 1 {
+							basemap[breakableBricks[randomPos]-22] = 3
+						}
+						if basemap[breakableBricks[randomPos]-21] == 1 {
+							basemap[breakableBricks[randomPos]-21] = 3
+						}
+						if basemap[breakableBricks[randomPos]-23] == 1 {
+							basemap[breakableBricks[randomPos]-23] = 3
 						}
 					}
 				}
 
-				if randomPos+11 < len(basemap) {
+				if breakableBricks[randomPos]+12 < len(basemap) {
 					if basemap[breakableBricks[randomPos]+11] == 1 {
 						basemap[breakableBricks[randomPos]+11] = 3
-						if randomPos+22 < len(basemap) {
-							if basemap[breakableBricks[randomPos]+22] == 1 {
-								basemap[breakableBricks[randomPos]+22] = 3
-							}
+					}
+					if basemap[breakableBricks[randomPos]+10] == 1 {
+						basemap[breakableBricks[randomPos]+10] = 3
+					}
+					if basemap[breakableBricks[randomPos]+12] == 1 {
+						basemap[breakableBricks[randomPos]+12] = 3
+					}
+					if breakableBricks[randomPos]+23 < len(basemap) {
+						if basemap[breakableBricks[randomPos]+22] == 1 {
+							basemap[breakableBricks[randomPos]+22] = 3
+						}
+						if basemap[breakableBricks[randomPos]+21] == 1 {
+							basemap[breakableBricks[randomPos]+21] = 3
+						}
+						if basemap[breakableBricks[randomPos]+23] == 1 {
+							basemap[breakableBricks[randomPos]+23] = 3
 						}
 					}
 				}
@@ -166,7 +189,6 @@ func CreateBaseMap(game *GameState) []int {
 		// randomPos := rand.Intn(len(breakableBricks))
 		// generatePowerUp(breakableBricks[randomPos], game)
 	}
-	fmt.Println(basemap)
 	for i, tile := range basemap {
 		if tile == 3 {
 			basemap[i] = 1
