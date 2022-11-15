@@ -1,13 +1,12 @@
 package game
 
-import "fmt"
-
 type Player struct {
 	X              int         `json:"x"`
 	Y              int         `json:"y"`
 	Name           string      `json:"name"`
 	Movement       Movement    `json:"movement"`
-	Speed          int         `json:"-"` //for changing how fas is movement
+	Lives          int         `json:"lives"`
+	Speed          int         `json:"-"` //for changing how fast is movement
 	BombsLeft      int         `json:"bombsLeft"`
 	Bombs          []Bomb      `json:"bombs"`
 	ExplosionRange int         `json:"-"`
@@ -48,6 +47,7 @@ func CreatePlayer(name string, index int) Player {
 		Movement:       movement,
 		X:              x,
 		Y:              y,
+		Lives:          3,
 		ExplosionRange: 1,
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
@@ -127,17 +127,37 @@ func getBase(x int) int {
 	return base
 }
 
-func (player *Player) CheckIfIDie(explosion *Explosion) {
-	fmt.Println("I am", player.Name)
-	var playerDied = false
+// bool value is true only if live lost, but monster is not dead yet
+func (player *Player) CheckIfIDie(explosion *Explosion) bool {
 	// for each fire in explosion, check if monster is inside it
-	for  _,fire := range explosion.Fires {
-		var monsterBurned = fire.IsMonsterInside(player.X, player.Y);
-		// if monster is inside the fire -> 
-		if monsterBurned{
-			playerDied = true
+	var lostLive = false
+	for _, fire := range explosion.Fires {
+		var monsterBurned = fire.IsMonsterInside(player.X, player.Y)
+		// if monster is inside the fire ->
+		if monsterBurned {
+			if state := player.LoseLife(); state == LostLive {
+				lostLive = true
+			}
 			break
 		}
-    }
-	fmt.Println("Did I die?", playerDied)
+	}
+	return lostLive
+}
+
+func (player *Player) LoseLife() Movement {
+	player.Lives = player.Lives - 1
+	if player.Lives > 0 {
+		player.Movement = LostLive
+	} else {
+		player.Movement = Died
+	}
+	return player.Movement
+}
+
+// Check if player still alive
+func (player *Player) IsAlive() bool {
+	if player.Movement == Died || player.Movement == LostLive {
+		return false
+	}
+	return true
 }

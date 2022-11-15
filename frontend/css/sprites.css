@@ -50,7 +50,7 @@
 .monster-up-stop,
 .monster-down-stop,
 .monster-left-stop,
-.monster-right-stop {
+.monster-right-stop{
 	animation-timing-function: steps(1);
 }
 
@@ -75,6 +75,12 @@
 	animation-name: monster-left;
 }
 
+.monster-lost-live{
+	filter: grayscale(100%) contrast(200%);
+}
+.monster-died{
+	display: none
+}
 /* -------------------- loop through monster spritesheet -------------------- */
 @keyframes monster-left {
 	from {

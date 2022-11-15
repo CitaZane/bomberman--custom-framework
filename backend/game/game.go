@@ -20,9 +20,26 @@ func (g *GameState) FindPlayer(name string) int {
 	return -1
 }
 // Loop through all players in game and check if somebody is in the explosion
-func (g *GameState) CheckIfSomebodyDie(explosion *Explosion) {
+// return slice with monster that died
+func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int{
+	var monstersLostLives = []int{}
 	for i:=0 ; i<len(g.Players); i++{
-		g.Players[i].CheckIfIDie(explosion)
+		var lostLive = g.Players[i].CheckIfIDie(explosion)
+		if lostLive {
+			monstersLostLives = append(monstersLostLives, i)
+		}
 	}
-	// g.Explosions = [][]Explosion{}
+	return monstersLostLives
+}
+
+// Loop through all active explosion in game and check if current player stepped in it
+func (g *GameState) CheckIfPlayerDied(p *Player) bool {
+	var lostLive = false
+	for _, player := range g.Players{
+		for _, explosion := range player.Explosions{
+			lostLive = p.CheckIfIDie(&explosion)
+			if lostLive{break}
+		}
+	}
+	return lostLive
 }

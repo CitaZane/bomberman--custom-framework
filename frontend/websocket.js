@@ -72,6 +72,9 @@ export function defineWebSocket(name) {
 			case "EXPLOSION_COMPLETED":
 				store.commit("updatePlayers", data.gameState.players);
 				break
+			case "PLAYER_REBORN":
+				store.commit("updatePlayers", data.gameState.players);
+				break
 		}
 	};
 }
