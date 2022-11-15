@@ -15,8 +15,6 @@ type Player struct {
 }
 
 type Bomb struct {
-	X int `json:"x"`
-	Y int `json:"y"`
 	X        int      `json:"x"`
 	Y        int      `json:"y"`
 	Name     string   `json:"name"`
