@@ -35,6 +35,10 @@ export function GameView() {
           <BombSprite bomb={bomb} id={i} />
         ))}
 
+        {powerUps.map((powerUp, i) => (
+          <PowerUp powerUp={powerUp} id={i} />
+        ))}
+
 
 
       </div >

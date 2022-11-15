@@ -6,6 +6,7 @@ type GameState struct {
 	Map       []int     `json:"map"`
 	Bombs     []Bomb    `json:"bombs"`
 	Explosion Explosion `json:"explosion"`
+	PowerUps  []PowerUp `json:"power_ups"`
 	// created bool
 }
 

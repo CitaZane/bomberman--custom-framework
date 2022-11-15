@@ -45,7 +45,8 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 
-			gameState.Map = game.CreateBaseMap()
+			gameState.Map = game.CreateBaseMap(gameState)
+			fmt.Println("MAP", gameState.PowerUps)
 			gameState.Players = pool.createPlayers()
 
 			// generate random power ups
@@ -88,7 +89,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 
 			switch message.Type {
 			case "START_GAME":
-				gameState.Map = game.CreateBaseMap()
+				gameState.Map = game.CreateBaseMap(gameState)
 				gameState.Players = pool.createPlayers()
 			case "PLAYER_MOVE": //update player movement
 				player.Move(message.Body)

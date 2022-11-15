@@ -1,6 +1,9 @@
 package game
 
-import "math/rand"
+import (
+	"math"
+	"math/rand"
+)
 
 //function for creating starting map with random placed breakable blocks.
 // 0 is floor tile
@@ -57,14 +60,21 @@ var mapBase = []int{
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 }
 
+func generatePowerUp(tile int, gameState *GameState) {
+	if rand.Intn(10) < 2 {
+		powerUpX := tile % 11 * 64
+		powerUpY := math.Floor(float64(tile)/11) * 64
+		gameState.PowerUps = append(gameState.PowerUps, PowerUp{X: powerUpX, Y: int(powerUpY)})
+	}
+}
 
-
-func CreateBaseMap() []int {
+func CreateBaseMap(game *GameState) []int {
 	basemap := mapBase
 	for i, tile := range basemap {
 		if tile == 9 {
 			if rand.Intn(10) > 5 {
 				mapBase[i] = 1
+				generatePowerUp(i, game)
 			} else {
 				mapBase[i] = 0
 			}
@@ -73,7 +83,7 @@ func CreateBaseMap() []int {
 	return mapBase
 }
 
-func DestroyBlocks(original []int, indexList []int)[]int{
+func DestroyBlocks(original []int, indexList []int) []int {
 	for _, v := range indexList {
 		original[v] = 0
 	}
