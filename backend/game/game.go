@@ -38,7 +38,9 @@ func (g *GameState) CheckIfPlayerDied(p *Player) bool {
 	for _, player := range g.Players{
 		for _, explosion := range player.Explosions{
 			lostLive = p.CheckIfIDie(&explosion)
-			if lostLive{break}
+			if lostLive{
+				return lostLive
+			}
 		}
 	}
 	return lostLive
