@@ -79,7 +79,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					go func() {
 						time.Sleep(3000 * time.Millisecond)
 						message.Type = "PLAYER_REBORN"
-						message.GameState.Players[currentPlayerIndex].Movement = game.LeftStop
+						message.GameState.Players[currentPlayerIndex].Movement = game.RightStop
 						pool.Broadcast <- message
 					}()
 				}
@@ -102,7 +102,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 						time.Sleep(3000 * time.Millisecond)
 						message.Type = "PLAYER_REBORN"
 						for _,i := range monstersLostLives{ //reset the movement
-							message.GameState.Players[i].Movement = game.LeftStop
+							message.GameState.Players[i].Movement = game.RightStop
 						}
 
 						pool.Broadcast <- message

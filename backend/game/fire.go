@@ -13,9 +13,10 @@ func (fire *Fire) IsMonsterInside(x, y int) bool {
 	var errorMargin = 5
 
 	var monsterLeft = x + errorMargin
-	var monsterRight = x - errorMargin
+	var monsterRight = x + 64 - errorMargin
 	var monsterUp = y + errorMargin
-	var monsterDown = y - errorMargin
+	var monsterDown = y + 64 - errorMargin
+	
 	if monsterLeft >= fire.X && monsterLeft <= fire.X+64 || monsterRight >= fire.X && monsterRight <= fire.X+64 {
 		if monsterUp >= fire.Y && monsterUp <= fire.Y+64 || monsterDown >= fire.Y && monsterDown <= fire.Y+64 {
 			return true

@@ -76,10 +76,28 @@
 }
 
 .monster-lost-live{
-	filter: grayscale(100%) contrast(200%);
+	background-image: url("../assets/monster-die.png") !important;
+	animation-timing-function: steps(6);
+	animation-duration: 0.3s;
+	animation-name: monster-left;
+	/* filter: grayscale(100%) contrast(200%); */
 }
 .monster-died{
-	display: none
+	background-image: url("../assets/monster-die.png") !important;
+	/* animation-timing-function: steps(6); */
+	animation-duration: 3s;
+	animation-name: monster-die;
+	animation-iteration-count: 1;
+	animation-fill-mode: forwards;
+}
+@keyframes monster-die {
+	from {
+		background-position: 0px 0px;
+		opacity: 1;
+	}
+	to {
+		opacity:0;
+	}
 }
 /* -------------------- loop through monster spritesheet -------------------- */
 @keyframes monster-left {
