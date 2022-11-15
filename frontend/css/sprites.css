@@ -78,13 +78,11 @@
 .monster-lost-live{
 	background-image: url("../assets/monster-die.png") !important;
 	animation-timing-function: steps(6);
-	animation-duration: 0.3s;
+	animation-duration: 0.2s;
 	animation-name: monster-left;
-	/* filter: grayscale(100%) contrast(200%); */
 }
 .monster-died{
 	background-image: url("../assets/monster-die.png") !important;
-	/* animation-timing-function: steps(6); */
 	animation-duration: 3s;
 	animation-name: monster-die;
 	animation-iteration-count: 1;
