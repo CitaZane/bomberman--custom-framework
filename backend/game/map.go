@@ -70,6 +70,8 @@ var mapBase = []int{
 // 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 // }
 
+
+
 func CreateBaseMap() []int {
 	basemap := mapBase
 	for i, tile := range basemap {
@@ -82,4 +84,11 @@ func CreateBaseMap() []int {
 		}
 	}
 	return mapBase
+}
+
+func DestroyBlocks(original []int, indexList []int)[]int{
+	for _, v := range indexList {
+		original[v] = 0
+	}
+	return original
 }

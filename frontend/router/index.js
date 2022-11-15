@@ -4,14 +4,15 @@ import { GameView } from "../views/Game"
 
 export default [{
     path: "/",
-    component: HomeView
-},
-{
-    path: "/queue",
-    component: QueueView
-},
-
-{
-    path: "/game",
     component: GameView
-}]
+},
+    // {
+    //     path: "/queue",
+    //     component: QueueView
+    // },
+
+    // {
+    //     path: "/game",
+    //     component: GameView
+    // }
+]

@@ -3,6 +3,20 @@ package game
 import "fmt"
 
 type Player struct {
+	X              int         `json:"x"`
+	Y              int         `json:"y"`
+	Name           string      `json:"name"`
+	Movement       Movement    `json:"movement"`
+	Speed          int         `json:"-"` //for changing how fas is movement
+	BombsLeft      int         `json:"bombsLeft"`
+	Bombs          []Bomb      `json:"bombs"`
+	ExplosionRange int         `json:"-"`
+	Explosions     []Explosion `json:"explosions"`
+}
+
+type Bomb struct {
+	X int `json:"x"`
+	Y int `json:"y"`
 	X        int      `json:"x"`
 	Y        int      `json:"y"`
 	Name     string   `json:"name"`
@@ -34,11 +48,15 @@ func CreatePlayer(name string, index int) Player {
 		movement = LeftStop
 	}
 	return Player{
-		Name:     name,
-		Speed:    1,
-		Movement: movement,
-		X:        x,
-		Y:        y,
+		Name:               name,
+		Speed:             1,
+		Movement:       movement,
+		X:                      x,
+		Y:                      y,
+		ExplosionRange: 1,
+		BombsLeft:      1,
+		Bombs:          make([]Bomb, 0),
+		Explosions:     []Explosion{},
 	}
 }
 
@@ -47,15 +65,41 @@ func (player *Player) Move(input string) {
 	// update movement variable
 	player.Movement = translateMovement(input)
 
-	if player.Movement == Up {
+	if player.Movement == Up  {
 		player.MoveUp()
-	} else if player.Movement == Down {
+	}  else if player.Movement == Down  {
 		player.MoveDown()
-	} else if player.Movement == Right {
+	}  else if player.Movement == Right  {
 		player.MoveRight()
-	} else if player.Movement == Left {
+	}  else if player.Movement == Left  {
 		player.MoveLeft()
+	} else if player.Movement == DropBomb {
+		player.DropBomb()
 	}
+}
+
+// player drops the  bomb
+func (player *Player) DropBomb() {
+	baseX, baseY := player.GetCurrentCoordinates()
+	player.Bombs = append(player.Bombs, Bomb{X: baseX, Y: baseY})
+	player.BombsLeft--
+}
+func (player *Player) BombExplosionComplete() {
+	player.BombsLeft++
+	player.Bombs = player.Bombs[1:]
+}
+
+// player create explosion
+func (player *Player) MakeExplosion(gameMap []int) []int {
+	var explosion, destroyedBlocks = NewExplosion(&player.Bombs[0], gameMap, player)
+	player.Explosions = append(player.Explosions, explosion)
+	return destroyedBlocks
+}
+func (player *Player) ExplosionComplete() {
+	if len(player.Explosions) == 0 {
+		return
+	}
+	player.Explosions = player.Explosions[1:]
 }
 
 // Movement functions
@@ -85,7 +129,7 @@ func (player *Player) MoveDown() {
 func (player *Player) MoveRight() {
 	// player.showCoordinates()
 	yFit(player)
-	if player.Y%64 == 0 {
+	if player.Y%64 == 0  {
 		if State.Map[player.calcPlayerPosition()+1] == 1 || State.Map[player.calcPlayerPosition()+1] == 2 {
 			return
 		} else {
@@ -112,11 +156,11 @@ func (player *Player) calcPlayerPosition() int {
 	return index
 }
 
-func (player *Player) showCoordinates() {
+func (player *Player) showCoordinates()  {
 	fmt.Printf("x: %v y: %v\n", player.X, player.Y)
 }
 
-func xFit(player *Player) {
+func xFit(player *Player)  {
 	if player.X%64 > 32 {
 		player.X++
 	} else {
@@ -124,10 +168,27 @@ func xFit(player *Player) {
 	}
 }
 
-func yFit(player *Player) {
+func yFit(player *Player)  {
 	if player.Y%64 > 32 {
 		player.Y++
 	} else {
 		player.Y--
 	}
+}
+
+
+func (player *Player) GetCurrentCoordinates() (int, int) {
+	var baseX = getBase(player.X)
+	var baseY = getBase(player.Y)
+	return baseX, baseY
+}
+func getBase(x int) int {
+	var base = x
+	var remainder = x % 64
+	if remainder > 32 { //base is next tile
+		base += 64 - remainder
+	} else { //base is previous tile
+		base -= remainder
+	}
+	return base
 }
