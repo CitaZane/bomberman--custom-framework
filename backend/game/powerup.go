@@ -2,6 +2,7 @@ package game
 
 import (
 	"math/rand"
+	"time"
 )
 
 type PowerUpType string
@@ -57,6 +58,7 @@ func newPowerUp(tile int) *PowerUp {
 func GeneratePowerUp(basemap []int, breakableBricks []int) {
 	powerUpPlaced := false
 	for !powerUpPlaced {
+		rand.Seed(time.Now().UnixNano())
 		randomPos := rand.Intn(len(breakableBricks))
 		if basemap[breakableBricks[randomPos]] == 1 {
 			// create a power up

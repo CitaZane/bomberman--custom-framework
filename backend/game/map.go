@@ -2,6 +2,7 @@ package game
 
 import (
 	"math/rand"
+	"time"
 )
 
 //function for creating starting map with random placed breakable blocks.
@@ -74,6 +75,7 @@ var mapBase = []int{
 }
 
 func CreateBaseMap(game *GameState) []int {
+	rand.Seed(time.Now().UnixNano())
 	basemap := append([]int{}, mapBase...)
 	GeneratedPowerUps = nil
 	breakableBricks := []int{}
