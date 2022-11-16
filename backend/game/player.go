@@ -81,11 +81,11 @@ func (player *Player) Move(input string, powerUps *[]*PowerUp) bool {
 
 			//add powerUp to the player
 			switch powerUp.Type {
-			case "increase_bombs":
+			case INCREASE_BOMBS:
 				player.BombsLeft++
-			case "increase_speed":
+			case INCREASE_SPEED:
 				player.Speed++
-			case "increase_flames":
+			case INCREASE_FLAMES:
 				player.ExplosionRange++
 			}
 
