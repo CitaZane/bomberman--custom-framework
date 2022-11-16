@@ -30,7 +30,7 @@ func CreatePlayer(name string, index int) Player {
 		movement = RightStop
 	case 1:
 		x = 576
-		y = 64
+		y = 576
 		movement = LeftStop
 	case 2:
 		x = 64
@@ -38,7 +38,7 @@ func CreatePlayer(name string, index int) Player {
 		movement = RightStop
 	default:
 		x = 576
-		y = 576
+		y = 64
 		movement = LeftStop
 	}
 	return Player{
