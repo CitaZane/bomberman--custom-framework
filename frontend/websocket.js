@@ -55,6 +55,9 @@ export function defineWebSocket(name) {
         break;
       // game  stuff
       case "PLAYER_MOVE":
+        if (data.body === "PICKED_UP_POWERUP") {
+          store.commit("updatePowerUps", data.gameState["power_ups"])
+        }
         store.commit("updatePlayers", data.gameState.players);
         break;
 
@@ -62,9 +65,6 @@ export function defineWebSocket(name) {
         store.dispatch("addNewMessage", data);
         break;
       // game  stuff
-      case "PLAYER_MOVE":
-        store.commit("updatePlayers", data.gameState.players);
-        break;
 
       case "PLAYER_DROPPED_BOMB":
         store.commit("updatePlayers", data.gameState.players);

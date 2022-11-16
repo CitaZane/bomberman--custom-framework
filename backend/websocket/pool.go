@@ -69,7 +69,10 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				gameState.Map = game.CreateBaseMap(gameState)
 				gameState.Players = pool.createPlayers()
 			case "PLAYER_MOVE": //update player movement
-				player.Move(message.Body)
+				pickedUpPowerUp := player.Move(message.Body, &gameState.PowerUps)
+				if pickedUpPowerUp {
+					message.Body = "PICKED_UP_POWERUP"
+				}
 			case "PLAYER_DROPPED_BOMB":
 				if player.BombsLeft <= 0 {
 					break S
@@ -80,6 +83,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					message.Type = "BOMB_EXPLODED"
 					pool.Broadcast <- message
 				}()
+
 			case "BOMB_EXPLODED":
 				destroyedBlocks := player.MakeExplosion(gameState.Map)
 				player.BombExplosionComplete()
@@ -87,6 +91,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					go func() { //trigger map update
 						time.Sleep(1000 * time.Millisecond)
 						message.Type = "MAP_UPDATE"
+						message.GameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
 
 						// check if destroyed block index match with powerup block index
 						for _, blockIndex := range destroyedBlocks {
@@ -97,7 +102,6 @@ func (pool *Pool) Start(gameState *game.GameState) {
 							}
 						}
 
-						message.GameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
 						pool.Broadcast <- message
 					}()
 				}
