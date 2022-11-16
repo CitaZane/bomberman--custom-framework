@@ -78,6 +78,17 @@ func (player *Player) Move(input string, powerUps *[]*PowerUp) bool {
 
 		if powerUp.X == playerX && powerUp.Y == playerY {
 			s := *powerUps
+
+			//add powerUp to the player
+			switch powerUp.Type {
+			case "increase_bombs":
+				player.BombsLeft++
+			case "increase_speed":
+				player.Speed++
+			case "increase_flames":
+				player.ExplosionRange++
+			}
+
 			// remove the powerup from powerups array
 			s = append(s[:i], s[i+1:]...)
 			*powerUps = s
