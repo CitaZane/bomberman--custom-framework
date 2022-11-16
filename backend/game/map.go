@@ -1,7 +1,6 @@
 package game
 
 import (
-	"math"
 	"math/rand"
 )
 
@@ -62,7 +61,7 @@ import (
 
 var mapBase = []int{
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 0, 0, 9, 9, 9, 9, 9, 0, 0, 2,
+	2, 0, 0, 1, 9, 9, 9, 9, 0, 0, 2,
 	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
 	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
@@ -74,29 +73,9 @@ var mapBase = []int{
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 }
 
-func generatePowerUp(tile int, gameState *GameState) {
-
-	powerUpX := tile % 11 * 64
-	powerUpY := math.Floor(float64(tile)/11) * 64
-	amountOfPowerUps := len(gameState.PowerUps)
-	var powerUpType PowerUpType
-
-	switch amountOfPowerUps % 3 {
-	case 0:
-		powerUpType = INCREASE_BOMBS
-	case 1:
-		powerUpType = INCREASE_FLAMES
-	case 2:
-		powerUpType = INCREASE_SPEED
-	}
-
-	gameState.PowerUps = append(gameState.PowerUps, PowerUp{Type: powerUpType, X: powerUpX, Y: int(powerUpY)})
-
-}
-
 func CreateBaseMap(game *GameState) []int {
 	basemap := append([]int{}, mapBase...)
-	game.PowerUps = nil
+	GeneratedPowerUps = nil
 	breakableBricks := []int{}
 	for i, tile := range basemap {
 		if tile == 9 {
@@ -109,84 +88,9 @@ func CreateBaseMap(game *GameState) []int {
 		}
 	}
 
+	// generate a powerup for 6 breakable bricks
 	for i := 0; i < 6; i++ {
-		powerUpPlaced := false
-		for !powerUpPlaced {
-			randomPos := rand.Intn(len(breakableBricks))
-			if basemap[breakableBricks[randomPos]] == 1 {
-				generatePowerUp(breakableBricks[randomPos], game)
-				basemap[breakableBricks[randomPos]] = 3
-
-				// left 1 tile
-				if basemap[breakableBricks[randomPos]-1] == 1 {
-					basemap[breakableBricks[randomPos]-1] = 3
-				}
-
-				// left 2 tiles
-				if basemap[breakableBricks[randomPos]-2] == 1 {
-					basemap[breakableBricks[randomPos]-2] = 3
-				}
-
-				// right 1 tile
-				if basemap[breakableBricks[randomPos]+1] == 1 {
-					basemap[breakableBricks[randomPos]+1] = 3
-				}
-
-				// right 2 tiles
-				if basemap[breakableBricks[randomPos]+2] == 1 {
-					basemap[breakableBricks[randomPos]+2] = 3
-				}
-
-				if breakableBricks[randomPos] > 12 {
-					// up 1 tile
-					if basemap[breakableBricks[randomPos]-11] == 1 {
-						basemap[breakableBricks[randomPos]-11] = 3
-					}
-
-					// diagonal up right
-					if basemap[breakableBricks[randomPos]-10] == 1 {
-						basemap[breakableBricks[randomPos]-10] = 3
-					}
-
-					// diagonal up left
-					if basemap[breakableBricks[randomPos]-12] == 1 {
-						basemap[breakableBricks[randomPos]-12] = 3
-					}
-
-					if breakableBricks[randomPos] > 22 {
-						// up 2 tiles
-						if basemap[breakableBricks[randomPos]-22] == 1 {
-							basemap[breakableBricks[randomPos]-22] = 3
-						}
-					}
-				}
-
-				if breakableBricks[randomPos]+12 < len(basemap) {
-					// down 1 tile
-					if basemap[breakableBricks[randomPos]+11] == 1 {
-						basemap[breakableBricks[randomPos]+11] = 3
-					}
-
-					// diagonal down left 1 tile
-					if basemap[breakableBricks[randomPos]+10] == 1 {
-						basemap[breakableBricks[randomPos]+10] = 3
-					}
-
-					// diagonal right 1 tile
-					if basemap[breakableBricks[randomPos]+12] == 1 {
-						basemap[breakableBricks[randomPos]+12] = 3
-					}
-
-					if breakableBricks[randomPos]+22 < len(basemap) {
-						// down 2 tile
-						if basemap[breakableBricks[randomPos]+22] == 1 {
-							basemap[breakableBricks[randomPos]+22] = 3
-						}
-					}
-				}
-				powerUpPlaced = true
-			}
-		}
+		GeneratePowerUp(basemap, breakableBricks)
 	}
 
 	// restore breakable bricks in map array

@@ -7,10 +7,7 @@ export function GameMap() {
 
     template: (
       <div id="gamemap">
-        {map_data.map((tile, idx) => {
-          if (idx == 29) {
-            console.log(tile)
-          }
+        {map_data.map((tile) => {
           switch (tile) {
             case 2:
               return <div class="wall_block"></div>;

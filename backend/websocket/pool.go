@@ -85,8 +85,18 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				player.BombExplosionComplete()
 				if len(destroyedBlocks) != 0 {
 					go func() { //trigger map update
-						time.Sleep(600 * time.Millisecond)
+						time.Sleep(1000 * time.Millisecond)
 						message.Type = "MAP_UPDATE"
+
+						// check if destroyed block index match with powerup block index
+						for _, blockIndex := range destroyedBlocks {
+							for _, powerUp := range game.GeneratedPowerUps {
+								if blockIndex == powerUp.Tile {
+									message.GameState.PowerUps = append(gameState.PowerUps, powerUp)
+								}
+							}
+						}
+
 						message.GameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
 						pool.Broadcast <- message
 					}()

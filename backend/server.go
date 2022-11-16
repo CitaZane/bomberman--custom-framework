@@ -10,7 +10,10 @@ import (
 
 func main() {
 	pool := ws.NewPool()
-	game := game.GameState{}
+	game := game.GameState{
+		Bombs:    make([]game.Bomb, 0),
+		PowerUps: make([]*game.PowerUp, 0),
+	}
 
 	go pool.Start(&game)
 

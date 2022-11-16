@@ -21,13 +21,10 @@ export function defineWebSocket(name) {
           store.commit("changePlayerName", data.creator);
         }
         store.commit("updatePlayers", []);
-        store.commit("updatePowerUps", []);
         data.gameState.players.forEach((player) => {
           store.dispatch("registerPlayer", player);
         });
         store.commit("updateMap", data.gameState.map);
-        store.commit("updatePowerUps", data.gameState["power_ups"]);
-        console.log("Game started with: ", data.gameState);
         // window.location.href = window.location.origin + "/#/game";
         setupGame();
         break;
@@ -77,6 +74,8 @@ export function defineWebSocket(name) {
         break
       case "MAP_UPDATE":
         store.commit("updateMap", data.gameState.map);
+        console.log("gameState", data.gameState)
+        store.commit("updatePowerUps", data.gameState["power_ups"])
         break
       case "EXPLOSION_COMPLETED":
         store.commit("updatePlayers", data.gameState.players);
