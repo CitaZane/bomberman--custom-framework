@@ -20,6 +20,10 @@ export function GameView() {
     template: (
       <div id="home">
         <GameMap />
+        
+        <div id="pu-1"></div>
+        <div id="pu-2"></div>
+        <div id="pu-3"></div>
         {players.map((player, i) => (
           <MonsterSprite player={player} id={i} />
         ))}
