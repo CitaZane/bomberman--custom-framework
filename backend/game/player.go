@@ -195,23 +195,23 @@ func xFit(player *Player) {
 	if player.X%64 > 32 {
 		if player.Movement == "down" {
 			if State.Map[player.calcPlayerPosition()+11] == 0 {
-				player.X++
+				player.X = player.X + 2
 			}
 		}
 		if player.Movement == "up" {
 			if State.Map[player.calcPlayerPosition()-11] == 0 {
-				player.X++
+				player.X = player.X + 2
 			}
 		}
 	} else {
 		if player.Movement == "down" {
 			if State.Map[player.calcPlayerPosition()+11] == 0 {
-				player.X--
+				player.X = player.X - 2
 			}
 		}
 		if player.Movement == "up" {
 			if State.Map[player.calcPlayerPosition()-11] == 0 {
-				player.X--
+				player.X = player.X - 2
 			}
 		}
 	}
@@ -223,23 +223,23 @@ func yFit(player *Player) {
 	if player.Y%64 > 32 {
 		if player.Movement == "right" {
 			if State.Map[player.calcPlayerPosition()+1] == 0 {
-				player.Y++
+				player.Y = player.Y + 2
 			}
 		}
 		if player.Movement == "left" {
 			if State.Map[player.calcPlayerPosition()-1] == 0 {
-				player.Y++
+				player.Y = player.Y + 2
 			}
 		}
 	} else {
 		if player.Movement == "right" {
 			if State.Map[player.calcPlayerPosition()+1] == 0 {
-				player.Y--
+				player.Y = player.Y - 2
 			}
 		}
 		if player.Movement == "left" {
 			if State.Map[player.calcPlayerPosition()-1] == 0 {
-				player.Y--
+				player.Y = player.Y - 2
 			}
 		}
 	}
