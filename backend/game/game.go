@@ -1,16 +1,15 @@
 package game
 
 type GameState struct {
-	Players []Player `json:"players"`
-	Map     []int    `json:"map"`
-	Bombs   []Bomb   `json:"bombs"`
+	Players   []Player  `json:"players"`
+	Map       []int     `json:"map"`
+	Bombs     []Bomb    `json:"bombs"`
 	Explosion Explosion `json:"explosion"`
 	// created bool
 }
 
 // holds game state to send it to all players
 var State = GameState{}
-
 
 func (g *GameState) FindPlayer(name string) int {
 	for index, player := range g.Players {
@@ -22,10 +21,29 @@ func (g *GameState) FindPlayer(name string) int {
 	return -1
 }
 
-// func (g *GameState) GetMap() []int {
-// 	return g.Map
-// }
+// Loop through all players in game and check if somebody is in the explosion
+// return slice with monster that died
+func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
+	var monstersLostLives = []int{}
+	for i := 0; i < len(g.Players); i++ {
+		var lostLive = g.Players[i].CheckIfIDie(explosion)
+		if lostLive {
+			monstersLostLives = append(monstersLostLives, i)
+		}
+	}
+	return monstersLostLives
+}
 
-// func (g *GameState) ClearExplosions() {
-// 	g.Explosions = [][]Explosion{}
-// }
+// Loop through all active explosion in game and check if current player stepped in it
+func (g *GameState) CheckIfPlayerDied(p *Player) bool {
+	var lostLive = false
+	for _, player := range g.Players {
+		for _, explosion := range player.Explosions {
+			lostLive = p.CheckIfIDie(&explosion)
+			if lostLive {
+				return lostLive
+			}
+		}
+	}
+	return lostLive
+}

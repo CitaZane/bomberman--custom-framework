@@ -9,7 +9,8 @@ type Player struct {
 	Y              int         `json:"y"`
 	Name           string      `json:"name"`
 	Movement       Movement    `json:"movement"`
-	Speed          int         `json:"-"` //for changing how fas is movement
+	Lives          int         `json:"lives"`
+	Speed          int         `json:"-"` //for changing how fast is movement
 	BombsLeft      int         `json:"bombsLeft"`
 	Bombs          []Bomb      `json:"bombs"`
 	ExplosionRange int         `json:"-"`
@@ -36,7 +37,7 @@ func CreatePlayer(name string, index int) Player {
 		movement = RightStop
 	case 1:
 		x = 576
-		y = 64
+		y = 576
 		movement = LeftStop
 	case 2:
 		x = 64
@@ -44,7 +45,7 @@ func CreatePlayer(name string, index int) Player {
 		movement = RightStop
 	default:
 		x = 576
-		y = 576
+		y = 64
 		movement = LeftStop
 	}
 	return Player{
@@ -53,6 +54,7 @@ func CreatePlayer(name string, index int) Player {
 		Movement:       movement,
 		X:              x,
 		Y:              y,
+		Lives:          3,
 		ExplosionRange: 1,
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
@@ -90,10 +92,10 @@ func (player *Player) BombExplosionComplete() {
 }
 
 // player create explosion
-func (player *Player) MakeExplosion(gameMap []int) []int {
+func (player *Player) MakeExplosion(gameMap []int) ([]int, Explosion) {
 	var explosion, destroyedBlocks = NewExplosion(&player.Bombs[0], gameMap, player)
 	player.Explosions = append(player.Explosions, explosion)
-	return destroyedBlocks
+	return destroyedBlocks, explosion
 }
 func (player *Player) ExplosionComplete() {
 	if len(player.Explosions) == 0 {
@@ -259,4 +261,39 @@ func getBase(x int) int {
 		base -= remainder
 	}
 	return base
+}
+
+// bool value is true only if live lost, but monster is not dead yet
+func (player *Player) CheckIfIDie(explosion *Explosion) bool {
+	// for each fire in explosion, check if monster is inside it
+	var lostLive = false
+	for _, fire := range explosion.Fires {
+		var monsterBurned = fire.IsMonsterInside(player.X, player.Y)
+		// if monster is inside the fire ->
+		if monsterBurned {
+			if state := player.LoseLife(); state == LostLive {
+				lostLive = true
+			}
+			break
+		}
+	}
+	return lostLive
+}
+
+func (player *Player) LoseLife() Movement {
+	player.Lives = player.Lives - 1
+	if player.Lives > 0 {
+		player.Movement = LostLive
+	} else {
+		player.Movement = Died
+	}
+	return player.Movement
+}
+
+// Check if player still alive
+func (player *Player) IsAlive() bool {
+	if player.Movement == Died || player.Movement == LostLive {
+		return false
+	}
+	return true
 }

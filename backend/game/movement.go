@@ -14,7 +14,10 @@ const (
 	DownStop  Movement = "down-stop"
 	LeftStop  Movement = "left-stop"
 	RightStop Movement = "right-stop"
+
 	DropBomb  Movement = "drop-bomb"
+	LostLive Movement  = "lost-live"
+	Died Movement      = "died"
 )
 
 // Translate monster movement from string to one of registerd movements

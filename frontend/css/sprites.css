@@ -50,7 +50,7 @@
 .monster-up-stop,
 .monster-down-stop,
 .monster-left-stop,
-.monster-right-stop {
+.monster-right-stop{
 	animation-timing-function: steps(1);
 }
 
@@ -75,6 +75,28 @@
 	animation-name: monster-left;
 }
 
+.monster-lost-live{
+	background-image: url("../assets/monster-die.png") !important;
+	animation-timing-function: steps(6);
+	animation-duration: 0.2s;
+	animation-name: monster-left;
+}
+.monster-died{
+	background-image: url("../assets/monster-die.png") !important;
+	animation-duration: 3s;
+	animation-name: monster-die;
+	animation-iteration-count: 1;
+	animation-fill-mode: forwards;
+}
+@keyframes monster-die {
+	from {
+		background-position: 0px 0px;
+		opacity: 1;
+	}
+	to {
+		opacity:0;
+	}
+}
 /* -------------------- loop through monster spritesheet -------------------- */
 @keyframes monster-left {
 	from {
