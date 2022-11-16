@@ -1,6 +1,8 @@
 package game
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Player struct {
 	X              int         `json:"x"`
@@ -46,11 +48,11 @@ func CreatePlayer(name string, index int) Player {
 		movement = LeftStop
 	}
 	return Player{
-		Name:               name,
-		Speed:             1,
+		Name:           name,
+		Speed:          1,
 		Movement:       movement,
-		X:                      x,
-		Y:                      y,
+		X:              x,
+		Y:              y,
 		ExplosionRange: 1,
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
@@ -63,13 +65,13 @@ func (player *Player) Move(input string) {
 	// update movement variable
 	player.Movement = translateMovement(input)
 
-	if player.Movement == Up  {
+	if player.Movement == Up {
 		player.MoveUp()
-	}  else if player.Movement == Down  {
+	} else if player.Movement == Down {
 		player.MoveDown()
-	}  else if player.Movement == Right  {
+	} else if player.Movement == Right {
 		player.MoveRight()
-	}  else if player.Movement == Left  {
+	} else if player.Movement == Left {
 		player.MoveLeft()
 	} else if player.Movement == DropBomb {
 		player.DropBomb()
@@ -102,10 +104,15 @@ func (player *Player) ExplosionComplete() {
 
 // Movement functions
 func (player *Player) MoveUp() {
-	// player.showCoordinates()
-	xFit(player)
+	if player.Y < 64 {
+		return
+	}
+	if player.X%64 != 0 {
+		xFit(player)
+	}
 	if player.X%64 == 0 {
-		if State.Map[player.calcPlayerPosition()] == 1 || State.Map[player.calcPlayerPosition()] == 2 {
+		if State.Map[player.calcPlayerPosition()-11] != 0 && player.Y%64 == 0 {
+			// fmt.Println("'MoveUp' func blocks movement!				player.go(110)")
 			return
 		} else {
 			player.Y -= player.Speed * 2
@@ -113,10 +120,12 @@ func (player *Player) MoveUp() {
 	}
 }
 func (player *Player) MoveDown() {
-	// player.showCoordinates()
-	xFit(player)
+	if player.X%64 != 0 {
+		xFit(player)
+	}
 	if player.X%64 == 0 {
-		if State.Map[player.calcPlayerPosition()+11] == 1 || State.Map[player.calcPlayerPosition()+11] == 2 {
+		if State.Map[player.calcPlayerPosition()+11] != 0 && player.Y%64 == 0 {
+			// fmt.Println("'MoveDown' func blocks movement!				player.go(121)")
 			return
 		} else {
 			player.Y += player.Speed * 2
@@ -125,10 +134,15 @@ func (player *Player) MoveDown() {
 }
 
 func (player *Player) MoveRight() {
-	// player.showCoordinates()
-	yFit(player)
-	if player.Y%64 == 0  {
-		if State.Map[player.calcPlayerPosition()+1] == 1 || State.Map[player.calcPlayerPosition()+1] == 2 {
+	if player.X > 574 {
+		// fmt.Println("Right wall")
+		return
+	}
+	if player.Y%64 != 0 {
+		yFit(player)
+	} else {
+		if State.Map[player.calcPlayerPosition()+1] != 0 && player.X%64 == 0 && player.Y%64 == 0 {
+			// fmt.Println("'MoveRight' func blocks movement!				player.go(133)")
 			return
 		} else {
 			player.X += player.Speed * 2
@@ -136,9 +150,15 @@ func (player *Player) MoveRight() {
 	}
 }
 func (player *Player) MoveLeft() {
-	yFit(player)
-	if player.Y%64 == 0 {
-		if State.Map[player.calcPlayerPosition()] == 1 || State.Map[player.calcPlayerPosition()] == 2 {
+	// player.showCoordinates()
+	if player.X < 65 {
+		return
+	}
+	if player.Y%64 != 0 {
+		yFit(player)
+	} else {
+		if State.Map[player.calcPlayerPosition()-1] != 0 && player.X%64 == 0 {
+			// fmt.Println("'MoveLeft' func blocks movement!				player.go(147)")
 			return
 		} else {
 			player.X -= player.Speed * 2
@@ -148,32 +168,82 @@ func (player *Player) MoveLeft() {
 
 // Calculates on which map cell player is standing. Cell is map index.
 func (player *Player) calcPlayerPosition() int {
+	xRemainder := player.X % 64
+	yRemainder := player.Y % 64
+
 	row := player.Y / 64
 	place := player.X / 64
+	if xRemainder > 32 {
+		place++
+	}
+	if yRemainder > 32 {
+		row++
+	}
+
 	index := row*11 + place
 	return index
 }
 
-func (player *Player) showCoordinates()  {
+func (player *Player) showCoordinates() {
 	fmt.Printf("x: %v y: %v\n", player.X, player.Y)
 }
 
-func xFit(player *Player)  {
+// Fit player on x-axis. (Auto move near corners)
+func xFit(player *Player) {
+	// fmt.Println(player.calcPlayerPosition(), "				player.go(174)")
+
 	if player.X%64 > 32 {
-		player.X++
+		if player.Movement == "down" {
+			if State.Map[player.calcPlayerPosition()+11] == 0 {
+				player.X++
+			}
+		}
+		if player.Movement == "up" {
+			if State.Map[player.calcPlayerPosition()-11] == 0 {
+				player.X++
+			}
+		}
 	} else {
-		player.X--
+		if player.Movement == "down" {
+			if State.Map[player.calcPlayerPosition()+11] == 0 {
+				player.X--
+			}
+		}
+		if player.Movement == "up" {
+			if State.Map[player.calcPlayerPosition()-11] == 0 {
+				player.X--
+			}
+		}
 	}
 }
 
-func yFit(player *Player)  {
+// fit player on y-axis
+func yFit(player *Player) {
+	// fmt.Println(player.calcPlayerPosition(), "				player.go(204)")
 	if player.Y%64 > 32 {
-		player.Y++
+		if player.Movement == "right" {
+			if State.Map[player.calcPlayerPosition()+1] == 0 {
+				player.Y++
+			}
+		}
+		if player.Movement == "left" {
+			if State.Map[player.calcPlayerPosition()-1] == 0 {
+				player.Y++
+			}
+		}
 	} else {
-		player.Y--
+		if player.Movement == "right" {
+			if State.Map[player.calcPlayerPosition()+1] == 0 {
+				player.Y--
+			}
+		}
+		if player.Movement == "left" {
+			if State.Map[player.calcPlayerPosition()-1] == 0 {
+				player.Y--
+			}
+		}
 	}
 }
-
 
 func (player *Player) GetCurrentCoordinates() (int, int) {
 	var baseX = getBase(player.X)

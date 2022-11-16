@@ -56,6 +56,8 @@ var mapBase = []int{
 	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 }
+
+//map clone for testing
 // var mapBase = []int{
 // 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 // 	2, 0, 0, 0, 9, 9, 9, 1, 0, 0, 2,
@@ -69,8 +71,6 @@ var mapBase = []int{
 // 	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
 // 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 // }
-
-
 
 func CreateBaseMap() []int {
 	basemap := mapBase
@@ -86,7 +86,7 @@ func CreateBaseMap() []int {
 	return mapBase
 }
 
-func DestroyBlocks(original []int, indexList []int)[]int{
+func DestroyBlocks(original []int, indexList []int) []int {
 	for _, v := range indexList {
 		original[v] = 0
 	}
