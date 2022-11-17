@@ -74,7 +74,7 @@ var mapBase = []int{
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 }
 
-func CreateBaseMap(game *GameState) []int {
+func CreateBaseMap() []int {
 	rand.Seed(time.Now().UnixNano())
 	basemap := append([]int{}, mapBase...)
 	GeneratedPowerUps = nil

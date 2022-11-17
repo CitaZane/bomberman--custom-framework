@@ -42,8 +42,15 @@ func (pool *Pool) Start(gameState *game.GameState) {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 
-			gameState.Map = game.CreateBaseMap(gameState)
+			gameState = game.NewGame()
+			gameState.Map = game.CreateBaseMap()
 			gameState.Players = pool.createPlayers(gameState.Map)
+
+			// dont delete yet please
+			// fmt.Printf("gameState %+v\n", gameState)
+			// for _, powerUp := range game.GeneratedPowerUps {
+			// 	fmt.Println("powerUp", powerUp)
+			// }
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
@@ -66,8 +73,9 @@ func (pool *Pool) Start(gameState *game.GameState) {
 
 			switch message.Type {
 			case "START_GAME":
-				gameState.Map = game.CreateBaseMap(gameState)
-				gameState.Players = pool.createPlayers()
+				gameState = game.NewGame()
+				gameState.Map = game.CreateBaseMap()
+				gameState.Players = pool.createPlayers(gameState.Map)
 			case "PLAYER_MOVE": //update player movement
 				if !player.IsAlive() {
 					break S
@@ -83,7 +91,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					go func() {
 						time.Sleep(3000 * time.Millisecond)
 						message.Type = "PLAYER_REBORN"
-						message.GameState.Players[currentPlayerIndex].Movement = game.RightStop
+						gameState.Players[currentPlayerIndex].Movement = game.RightStop
 						pool.Broadcast <- message
 					}()
 				}
@@ -109,7 +117,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 						time.Sleep(3000 * time.Millisecond)
 						message.Type = "PLAYER_REBORN"
 						for _, i := range monstersLostLives { //reset the movement
-							message.GameState.Players[i].Movement = game.RightStop
+							gameState.Players[i].Movement = game.RightStop
 						}
 
 						pool.Broadcast <- message
@@ -119,13 +127,15 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					go func() { //trigger map update
 						time.Sleep(1000 * time.Millisecond)
 						message.Type = "MAP_UPDATE"
-						message.GameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
+						gameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
 
 						// check if destroyed block index match with powerup block index
 						for _, blockIndex := range destroyedBlocks {
 							for _, powerUp := range game.GeneratedPowerUps {
 								if blockIndex == powerUp.Tile {
-									message.GameState.PowerUps = append(gameState.PowerUps, powerUp)
+									// fmt.Println("blockIndex", blockIndex)
+									// fmt.Println("powerUp", powerUp)
+									gameState.PowerUps = append(gameState.PowerUps, powerUp)
 								}
 							}
 						}
@@ -141,12 +151,8 @@ func (pool *Pool) Start(gameState *game.GameState) {
 
 			case "EXPLOSION_COMPLETED":
 				player.ExplosionComplete()
-			case "MAP_UPDATE":
-				gameState.Map = message.GameState.Map
-			case "PLAYER_REBORN":
-				gameState.Players = message.GameState.Players
-			}
 
+			}
 			message.GameState = gameState
 			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {

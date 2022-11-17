@@ -9,6 +9,16 @@ type GameState struct {
 	// created bool
 }
 
+func NewGame() *GameState {
+	return &GameState{
+		Players:   make([]Player, 0),
+		Bombs:     make([]Bomb, 0),
+		Map:       make([]int, 0),
+		PowerUps:  make([]*PowerUp, 0),
+		Explosion: Explosion{},
+	}
+}
+
 func (g *GameState) FindPlayer(name string) int {
 	for index, player := range g.Players {
 		if player.Name == name {
