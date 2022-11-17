@@ -7,12 +7,6 @@ type Explosion struct {
 	Id    string `json:"id"`
 }
 
-type Fire struct {
-	X    int `json:"x"`
-	Y    int `json:"y"`
-	Type int `json:"type"`
-}
-
 type ExplosionManager struct {
 	Range        int             //explosion range
 	CurrentRange int             //holds current range in calculation
@@ -36,6 +30,7 @@ func setupManager(exlosionRange int, x, y int, baseMap []int) ExplosionManager {
 		Directions:   []string{"UP", "DOWN", "LEFT", "RIGHT"},
 	}
 }
+
 
 // stopsserching for fire in certain direction
 func (manager *ExplosionManager) turnOffFire(direction string) {

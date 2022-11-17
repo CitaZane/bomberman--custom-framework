@@ -23,12 +23,12 @@ func NewPool() *Pool {
 	}
 }
 
-func (pool *Pool) createPlayers() []game.Player {
+func (pool *Pool) createPlayers(gameMap []int) []game.Player {
 	keys := make([]game.Player, len(pool.Clients))
 
 	i := 0
 	for client := range pool.Clients {
-		keys[i] = game.CreatePlayer(client.ID, i)
+		keys[i] = game.CreatePlayer(client.ID, i, gameMap)
 		i++
 	}
 
@@ -43,7 +43,7 @@ func (pool *Pool) Start(gameState *game.GameState) {
 			pool.Clients[client] = true
 
 			gameState.Map = game.CreateBaseMap(gameState)
-			gameState.Players = pool.createPlayers()
+			gameState.Players = pool.createPlayers(gameState.Map)
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
@@ -69,12 +69,27 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				gameState.Map = game.CreateBaseMap(gameState)
 				gameState.Players = pool.createPlayers()
 			case "PLAYER_MOVE": //update player movement
+				if !player.IsAlive() {
+					break S
+				} // allow player to move only if has not died
+
 				pickedUpPowerUp := player.Move(message.Body, &gameState.PowerUps)
 				if pickedUpPowerUp {
 					message.Body = "PICKED_UP_POWERUP"
 				}
+
+				lostLive := gameState.CheckIfPlayerDied(player)
+				if lostLive {
+					go func() {
+						time.Sleep(3000 * time.Millisecond)
+						message.Type = "PLAYER_REBORN"
+						message.GameState.Players[currentPlayerIndex].Movement = game.RightStop
+						pool.Broadcast <- message
+					}()
+				}
+
 			case "PLAYER_DROPPED_BOMB":
-				if player.BombsLeft <= 0 {
+				if player.BombsLeft <= 0 || !player.IsAlive() {
 					break S
 				}
 				player.DropBomb()
@@ -85,8 +100,21 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				}()
 
 			case "BOMB_EXPLODED":
-				destroyedBlocks := player.MakeExplosion(gameState.Map)
+				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
 				player.BombExplosionComplete()
+				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
+
+				if len(monstersLostLives) != 0 {
+					go func() {
+						time.Sleep(3000 * time.Millisecond)
+						message.Type = "PLAYER_REBORN"
+						for _, i := range monstersLostLives { //reset the movement
+							message.GameState.Players[i].Movement = game.RightStop
+						}
+
+						pool.Broadcast <- message
+					}()
+				}
 				if len(destroyedBlocks) != 0 {
 					go func() { //trigger map update
 						time.Sleep(1000 * time.Millisecond)
@@ -115,6 +143,8 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				player.ExplosionComplete()
 			case "MAP_UPDATE":
 				gameState.Map = message.GameState.Map
+			case "PLAYER_REBORN":
+				gameState.Players = message.GameState.Players
 			}
 
 			message.GameState = gameState

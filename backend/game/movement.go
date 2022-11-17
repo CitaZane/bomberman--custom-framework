@@ -1,7 +1,7 @@
 package game
 
 // movement enum
-// Movement enup used to provide possible monster actions
+// Movement enum used to provide possible monster actions
 type Movement string
 
 const (
@@ -14,7 +14,10 @@ const (
 	DownStop  Movement = "down-stop"
 	LeftStop  Movement = "left-stop"
 	RightStop Movement = "right-stop"
-	DropBomb  Movement = "drop-bomb"
+
+	DropBomb Movement = "drop-bomb"
+	LostLive Movement = "lost-live"
+	Died     Movement = "died"
 )
 
 // Translate monster movement from string to one of registerd movements
