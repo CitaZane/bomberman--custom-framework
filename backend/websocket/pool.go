@@ -78,16 +78,13 @@ func (pool *Pool) Start() {
 				}
 				//update player movement
 				player.Move(message.Body)
-				lostLive := gameState.CheckIfPlayerDied(player)
 
-				if lostLive {
-					//let reborn
+				if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
 					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
 				}
-				pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps)
-
-				if pickedUpPowerUp {
+				if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
 					message.Body = "PICKED_UP_POWERUP"
+
 				}
 			case "PLAYER_DROPPED_BOMB":
 				if player.BombsLeft <= 0 || !player.IsAlive() {
