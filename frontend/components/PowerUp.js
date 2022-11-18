@@ -1,4 +1,4 @@
-import jsx from "../../framework/vDom/jsx";
+import jsx from "../framework/vDom/jsx";
 
 export function PowerUp({ powerUp, id }) {
   let ref = `powerup-${powerUp.type}-${id}`;

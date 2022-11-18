@@ -51,9 +51,11 @@ After installation start a dev server with
 ```
 npm run dev
 ```
+
 After server has successfuly started [open application](http://localhost:1234/) in browser.
 
 ## Creating an Application
+
 Your appliction is located in `/src` folder.
 Every application starts by initializing router and store:
 
@@ -64,8 +66,8 @@ Every application starts by initializing router and store:
 import storeObj from "./store/index";
 import routes from "./router/index";
 // import initialization functions
-import createStore from "../framework/store";
-import createRouter from "../framework/router";
+import createStore from "./framework/store";
+import createRouter from "./framework/router";
 
 const store = createStore(storeObj);
 const router = createRouter(routes);
@@ -79,12 +81,12 @@ Every app requires a "root component" that can contain other components as its c
 
 ```jsx
 // views/HomeView.js
-import jsx from "../../framework/vDom/jsx";
+import jsx from "./framework/vDom/jsx";
 
 export const HomeView = () => {
   return {
-    template: <h1> This is home view</h1>
-  }
+    template: <h1> This is home view</h1>,
+  };
 };
 ```
 
@@ -139,7 +141,7 @@ todo-app
 Our reactivity system is inspired by Vue's. We make an object reactive by calling a reactive function and passing it the object we want to make reactive.
 
 ```js
-import { watchEffect, reactive } from "../../framework/reactive";
+import { watchEffect, reactive } from "./framework/reactive";
 
 // create a reactive object
 const reactiveObj = reactive({
@@ -168,7 +170,9 @@ reactiveObj.age = 10;
 // Mike, 50
 // Mike, 10
 ```
+
 Under the hood this reactivity system is used to track the values in user defined store.state and update the DOM whenever chenges are detected.
+
 ## Templating / JSX
 
 To describe how UI should look like framework uses JSX. While from the first glance it can be seen as a template language, it is much stronger as it takes full advantage of JavaScript. A simple variable declaration looks like this:
@@ -208,13 +212,11 @@ Conceptually, components are like JavaScript functions. They accept inputs and r
 
 ```jsx
 // components/SimpleComponent.js
-import jsx from "../../framework/vDom/jsx";
+import jsx from "./framework/vDom/jsx";
 
 export function SimpleComponent(props) {
   return {
-    template:(
-      <h1>Hello, {props.name}</h1>
-    )
+    template: <h1>Hello, {props.name}</h1>,
   };
 }
 ```
@@ -231,7 +233,7 @@ To use user-defined components they should be brought into scope(imported).
 By using custom attributes you can pass properties to child components:
 
 ```jsx
-import jsx from "../../framework/vDom/jsx";
+import jsx from "./framework/vDom/jsx";
 import { TodoList } from "./TodoList";
 
 export const TodoApp = () => {
@@ -336,10 +338,8 @@ export const AddItem = () => {
     }
   }
   return {
-    template: (
-      <input onKeyup={handleKeyup}></input>
-    )
-  }
+    template: <input onKeyup={handleKeyup}></input>,
+  };
 };
 ```
 
@@ -356,7 +356,7 @@ export const DestroyItem = ({ toDo }) => {
       <li>
         <button onClick={(e) => deleteTodoItem(e, toDo)}></button>
       </li>
-    )
+    ),
   };
 };
 ```
@@ -370,9 +370,9 @@ You can render blocks of code or components based on JavaScript logic:
 function Greeting(props) {
   const isLoggedIn = props.isLoggedIn;
   if (isLoggedIn) {
-    return {template: <UserGreeting />};
+    return { template: <UserGreeting /> };
   }
-  return {template: <GuestGreeting />};
+  return { template: <GuestGreeting /> };
 }
 ```
 
@@ -421,7 +421,7 @@ export const TodoList = () => {
 
   const list = toDoData.map((item) => <TodoItem toDo={item} />);
 
-  return {template: <ul>{list}</ul>};
+  return { template: <ul>{list}</ul> };
 };
 ```
 
@@ -432,7 +432,7 @@ export function TodoItem({ toDo }) {
       <li id={toDo.id}>
         <p>{toDo.task}</p>
       </li>
-    )
+    ),
   };
 }
 ```
@@ -449,10 +449,10 @@ let list = Object.entries(someObject).map((item) => (
 
 State in our framework is managed globally via **Store**, which consists of:
 
-- **State**     -> Holds the data
+- **State** -> Holds the data
 - **Mutations** -> Updates/mutates the state.
-- **Actions**   -> Change state by calling mutations.
-  
+- **Actions** -> Change state by calling mutations.
+
 ```js
 // store/index.js
 
@@ -492,11 +492,12 @@ You can initialize the Store in app.js by calling **createStore**, which will ac
    - Each function will accept two arguments: store object and data
      - State is the stores state object, which will be provided by the framework
      - Store object is provided by the framework and will hold the store's state and a function to commit mutations
+
 ```js
 // app.js
 
 import storeObj from "./store/index";
-import createStore from "../framework/store";
+import createStore from "./framework/store";
 
 const store = createStore(storeObj);
 
@@ -514,44 +515,48 @@ To invoke a mutation, we call commit with mutation name and data.
 ```js
 commit("mutationName", data);
 ```
+
 Example with invoking an action from component:
+
 ```js
 // components/AddItem.js
 
-import jsx from "../../framework/vDom/jsx";
+import jsx from "./framework/vDom/jsx";
 import { store } from "../app";
 
 export const AddItem = () => {
   function addItemHandler(event) {
-     // .. //
+    // .. //
 
     const todoItem = {
-        task: event.target.value,
-        id: Date.now(),
-        completed: false,
+      task: event.target.value,
+      id: Date.now(),
+      completed: false,
     };
 
     // call an action addTodoItem with todoItem from the store
     store.dispatch("addTodoItem", todoItem);
 
     // ... //
-    }
-    return {
-      template: (
-        <input
-          onKeyup={(e) => addItemHandler(e)}
-          class="new-todo"
-          placeholder="What needs to be done?"
-          autofocus=""
-        ></input>
-      )
-    };
   }
+  return {
+    template: (
+      <input
+        onKeyup={(e) => addItemHandler(e)}
+        class="new-todo"
+        placeholder="What needs to be done?"
+        autofocus=""
+      ></input>
+    ),
+  };
+};
 ```
-### Persisting state
-To give user more controll, state persisting is not inbuilt in framework, but it can be easly added by using localStorage and including something similar to this in app.js:
-```js
 
+### Persisting state
+
+To give user more controll, state persisting is not inbuilt in framework, but it can be easly added by using localStorage and including something similar to this in app.js:
+
+```js
 // save store.state.<some-data> in localStorage before unload
 window.onbeforeunload = () => {
   localStorage.setItem("framework-data", JSON.stringify(store.state.data));
@@ -573,7 +578,6 @@ Router is implemented in mini-frameworks core. It is used to map components(view
 First defined route will be set as a default route, in case of no match will be found, view that is defined on fist route will be rendered. To keep things organized, the components that are defined as root elements in router should be called `views` and defined in `views` directory.
 
 ```js
-
 // Import view components
 import { HomeView } from "../views/HomeView";
 import { AboutView } from "../views/AboutView";
@@ -589,14 +593,16 @@ export default routes;
 ```
 
 Initialize router in app.js :
+
 ```js
 import routes from "./router/index";
-import createRouter from "../framework/router";
+import createRouter from "./framework/router";
 
 const router = createRouter(routes);
 
 export { router };
 ```
+
 By importing router in component we can access current route as `router.currentRoute`.
 
 ```jsx
@@ -646,7 +652,7 @@ export const UserView = () => {
       <section>
         <h1>And the current user is: {username}</h1>
       </section>
-    )
+    ),
   };
 };
 ```

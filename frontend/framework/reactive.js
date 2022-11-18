@@ -1,7 +1,7 @@
 // You can read about that reactive implementation from:
 // https://dev.to/themarcba/create-your-own-vue-js-from-scratch-part-3-building-the-reactivity-5162
 
-import router from "../frontend/router/index";
+import router from "../router/index";
 
 let activeEffect;
 

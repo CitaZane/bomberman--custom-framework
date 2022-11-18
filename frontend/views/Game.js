@@ -1,5 +1,5 @@
 /* @jsx jsx */
-import jsx from "../../framework/vDom/jsx";
+import jsx from "../framework/vDom/jsx";
 import { MonsterSprite } from "../components/MonsterSprite";
 import { ExplosionSprite } from "../components/ExplosionSprite";
 import { BombSprite } from "../components/BombSprite";
@@ -29,7 +29,8 @@ export function GameView() {
         ))}
 
         {allExplosions.map((explosion, i) => (
-          <ExplosionSprite explosion={explosion} />))}
+          <ExplosionSprite explosion={explosion} />
+        ))}
 
         {allBombs.map((bomb, i) => (
           <BombSprite bomb={bomb} id={i} />
@@ -38,10 +39,7 @@ export function GameView() {
         {powerUps.map((powerUp, i) => (
           <PowerUp powerUp={powerUp} id={i} />
         ))}
-
-
-
-      </div >
+      </div>
     ),
   };
 }

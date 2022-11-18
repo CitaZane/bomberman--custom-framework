@@ -1,8 +1,8 @@
-import createRouter from "../framework/router";
-import createStore from "../framework/store";
+import createRouter from "./framework/router";
+import createStore from "./framework/store";
 import routes from "./router";
 import storeObj from "./store/index";
-import { ws , SendWsMessage} from "./websocket";
+import { ws, SendWsMessage } from "./websocket";
 
 import { defineWebSocket } from "./websocket";
 const store = createStore(storeObj);
@@ -34,16 +34,15 @@ function animate() {
 
   // sends all 4 movements
   if (movement.move) {
-    SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.move)
-
+    SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.move);
   } else if (movement.stop) {
-    SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.stop)
+    SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.stop);
     //send movement stop only once, so clear the variable after sending
     store.dispatch("clearStopMovement");
   }
 
-  if(movement.bomb){
-    SendWsMessage("PLAYER_DROPPED_BOMB", currentPlayerName)
+  if (movement.bomb) {
+    SendWsMessage("PLAYER_DROPPED_BOMB", currentPlayerName);
     store.dispatch("clearBombDrop");
   }
 

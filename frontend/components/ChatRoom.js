@@ -1,6 +1,6 @@
 /* @jsx jsx */
 
-import jsx from "../../framework/vDom/jsx";
+import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
 import { ws } from "../websocket";
 
@@ -26,7 +26,7 @@ function sendMessage(e) {
 
 export function ChatRoom() {
   const messages = store.state.messages;
-  const currentPlayername = store.state.currentPlayerName
+  const currentPlayername = store.state.currentPlayerName;
   console.log("messages:", messages);
 
   return {
@@ -40,7 +40,11 @@ export function ChatRoom() {
         <div id="chat">
           <ul>
             {messages.map((message) => {
-              return <p>{message.creator}: {message.body}</p>;
+              return (
+                <p>
+                  {message.creator}: {message.body}
+                </p>
+              );
             })}
           </ul>
         </div>

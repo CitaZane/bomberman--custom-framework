@@ -1,5 +1,5 @@
 /* @jsx jsx */
-import jsx from "../../framework/vDom/jsx";
+import jsx from "../framework/vDom/jsx";
 
 export function BombSprite({ bomb, id }) {
   return {

@@ -1,10 +1,9 @@
-import jsx from "../../framework/vDom/jsx";
+import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
 
 export function GameMap() {
-  let map_data = store.state.map
+  let map_data = store.state.map;
   return {
-
     template: (
       <div id="gamemap">
         {map_data.map((tile) => {
@@ -19,5 +18,5 @@ export function GameMap() {
         })}
       </div>
     ),
-  }
+  };
 }
