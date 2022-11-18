@@ -35,7 +35,10 @@ func (pool *Pool) createPlayers(gameMap []int) []game.Player {
 	return keys
 }
 
-func (pool *Pool) Start(gameState *game.GameState) {
+func (pool *Pool) Start() {
+
+	var gameState *game.GameState
+
 	for {
 	S:
 		select {
@@ -45,12 +48,6 @@ func (pool *Pool) Start(gameState *game.GameState) {
 			gameState = game.NewGame()
 			gameState.Map = game.CreateBaseMap()
 			gameState.Players = pool.createPlayers(gameState.Map)
-
-			// dont delete yet please
-			// fmt.Printf("gameState %+v\n", gameState)
-			// for _, powerUp := range game.GeneratedPowerUps {
-			// 	fmt.Println("powerUp", powerUp)
-			// }
 
 			for otherClient := range pool.Clients {
 				if client.ID == otherClient.ID {
@@ -76,15 +73,13 @@ func (pool *Pool) Start(gameState *game.GameState) {
 				gameState = game.NewGame()
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers(gameState.Map)
-			case "PLAYER_MOVE": //update player movement
+			case "PLAYER_MOVE":
 				if !player.IsAlive() {
 					break S
 				} // allow player to move only if has not died
 
-				pickedUpPowerUp := player.Move(message.Body, &gameState.PowerUps)
-				if pickedUpPowerUp {
-					message.Body = "PICKED_UP_POWERUP"
-				}
+				//update player movement
+				player.Move(message.Body)
 
 				lostLive := gameState.CheckIfPlayerDied(player)
 				if lostLive {
@@ -96,6 +91,10 @@ func (pool *Pool) Start(gameState *game.GameState) {
 					}()
 				}
 
+				pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps)
+				if pickedUpPowerUp {
+					message.Body = "PICKED_UP_POWERUP"
+				}
 			case "PLAYER_DROPPED_BOMB":
 				if player.BombsLeft <= 0 || !player.IsAlive() {
 					break S

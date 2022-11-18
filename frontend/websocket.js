@@ -49,10 +49,6 @@ export function defineWebSocket(name) {
         setupGame();
         // ---------------
         break;
-
-      case "TEXT_MESSAGE":
-        store.dispatch("addNewMessage", data);
-        break;
       // game  stuff
       case "PLAYER_MOVE":
         if (data.body === "PICKED_UP_POWERUP") {
@@ -64,17 +60,12 @@ export function defineWebSocket(name) {
       case "TEXT_MESSAGE":
         store.dispatch("addNewMessage", data);
         break;
-      case "PLAYER_DROPPED_BOMB":
-        store.commit("updatePlayers", data.gameState.players);
-        break
-      case "BOMB_EXPLODED":
-        store.commit("updatePlayers", data.gameState.players);
-        break
       case "MAP_UPDATE":
         store.commit("updateMap", data.gameState.map);
-        console.log("PowerUps", data.gameState["power_ups"])
         store.commit("updatePowerUps", data.gameState["power_ups"])
         break
+      case "PLAYER_DROPPED_BOMB":
+      case "BOMB_EXPLODED":
       case "EXPLOSION_COMPLETED":
       case "PLAYER_REBORN":
         store.commit("updatePlayers", data.gameState.players);

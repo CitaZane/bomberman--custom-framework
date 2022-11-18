@@ -62,7 +62,7 @@ func CreatePlayer(name string, index int, gameMap []int) Player {
 }
 
 // methods for updatig monster position based on input from websocket
-func (player *Player) Move(input string, powerUps *[]*PowerUp) bool {
+func (player *Player) Move(input string) {
 	// update movement variable
 	player.Movement = translateMovement(input)
 
@@ -78,6 +78,9 @@ func (player *Player) Move(input string, powerUps *[]*PowerUp) bool {
 		player.DropBomb()
 	}
 
+}
+
+func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
 	playerX, playerY := player.GetCurrentCoordinates()
 
 	// check if there is a powerup on player x and y
