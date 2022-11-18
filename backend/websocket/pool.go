@@ -4,7 +4,6 @@ import (
 	"bomberman-dom/game"
 	"fmt"
 	"strconv"
-	"time"
 )
 
 type Pool struct {
@@ -76,22 +75,18 @@ func (pool *Pool) Start() {
 			case "PLAYER_MOVE":
 				if !player.IsAlive() {
 					break S
-				} // allow player to move only if has not died
-
+				}
 				//update player movement
 				player.Move(message.Body)
-
 				lostLive := gameState.CheckIfPlayerDied(player)
+
 				if lostLive {
-					go func() {
-						time.Sleep(3000 * time.Millisecond)
-						message.Type = "PLAYER_REBORN"
-						gameState.Players[currentPlayerIndex].Movement = game.RightStop
-						pool.Broadcast <- message
+					go func() { //let reborn
+						message.MonstersReborn(pool,gameState, []int{currentPlayerIndex})
 					}()
 				}
-
 				pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps)
+
 				if pickedUpPowerUp {
 					message.Body = "PICKED_UP_POWERUP"
 				}
@@ -100,52 +95,21 @@ func (pool *Pool) Start() {
 					break S
 				}
 				player.DropBomb()
-				go func() {
-					time.Sleep(3000 * time.Millisecond)
-					message.Type = "BOMB_EXPLODED"
-					pool.Broadcast <- message
-				}()
-
+				go func() { message.BombExploded(pool) }()
+				
 			case "BOMB_EXPLODED":
 				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
 				player.BombExplosionComplete()
 				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
 
-				if len(monstersLostLives) != 0 {
-					go func() {
-						time.Sleep(3000 * time.Millisecond)
-						message.Type = "PLAYER_REBORN"
-						for _, i := range monstersLostLives { //reset the movement
-							gameState.Players[i].Movement = game.RightStop
-						}
-
-						pool.Broadcast <- message
-					}()
-				}
-				if len(destroyedBlocks) != 0 {
-					go func() { //trigger map update
-						time.Sleep(1000 * time.Millisecond)
-						message.Type = "MAP_UPDATE"
-						gameState.Map = game.DestroyBlocks(gameState.Map, destroyedBlocks)
-
-						// check if destroyed block index match with powerup block index
-						for _, blockIndex := range destroyedBlocks {
-							for _, powerUp := range game.GeneratedPowerUps {
-								if blockIndex == powerUp.Tile {
-									// fmt.Println("blockIndex", blockIndex)
-									// fmt.Println("powerUp", powerUp)
-									gameState.PowerUps = append(gameState.PowerUps, powerUp)
-								}
-							}
-						}
-
-						pool.Broadcast <- message
-					}()
-				}
+				go func() {//trigger monster-reborn
+					message.MonstersReborn(pool,gameState, monstersLostLives)
+				}()
+				go func() { //trigger map update
+					message.UpdateMap(pool, gameState, destroyedBlocks)
+				}()
 				go func() { //trigger end of explosion
-					time.Sleep(900 * time.Millisecond)
-					message.Type = "EXPLOSION_COMPLETED"
-					pool.Broadcast <- message
+					message.ExplosionComplete(pool)
 				}()
 
 			case "EXPLOSION_COMPLETED":

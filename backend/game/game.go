@@ -55,3 +55,19 @@ func (g *GameState) CheckIfPlayerDied(p *Player) bool {
 	}
 	return lostLive
 }
+// check if destroyed block index match with powerup block index
+func (g *GameState) RevealPowerUps(destroyedBlocks []int) {
+	for _, blockIndex := range destroyedBlocks {
+		for _, powerUp := range GeneratedPowerUps {
+			if blockIndex == powerUp.Tile {
+				g.PowerUps = append(g.PowerUps, powerUp)
+			}
+		}
+	}
+}
+
+func(g *GameState)LetMonstersReborn(monstersLostLives []int){
+	for _, i := range monstersLostLives { //reset the movement
+		g.Players[i].Movement = RightStop
+	}
+}
