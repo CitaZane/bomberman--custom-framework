@@ -81,9 +81,8 @@ func (pool *Pool) Start() {
 				lostLive := gameState.CheckIfPlayerDied(player)
 
 				if lostLive {
-					go func() { //let reborn
-						message.MonstersReborn(pool,gameState, []int{currentPlayerIndex})
-					}()
+					//let reborn
+					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
 				}
 				pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps)
 
@@ -95,22 +94,19 @@ func (pool *Pool) Start() {
 					break S
 				}
 				player.DropBomb()
-				go func() { message.BombExploded(pool) }()
-				
+
+				go message.BombExploded(pool)
+
 			case "BOMB_EXPLODED":
 				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
 				player.BombExplosionComplete()
 				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
-
-				go func() {//trigger monster-reborn
-					message.MonstersReborn(pool,gameState, monstersLostLives)
-				}()
-				go func() { //trigger map update
-					message.UpdateMap(pool, gameState, destroyedBlocks)
-				}()
-				go func() { //trigger end of explosion
-					message.ExplosionComplete(pool)
-				}()
+				//trigger monster-reborn
+				go message.MonstersReborn(pool, gameState, monstersLostLives)
+				//trigger map update
+				go message.UpdateMap(pool, gameState, destroyedBlocks)
+				//trigger end of explosion
+				go message.ExplosionComplete(pool)
 
 			case "EXPLOSION_COMPLETED":
 				player.ExplosionComplete()
