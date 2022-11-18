@@ -19,7 +19,7 @@ function renderElem(node) {
 
   // append all children)
   for (const child of node.children) {
-    $el.appendChild(render(child))
+    $el.appendChild(render(child));
   }
 
   if (node.props.ref !== undefined) {
@@ -38,10 +38,11 @@ const render = (vNode) => {
   // on initial render vNode can have template and onmounted properties
   if (vNode?.template) {
     if (vNode?.onMounted) {
-      onMountedStack.push(vNode.onMounted)
+      onMountedStack.push(vNode.onMounted);
     }
     return renderElem(vNode.template);
   } else {
+    // console.log("vNode", vNode);
     return renderElem(vNode);
   }
 };

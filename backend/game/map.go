@@ -1,6 +1,9 @@
 package game
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 //function for creating starting map with random placed breakable blocks.
 // 0 is floor tile
@@ -43,27 +46,12 @@ import "math/rand"
 // }
 
 // map withouth 3s look like this->
-var mapBase = []int{
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
-	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
-	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
-	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
-	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
-	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
-	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
-	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
-	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-}
-
-//map clone for testing
 // var mapBase = []int{
 // 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-// 	2, 0, 0, 0, 9, 9, 9, 1, 0, 0, 2,
-// 	2, 0, 2, 0, 2, 9, 2, 9, 2, 0, 2,
-// 	2, 0, 0, 0, 9, 9, 9, 9, 9, 1, 2,
-// 	2, 0, 2, 9, 2, 9, 2, 9, 2, 9, 2,
+// 	2, 0, 0, 1, 9, 9, 9, 1, 0, 0, 2,
+// 	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
+// 	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
+// 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
 // 	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
 // 	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
 // 	2, 1, 9, 9, 9, 9, 9, 9, 9, 1, 2,
@@ -72,18 +60,48 @@ var mapBase = []int{
 // 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 // }
 
+var mapBase = []int{
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 0, 0, 1, 9, 9, 9, 9, 0, 0, 2,
+	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
+	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
+	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
+	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
+	2, 9, 2, 9, 2, 9, 2, 9, 2, 9, 2,
+	2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2,
+	2, 0, 2, 9, 2, 9, 2, 9, 2, 0, 2,
+	2, 0, 0, 9, 9, 9, 9, 9, 0, 0, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+}
+
 func CreateBaseMap() []int {
-	basemap := mapBase
+	rand.Seed(time.Now().UnixNano())
+	basemap := append([]int{}, mapBase...)
+	GeneratedPowerUps = nil
+	breakableBricks := []int{}
 	for i, tile := range basemap {
 		if tile == 9 {
-			if rand.Intn(10) > 5 {
-				mapBase[i] = 1
+			if rand.Intn(10) < 6 {
+				basemap[i] = 1
+				breakableBricks = append(breakableBricks, i)
 			} else {
-				mapBase[i] = 0
+				basemap[i] = 0
 			}
 		}
 	}
-	return mapBase
+
+	// generate a powerup for 6 breakable bricks
+	for i := 0; i < 6; i++ {
+		GeneratePowerUp(basemap, breakableBricks)
+	}
+
+	// restore breakable bricks in map array
+	for i, tile := range basemap {
+		if tile == 3 {
+			basemap[i] = 1
+		}
+	}
+	return basemap
 }
 
 func DestroyBlocks(original []int, indexList []int) []int {

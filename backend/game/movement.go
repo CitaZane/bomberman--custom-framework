@@ -15,13 +15,13 @@ const (
 	LeftStop  Movement = "left-stop"
 	RightStop Movement = "right-stop"
 
-	DropBomb  Movement = "drop-bomb"
-	LostLive Movement  = "lost-live"
-	Died Movement      = "died"
+	DropBomb Movement = "drop-bomb"
+	LostLive Movement = "lost-live"
+	Died     Movement = "died"
 )
 
 // Translate monster movement from string to one of registerd movements
-func translateMovement(movement string)  Movement  {
+func translateMovement(movement string) Movement {
 	switch movement {
 	case "DOWN":
 		return Down
@@ -43,4 +43,3 @@ func translateMovement(movement string)  Movement  {
 		return RightStop
 	}
 }
-

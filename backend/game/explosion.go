@@ -4,7 +4,7 @@ import "strconv"
 
 type Explosion struct {
 	Fires []Fire `json:"fires"`
-	Id    string   `json:"id"`
+	Id    string `json:"id"`
 }
 
 type ExplosionManager struct {
@@ -31,7 +31,6 @@ func setupManager(exlosionRange int, x, y int, baseMap []int) ExplosionManager {
 	}
 }
 
-
 // stopsserching for fire in certain direction
 func (manager *ExplosionManager) turnOffFire(direction string) {
 	manager.FireAlive[direction] = false
@@ -54,9 +53,9 @@ func (manager *ExplosionManager) incrementRange() {
 // return []Explosion tiles that makes 1 explosion and
 // []indexes for bushes destroyed int the explosion
 func NewExplosion(bomb *Bomb, m []int, player *Player) (Explosion, []int) {
-	var id = "explosion-" + player.Name +"-"+ strconv.Itoa(len(player.Explosions))
-	explosion := Explosion{Id:id}   //hold end explosion
-	destroyedBlocks := []int{} //hold index of destroyed blocks
+	var id = "explosion-" + player.Name + "-" + strconv.Itoa(len(player.Explosions))
+	explosion := Explosion{Id: id} //hold end explosion
+	destroyedBlocks := []int{}     //hold index of destroyed blocks
 
 	// add base in place of bomb
 	var base = Fire{X: bomb.X, Y: bomb.Y, Type: 0}

@@ -1,15 +1,23 @@
 package game
 
 type GameState struct {
-	Players   []Player  `json:"players"`
-	Map       []int     `json:"map"`
-	Bombs     []Bomb    `json:"bombs"`
-	Explosion Explosion `json:"explosion"`
+	Players   []Player   `json:"players"`
+	Map       []int      `json:"map"`
+	Bombs     []Bomb     `json:"bombs"`
+	Explosion Explosion  `json:"explosion"`
+	PowerUps  []*PowerUp `json:"power_ups"` // holds power ups, which are shown on screen
 	// created bool
 }
 
-// holds game state to send it to all players
-var State = GameState{}
+func NewGame() *GameState {
+	return &GameState{
+		Players:   make([]Player, 0),
+		Bombs:     make([]Bomb, 0),
+		Map:       make([]int, 0),
+		PowerUps:  make([]*PowerUp, 0),
+		Explosion: Explosion{},
+	}
+}
 
 func (g *GameState) FindPlayer(name string) int {
 	for index, player := range g.Players {
