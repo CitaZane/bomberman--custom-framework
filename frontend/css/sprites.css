@@ -283,29 +283,3 @@
 	animation-fill-mode: forwards;
 	animation-iteration-count: 1;
 }
-
-
-/* temp */
-#pu-1, #pu-2, #pu-3{
-	position:absolute;
-	height: 64px;
-    width: 64px;
-}
-#pu-1{
-	background-image: url("../assets/power_ups_4.png");
-	background-position: 0 64;
-	left:128;
-	top:64;
-}
-#pu-2{
-	background-image: url("../assets/power_ups_4.png");
-	background-position: 64 64;
-		top:256;
-		left:320;
-}
-#pu-3{
-	background-image: url("../assets/power_ups_4.png");
-	background-position: 128 64;
-	top:448;
-	left:448;
-}
