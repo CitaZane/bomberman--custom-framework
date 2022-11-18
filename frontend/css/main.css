@@ -8,7 +8,9 @@
 h2 {
     margin-bottom: 5px;
 }
-
+body {
+    background-color:#332D28;
+}
 #chatroom {
     height: 400px;
     width: 350px;
