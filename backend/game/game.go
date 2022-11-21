@@ -6,7 +6,6 @@ type GameState struct {
 	Bombs     []Bomb     `json:"bombs"`
 	Explosion Explosion  `json:"explosion"`
 	PowerUps  []*PowerUp `json:"power_ups"` // holds power ups, which are shown on screen
-	// created bool
 }
 
 func NewGame() *GameState {
@@ -55,6 +54,7 @@ func (g *GameState) CheckIfPlayerDied(p *Player) bool {
 	}
 	return lostLive
 }
+
 // check if destroyed block index match with powerup block index
 func (g *GameState) RevealPowerUps(destroyedBlocks []int) {
 	for _, blockIndex := range destroyedBlocks {
@@ -66,7 +66,7 @@ func (g *GameState) RevealPowerUps(destroyedBlocks []int) {
 	}
 }
 
-func(g *GameState)LetMonstersReborn(monstersLostLives []int){
+func (g *GameState) LetMonstersReborn(monstersLostLives []int) {
 	for _, i := range monstersLostLives { //reset the movement
 		g.Players[i].Movement = RightStop
 	}

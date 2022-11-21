@@ -2,9 +2,8 @@ import createRouter from "./framework/router";
 import createStore from "./framework/store";
 import routes from "./router";
 import storeObj from "./store/index";
-import { ws, SendWsMessage } from "./websocket";
+import { SendWsMessage } from "./websocket";
 
-import { defineWebSocket } from "./websocket";
 const store = createStore(storeObj);
 const router = createRouter(routes);
 let gameStarted = false;
@@ -22,9 +21,6 @@ export function setupGame() {
     animate();
   }
 }
-
-// name provided by backend
-defineWebSocket("user");
 
 // main game loop
 let gameFrame = 0;

@@ -1,5 +1,5 @@
 import { store } from "./app";
-import { setupGame, gameFrame } from "./app";
+import { setupGame } from "./app";
 export let ws;
 export function defineWebSocket(name) {
   ws = new WebSocket(`ws://localhost:8080/ws?username=${name}`);
@@ -17,15 +17,9 @@ export function defineWebSocket(name) {
     // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
-        if (data.body === "me") {
-          store.commit("changePlayerName", data.creator);
-        }
-        store.commit("updatePlayers", []);
-        data.gameState.players.forEach((player) => {
-          store.dispatch("registerPlayer", player);
-        });
+        store.commit("updatePlayers", data.gameState.players);
         store.commit("updateMap", data.gameState.map);
-        // window.location.href = window.location.origin + "/#/game";
+        window.location.href = window.location.origin + "/#/game";
         setupGame();
         break;
 
@@ -36,23 +30,13 @@ export function defineWebSocket(name) {
         break;
 
       case "JOIN_QUEUE":
-        // store.commit("updateUserQueueCount", data.body);
-        // window.location.href = window.location.origin + "/#/queue";
-
-        // create new game and update players
-        store.commit("updatePlayers", []);
-
-        data.gameState.players.forEach((player) => {
-          store.dispatch("registerPlayer", player);
-        });
-        store.commit("updateMap", data.gameState.map);
-        setupGame();
-        // ---------------
+        store.commit("updateUserQueueCount", data.body);
+        window.location.href = window.location.origin + "/#/queue";
         break;
       // game  stuff
       case "PLAYER_MOVE":
         if (data.body === "PICKED_UP_POWERUP") {
-          store.commit("updatePowerUps", data.gameState["power_ups"])
+          store.commit("updatePowerUps", data.gameState["power_ups"]);
         }
         store.commit("updatePlayers", data.gameState.players);
         break;
@@ -62,14 +46,14 @@ export function defineWebSocket(name) {
         break;
       case "MAP_UPDATE":
         store.commit("updateMap", data.gameState.map);
-        store.commit("updatePowerUps", data.gameState["power_ups"])
-        break
+        store.commit("updatePowerUps", data.gameState["power_ups"]);
+        break;
       case "PLAYER_DROPPED_BOMB":
       case "BOMB_EXPLODED":
       case "EXPLOSION_COMPLETED":
       case "PLAYER_REBORN":
         store.commit("updatePlayers", data.gameState.players);
-        break
+        break;
     }
   };
 }
@@ -81,5 +65,5 @@ export function SendWsMessage(type, creator, body) {
       creator: creator,
       body: body,
     })
-  )
+  );
 }

@@ -1,18 +1,19 @@
-import { QueueView } from "../views/Queue"
-import { HomeView } from "../views/Home"
-import { GameView } from "../views/Game"
+import { QueueView } from "../views/Queue";
+import { HomeView } from "../views/Home";
+import { GameView } from "../views/Game";
 
-export default [{
+export default [
+  {
     path: "/",
-    component: GameView
-},
-    // {
-    //     path: "/queue",
-    //     component: QueueView
-    // },
+    component: HomeView,
+  },
+  {
+    path: "/queue",
+    component: QueueView,
+  },
 
-    // {
-    //     path: "/game",
-    //     component: GameView
-    // }
-]
+  {
+    path: "/game",
+    component: GameView,
+  },
+];

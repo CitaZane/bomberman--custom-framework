@@ -11,7 +11,6 @@ export function GameView() {
   let players = store.state.players;
   let powerUps = store.state.powerUps;
 
-  // let allExplosions = store.state.explosions;
   const allExplosions = players.reduce((prev, current) => {
     return prev.concat(current?.explosions);
   }, []);

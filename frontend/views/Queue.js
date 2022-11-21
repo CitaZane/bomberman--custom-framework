@@ -4,7 +4,11 @@ import { store } from "../app";
 import { ChatRoom } from "../components/ChatRoom";
 import { ws } from "../websocket";
 function startGame() {
-  ws.send(JSON.stringify({ type: "START_GAME" }));
+  ws.send(
+    JSON.stringify({
+      type: "START_GAME",
+    })
+  );
 }
 
 export function QueueView() {
