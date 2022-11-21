@@ -36,7 +36,7 @@ func (pool *Pool) createPlayers(gameMap []int) []game.Player {
 
 func (pool *Pool) Start() {
 
-	var gameState *game.GameState
+	var gameState = game.NewGame()
 
 	for {
 	S:
@@ -44,36 +44,34 @@ func (pool *Pool) Start() {
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 
-			gameState = game.NewGame()
-			gameState.Map = game.CreateBaseMap()
-			gameState.Players = pool.createPlayers(gameState.Map)
-
-			for otherClient := range pool.Clients {
-				if client.ID == otherClient.ID {
-					otherClient.Conn.WriteJSON(Message{Type: "START_GAME", Body: "me", GameState: gameState, Creator: client.ID})
-				}
-				otherClient.Conn.WriteJSON(Message{Type: "START_GAME", Body: strconv.Itoa(len(pool.Clients)), GameState: gameState, Creator: client.ID})
+			for client := range pool.Clients {
+				client.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", Body: strconv.Itoa(len(pool.Clients))})
 			}
 
-			break S
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
 
 			for client := range pool.Clients {
 				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
 			}
-			break S
 		case message := <-pool.Broadcast:
-			currentPlayerIndex := gameState.FindPlayer(message.Creator)
-			player := &gameState.Players[currentPlayerIndex]
+
+			/*
+				had to move these because before the "START_GAME" message we dont have players yet
+			*/
+
+			// currentPlayerIndex := gameState.FindPlayer(message.Creator)
+			// 	player := &gameState.Players[currentPlayerIndex]
 
 			switch message.Type {
 			case "START_GAME":
-				gameState = game.NewGame()
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers(gameState.Map)
+
 			case "PLAYER_MOVE":
-				if !player.IsAlive() || gameState.State != game.Play{
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				player := &gameState.Players[currentPlayerIndex]
+				if !player.IsAlive() || gameState.State != game.Play {
 					break S
 				}
 				//update player movement
@@ -86,7 +84,11 @@ func (pool *Pool) Start() {
 					message.Body = "PICKED_UP_POWERUP"
 
 				}
+
 			case "PLAYER_DROPPED_BOMB":
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				player := &gameState.Players[currentPlayerIndex]
+
 				if player.BombsLeft <= 0 || !player.IsAlive() {
 					break S
 				}
@@ -95,6 +97,9 @@ func (pool *Pool) Start() {
 				go message.BombExploded(pool)
 
 			case "BOMB_EXPLODED":
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				player := &gameState.Players[currentPlayerIndex]
+
 				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
 				player.BombExplosionComplete()
 				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
@@ -106,23 +111,29 @@ func (pool *Pool) Start() {
 				go message.ExplosionComplete(pool)
 
 			case "EXPLOSION_COMPLETED":
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				player := &gameState.Players[currentPlayerIndex]
+
 				player.ExplosionComplete()
 			case "PLAYER_AUTO_MOVE":
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				player := &gameState.Players[currentPlayerIndex]
+
 				//update player movement wthouth obstacles
 				done := player.AutoMove(message.Body)
 				message.Type = "PLAYER_MOVE"
-				if !done{
-					go message.AutoGuideWinner(pool,message.Creator) 
-				}else{
+				if !done {
+					go message.AutoGuideWinner(pool, message.Creator)
+				} else {
 					gameState.State = game.Finish
 				}
 			}
-			
-			if gameState.State == game.GameOver{
+
+			if gameState.State == game.GameOver {
 				message.ActivateGameOverScreen(pool, gameState)
 				gameState.State = game.WalkOfFame
-				var winner  = gameState.FindWinner()
-				go message.AutoGuideWinner(pool,gameState.Players[winner].Name)
+				var winner = gameState.FindWinner()
+				go message.AutoGuideWinner(pool, gameState.Players[winner].Name)
 			}
 
 			message.GameState = gameState
