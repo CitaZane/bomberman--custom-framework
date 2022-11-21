@@ -73,7 +73,7 @@ func (pool *Pool) Start() {
 				gameState.Map = game.CreateBaseMap()
 				gameState.Players = pool.createPlayers(gameState.Map)
 			case "PLAYER_MOVE":
-				if !player.IsAlive() {
+				if !player.IsAlive() || gameState.State != game.Play{
 					break S
 				}
 				//update player movement
@@ -107,8 +107,24 @@ func (pool *Pool) Start() {
 
 			case "EXPLOSION_COMPLETED":
 				player.ExplosionComplete()
-
+			case "PLAYER_AUTO_MOVE":
+				//update player movement wthouth obstacles
+				done := player.AutoMove(message.Body)
+				message.Type = "PLAYER_MOVE"
+				if !done{
+					go message.AutoGuideWinner(pool,message.Creator) 
+				}else{
+					gameState.State = game.Finish
+				}
 			}
+			
+			if gameState.State == game.GameOver{
+				message.ActivateGameOverScreen(pool, gameState)
+				gameState.State = game.WalkOfFame
+				var winner  = gameState.FindWinner()
+				go message.AutoGuideWinner(pool,gameState.Players[winner].Name)
+			}
+
 			message.GameState = gameState
 			for client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {

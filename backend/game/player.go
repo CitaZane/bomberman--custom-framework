@@ -84,6 +84,48 @@ func (player *Player) Move(input string, delta float64) {
 
 }
 
+// automate movement to the middle of the screen
+// for the walk of fame
+func (player *Player) AutoMove(input string) bool {
+
+	if player.X < 320 {
+		player.Movement = Right
+		if player.X + player.Speed > 320{
+			player.X = 320
+		}else{
+			player.X += player.Speed
+		}
+	} else if player.X > 320 {
+		player.Movement = Left
+		if player.X + player.Speed < 320{
+			player.X = 320
+		}else{
+			player.X -= player.Speed
+		}
+	} else if player.Y < 320 {
+		player.Movement = Down
+		if player.Y + player.Speed > 320{
+			player.Y = 320
+		}else{
+			player.Y += player.Speed
+		}
+	} else if player.Y > 320 {
+		player.Movement = Up
+		if player.Y + player.Speed < 320{
+			player.Y = 320
+		}else{
+			player.Y -= player.Speed
+		}
+		
+	}
+
+	if player.X == 320 && player.Y == 320 {
+		player.Movement = DownStop
+		return true
+	}
+	return false
+}
+
 func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
 	playerX, playerY := player.GetCurrentCoordinates()
 
