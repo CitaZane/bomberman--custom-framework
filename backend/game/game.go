@@ -1,20 +1,20 @@
 package game
 
 type GameState struct {
-	Players   []Player   `json:"players"`
-	Map       []int      `json:"map"`
-	Bombs     []Bomb     `json:"bombs"`
-	Explosion Explosion  `json:"explosion"`
-	PowerUps  []*PowerUp `json:"power_ups"` // holds power ups, which are shown on screen
+	Players  []Player   `json:"players"`
+	Map      []int      `json:"map"`
+	Bombs    []Bomb     `json:"bombs"`
+	PowerUps []*PowerUp `json:"power_ups"` // holds power ups, which are shown on screen
+	State    State      `json:"state"`
 }
 
 func NewGame() *GameState {
 	return &GameState{
-		Players:   make([]Player, 0),
-		Bombs:     make([]Bomb, 0),
-		Map:       make([]int, 0),
-		PowerUps:  make([]*PowerUp, 0),
-		Explosion: Explosion{},
+		Players:  make([]Player, 0),
+		Bombs:    make([]Bomb, 0),
+		Map:      make([]int, 0),
+		PowerUps: make([]*PowerUp, 0),
+		State:    Play,
 	}
 }
 
@@ -28,6 +28,20 @@ func (g *GameState) FindPlayer(name string) int {
 	return -1
 }
 
+// check how many players are still alive.
+// in case of 1 player left -> game over
+func (g *GameState) CheckGameOverState() {
+	playersAlive := 0
+	for _, player := range g.Players {
+		if player.Movement != Died {
+			playersAlive += 1
+		}
+	}
+	if playersAlive == 1 && len(g.Players) != 1 {
+		g.State = GameOver
+	}
+}
+
 // Loop through all players in game and check if somebody is in the explosion
 // return slice with monster that died
 func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
@@ -38,6 +52,7 @@ func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
 			monstersLostLives = append(monstersLostLives, i)
 		}
 	}
+	g.CheckGameOverState()
 	return monstersLostLives
 }
 
@@ -52,6 +67,7 @@ func (g *GameState) CheckIfPlayerDied(p *Player) bool {
 			}
 		}
 	}
+	g.CheckGameOverState()
 	return lostLive
 }
 
@@ -70,4 +86,13 @@ func (g *GameState) LetMonstersReborn(monstersLostLives []int) {
 	for _, i := range monstersLostLives { //reset the movement
 		g.Players[i].Movement = RightStop
 	}
+}
+
+func (g *GameState) FindWinner() int {
+	for i, player := range g.Players {
+		if player.Movement != Died {
+			return i
+		}
+	}
+	return -1
 }

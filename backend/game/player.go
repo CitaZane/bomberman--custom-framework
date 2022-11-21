@@ -1,12 +1,16 @@
 package game
 
+import (
+	"math"
+)
+
 type Player struct {
-	X              int         `json:"x"`
-	Y              int         `json:"y"`
+	X              float64     `json:"x"`
+	Y              float64     `json:"y"`
 	Name           string      `json:"name"`
 	Movement       Movement    `json:"movement"`
 	Lives          int         `json:"lives"`
-	Speed          int         `json:"-"` //for changing how fast is movement
+	Speed          float64     `json:"-"` //for changing how fast is movement
 	BombsLeft      int         `json:"bombsLeft"`
 	Bombs          []Bomb      `json:"bombs"`
 	ExplosionRange int         `json:"-"`
@@ -23,10 +27,10 @@ type Bomb struct {
 	Speed    int      `json:"-"` //for changing how fast is movement
 }
 
-// initialization functions returns player with initial state and position in  11x11 field
+// initialization functions returns palyer with initial state and position in  11x11 field
 func CreatePlayer(name string, index int, gameMap []int) Player {
-	var x int
-	var y int
+	var x float64
+	var y float64
 	var movement Movement
 	switch index {
 	case 0:
@@ -61,23 +65,65 @@ func CreatePlayer(name string, index int, gameMap []int) Player {
 	}
 }
 
-// methods for updating monster position based on input from websocket
-func (player *Player) Move(input string) {
+// methods for updatig monster position based on input from websocket
+func (player *Player) Move(input string, delta float64) {
 	// update movement variable
 	player.Movement = translateMovement(input)
 
 	if player.Movement == Up {
-		player.MoveUp()
+		player.MoveUp(delta)
 	} else if player.Movement == Down {
-		player.MoveDown()
+		player.MoveDown(delta)
 	} else if player.Movement == Right {
-		player.MoveRight()
+		player.MoveRight(delta)
 	} else if player.Movement == Left {
-		player.MoveLeft()
+		player.MoveLeft(delta)
 	} else if player.Movement == DropBomb {
 		player.DropBomb()
 	}
 
+}
+
+// automate movement to the middle of the screen
+// for the walk of fame
+func (player *Player) AutoMove(input string) bool {
+
+	if player.X < 320 {
+		player.Movement = Right
+		if player.X + player.Speed > 320{
+			player.X = 320
+		}else{
+			player.X += player.Speed
+		}
+	} else if player.X > 320 {
+		player.Movement = Left
+		if player.X + player.Speed < 320{
+			player.X = 320
+		}else{
+			player.X -= player.Speed
+		}
+	} else if player.Y < 320 {
+		player.Movement = Down
+		if player.Y + player.Speed > 320{
+			player.Y = 320
+		}else{
+			player.Y += player.Speed
+		}
+	} else if player.Y > 320 {
+		player.Movement = Up
+		if player.Y + player.Speed < 320{
+			player.Y = 320
+		}else{
+			player.Y -= player.Speed
+		}
+		
+	}
+
+	if player.X == 320 && player.Y == 320 {
+		player.Movement = DownStop
+		return true
+	}
+	return false
 }
 
 func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
@@ -94,7 +140,7 @@ func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
 			case INCREASE_BOMBS:
 				player.BombsLeft++
 			case INCREASE_SPEED:
-				player.Speed++
+				player.Speed += 0.5
 			case INCREASE_FLAMES:
 				player.ExplosionRange++
 			}
@@ -133,154 +179,165 @@ func (player *Player) ExplosionComplete() {
 	player.Explosions = player.Explosions[1:]
 }
 
-// Movement functions
-func (player *Player) MoveUp() {
-	if player.Y < 64 {
+//Movement functions with delta
+func (player *Player) MoveUp(delta float64) {
+	//Checks if the charecter lined up on a tile horizontally before allowing to move vertically
+	if math.Mod(player.X, 64) != 0 {
+		//if player is near a corner xFit function will help move left or right to line up perfectly
+		xFit(player, delta)
 		return
 	}
-	if player.X%64 != 0 {
-		xFit(player)
-	}
-	if player.X%64 == 0 {
-		if player.GameMap[player.calcPlayerPosition()-11] != 0 && player.Y%64 == 0 {
-			return
+	//player.Movement == "up" check will fail if method is called from xFit function
+	if player.GameMap[player.calcPlayerPosition()-11] == 0 && player.Movement == "up" {
+		player.Y -= player.Speed * delta
+	} else {
+		//checks the distance until the obsticle and sets that as the maximum amount allowed to move (fixes running over walls)
+		if math.Mod(player.Y, 64) > player.Speed*delta {
+			player.Y -= player.Speed * delta
 		} else {
-			player.Y -= player.Speed * 2
-		}
-	}
-}
-func (player *Player) MoveDown() {
-	if player.X%64 != 0 {
-		xFit(player)
-	}
-	if player.X%64 == 0 {
-		if player.GameMap[player.calcPlayerPosition()+11] != 0 && player.Y%64 == 0 {
-			return
-		} else {
-			player.Y += player.Speed * 2
+			player.Y -= math.Mod(player.Y, 64)
 		}
 	}
 }
 
-func (player *Player) MoveRight() {
-	if player.X > 574 {
+func (player *Player) MoveDown(delta float64) {
+	if math.Mod(player.X, 64) != 0 {
+		xFit(player, delta)
 		return
 	}
-	if player.Y%64 != 0 {
-		yFit(player)
+	if player.GameMap[player.calcPlayerPosition()+11] == 0 && player.Movement == "down" {
+		player.Y += player.Speed * delta
 	} else {
-		if player.GameMap[player.calcPlayerPosition()+1] != 0 && player.X%64 == 0 && player.Y%64 == 0 {
+		if math.Mod(player.Y, 64) == 0 {
 			return
+		}
+		if 64-math.Mod(player.Y, 64) > player.Speed*delta {
+			player.Y += player.Speed * delta
 		} else {
-			player.X += player.Speed * 2
+			player.Y += (64 - math.Mod(player.Y, 64))
 		}
 	}
 }
-func (player *Player) MoveLeft() {
-	if player.X < 65 {
+
+func (player *Player) MoveLeft(delta float64) {
+	if math.Mod(player.Y, 64) != 0 {
+		yFit(player, delta)
 		return
 	}
-	if player.Y%64 != 0 {
-		yFit(player)
+	if player.GameMap[player.calcPlayerPosition()-1] == 0 && player.Movement == "left" {
+		player.X -= player.Speed * delta
 	} else {
-		if player.GameMap[player.calcPlayerPosition()-1] != 0 && player.X%64 == 0 {
-			return
+		if math.Mod(player.X, 64) > player.Speed*delta {
+			player.X -= player.Speed * delta
 		} else {
-			player.X -= player.Speed * 2
+			player.X -= math.Mod(player.X, 64)
+		}
+	}
+}
+
+func (player *Player) MoveRight(delta float64) {
+	if math.Mod(player.Y, 64) != 0 {
+		yFit(player, delta)
+		return
+	}
+	if player.GameMap[player.calcPlayerPosition()+1] == 0 && player.Movement == "right" {
+		player.X += player.Speed * delta
+	} else {
+		if math.Mod(player.X, 64) == 0 {
+			return
+		}
+		if 64-math.Mod(player.X, 64) > player.Speed*delta {
+			player.X += player.Speed * delta
+		} else {
+			player.X += 64 - math.Mod(player.X, 64)
+		}
+	}
+}
+
+//helps going around the corners
+func xFit(player *Player, delta float64) {
+	if math.Mod(player.X, 64) > 32 {
+		if player.Movement == "down" {
+			if player.GameMap[player.calcPlayerPosition()+11] == 0 {
+				player.MoveRight(delta)
+			}
+		}
+		if player.Movement == "up" {
+			if player.GameMap[player.calcPlayerPosition()-11] == 0 {
+				player.MoveRight(delta)
+			}
+		}
+	} else {
+		if player.Movement == "down" {
+			if player.GameMap[player.calcPlayerPosition()+11] == 0 {
+				player.MoveLeft(delta)
+			}
+		}
+		if player.Movement == "up" {
+			if player.GameMap[player.calcPlayerPosition()-11] == 0 {
+				player.MoveLeft(delta)
+			}
+		}
+	}
+}
+
+func yFit(player *Player, delta float64) {
+	if math.Mod(player.Y, 64) > 32 {
+		if player.Movement == "right" {
+			if player.GameMap[player.calcPlayerPosition()+1] == 0 {
+				player.MoveDown(delta)
+			}
+		}
+		if player.Movement == "left" {
+			if player.GameMap[player.calcPlayerPosition()-1] == 0 {
+				player.MoveDown(delta)
+			}
+		}
+	} else {
+		if player.Movement == "right" {
+			if player.GameMap[player.calcPlayerPosition()+1] == 0 {
+				player.MoveUp(delta)
+			}
+		}
+		if player.Movement == "left" {
+			if player.GameMap[player.calcPlayerPosition()-1] == 0 {
+				player.MoveUp(delta)
+			}
 		}
 	}
 }
 
 // Calculates on which map cell player is standing. Cell is map index.
 func (player *Player) calcPlayerPosition() int {
-	xRemainder := player.X % 64
-	yRemainder := player.Y % 64
-
-	row := player.Y / 64
-	place := player.X / 64
+	xRemainder := math.Mod(player.X, 64)
+	yRemainder := math.Mod(player.Y, 64)
+	column := player.Y / 64
+	row := player.X / 64
 	if xRemainder > 32 {
-		place++
-	}
-	if yRemainder > 32 {
 		row++
 	}
-
-	index := row*11 + place
+	if yRemainder > 32 {
+		column++
+	}
+	index := int(math.Floor(column)*11 + math.Floor(row))
 	return index
 }
 
-// func (player *Player) showCoordinates() {
-// 	fmt.Printf("x: %v y: %v\n", player.X, player.Y)
-// }
-
-// Fit player on x-axis. (Auto move near corners)
-func xFit(player *Player) {
-	if player.X%64 > 32 {
-		if player.Movement == "down" {
-			if player.GameMap[player.calcPlayerPosition()+11] == 0 {
-				player.X = player.X + 2
-			}
-		}
-		if player.Movement == "up" {
-			if player.GameMap[player.calcPlayerPosition()-11] == 0 {
-				player.X = player.X + 2
-			}
-		}
-	} else {
-		if player.Movement == "down" {
-			if player.GameMap[player.calcPlayerPosition()+11] == 0 {
-				player.X = player.X - 2
-			}
-		}
-		if player.Movement == "up" {
-			if player.GameMap[player.calcPlayerPosition()-11] == 0 {
-				player.X = player.X - 2
-			}
-		}
+func getBase(x float64) int {
+	var base = x
+	var remainder = math.Mod(x, 64)
+	if remainder > 32 { //base is next tile
+		base += 64 - remainder
+	} else { //base is previous tile
+		base -= remainder
 	}
-}
-
-// fit player on y-axis
-func yFit(player *Player) {
-	if player.Y%64 > 32 {
-		if player.Movement == "right" {
-			if player.GameMap[player.calcPlayerPosition()+1] == 0 {
-				player.Y = player.Y + 2
-			}
-		}
-		if player.Movement == "left" {
-			if player.GameMap[player.calcPlayerPosition()-1] == 0 {
-				player.Y = player.Y + 2
-			}
-		}
-	} else {
-		if player.Movement == "right" {
-			if player.GameMap[player.calcPlayerPosition()+1] == 0 {
-				player.Y = player.Y - 2
-			}
-		}
-		if player.Movement == "left" {
-			if player.GameMap[player.calcPlayerPosition()-1] == 0 {
-				player.Y = player.Y - 2
-			}
-		}
-	}
+	return int(math.Round(base))
 }
 
 func (player *Player) GetCurrentCoordinates() (int, int) {
 	var baseX = getBase(player.X)
 	var baseY = getBase(player.Y)
 	return baseX, baseY
-}
-func getBase(x int) int {
-	var base = x
-	var remainder = x % 64
-	if remainder > 32 { //base is next tile
-		base += 64 - remainder
-	} else { //base is previous tile
-		base -= remainder
-	}
-	return base
 }
 
 // bool value is true only if live lost, but monster is not dead yet
@@ -299,7 +356,6 @@ func (player *Player) CheckIfIDie(explosion *Explosion) bool {
 	}
 	return lostLive
 }
-
 func (player *Player) LoseLife() Movement {
 	player.Lives = player.Lives - 1
 	if player.Lives > 0 {

@@ -71,11 +71,11 @@ func (pool *Pool) Start() {
 			case "PLAYER_MOVE":
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				player := &gameState.Players[currentPlayerIndex]
-				if !player.IsAlive() {
+				if !player.IsAlive() || gameState.State != game.Play {
 					break S
 				}
 				//update player movement
-				player.Move(message.Body)
+				player.Move(message.Body, message.Delta)
 
 				if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
 					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
@@ -115,7 +115,25 @@ func (pool *Pool) Start() {
 				player := &gameState.Players[currentPlayerIndex]
 
 				player.ExplosionComplete()
+			case "PLAYER_AUTO_MOVE":
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				player := &gameState.Players[currentPlayerIndex]
 
+				//update player movement wthouth obstacles
+				done := player.AutoMove(message.Body)
+				message.Type = "PLAYER_MOVE"
+				if !done {
+					go message.AutoGuideWinner(pool, message.Creator)
+				} else {
+					gameState.State = game.Finish
+				}
+			}
+
+			if gameState.State == game.GameOver {
+				message.ActivateGameOverScreen(pool, gameState)
+				gameState.State = game.WalkOfFame
+				var winner = gameState.FindWinner()
+				go message.AutoGuideWinner(pool, gameState.Players[winner].Name)
 			}
 
 			message.GameState = gameState
