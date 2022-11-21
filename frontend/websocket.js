@@ -58,12 +58,13 @@ export function defineWebSocket(name) {
   };
 }
 
-export function SendWsMessage(type, creator, body) {
+export function SendWsMessage(type, creator, body, delta) {
   ws.send(
     JSON.stringify({
       type: type,
       creator: creator,
       body: body,
+      delta:delta
     })
   );
 }
