@@ -11,43 +11,46 @@ let gameStarted = false;
 
 // add keyup and KeyDown listeners
 export function setupGame() {
-  document.addEventListener("keyup", (e) => {
-    store.dispatch("registerKeyUp", e.code);
-  });
-  document.addEventListener("keydown", (e) => {
-    store.dispatch("registerKeyDown", e.code);
-  });
-  if (!gameStarted) {
-    gameStarted = true;
-    animate();
-  }
+	document.addEventListener("keyup", (e) => {
+		store.dispatch("registerKeyUp", e.code);
+	});
+	document.addEventListener("keydown", (e) => {
+		store.dispatch("registerKeyDown", e.code);
+	});
+	if (!gameStarted) {
+		gameStarted = true;
+		animate();
+	}
 }
 
 // name provided by backend
 defineWebSocket("user");
 
 // main game loop
-let gameFrame = 0;
-function animate() {
-  let movement = store.state.movement;
-  let currentPlayerName = store.state.currentPlayerName;
+let lastUpdate;
 
-  // sends all 4 movements
-  if (movement.move) {
-    SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.move);
-  } else if (movement.stop) {
-    SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.stop);
-    //send movement stop only once, so clear the variable after sending
-    store.dispatch("clearStopMovement");
-  }
+function animate(timestamp) {
+	let delta = lastUpdate ? (timestamp - lastUpdate) / 10 : 0; //approx 1.6 from 16 ms
 
-  if (movement.bomb) {
-    SendWsMessage("PLAYER_DROPPED_BOMB", currentPlayerName);
-    store.dispatch("clearBombDrop");
-  }
+	let movement = store.state.movement;
+	let currentPlayerName = store.state.currentPlayerName;
 
-  gameFrame++;
-  requestAnimationFrame(animate);
+	// sends all 4 movements
+	if (movement.move) {
+		SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.move, delta);
+	} else if (movement.stop) {
+		SendWsMessage("PLAYER_MOVE", currentPlayerName, movement.stop);
+		//send movement stop only once, so clear the variable after sending
+		store.dispatch("clearStopMovement");
+	}
+
+	if (movement.bomb) {
+		SendWsMessage("PLAYER_DROPPED_BOMB", currentPlayerName);
+		store.dispatch("clearBombDrop");
+	}
+
+	lastUpdate = timestamp;
+	requestAnimationFrame(animate);
 }
 
-export { store, router, gameFrame };
+export { store, router };

@@ -10,6 +10,7 @@ type Message struct {
 	Creator   string       `json:"creator"`
 	Body      string       `json:"body"`
 	GameState *g.GameState `json:"gameState"`
+	Delta     float64      `json:"delta"`
 }
 
 func (m Message) ExplosionComplete(pool *Pool) {

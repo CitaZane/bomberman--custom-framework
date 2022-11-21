@@ -77,7 +77,7 @@ func (pool *Pool) Start() {
 					break S
 				}
 				//update player movement
-				player.Move(message.Body)
+				player.Move(message.Body, message.Delta)
 
 				if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
 					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
