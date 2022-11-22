@@ -17,9 +17,8 @@ export function QueueView() {
   return {
     template: (
       <div id="lobby-layout">
-        {/* <h1>Queue</h1> */}
-        {/* <h3>Users joined: {String(userQueueCount)}</h3> */}
-        {/* <button onClick={startGame}>Start Game</button> */}
+        <h3>Users joined: {String(userQueueCount)}</h3>
+        <button onClick={startGame}>Start Game</button>
         <h2>
           {/* Game starts in<span id="timer">10</span> */}
           Need at least 2 players to start timer

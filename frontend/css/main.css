@@ -197,3 +197,15 @@ input {
 #chatroom {
     grid-area: chat;
 }
+
+
+/* Game view */
+#game-layout {
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+#game-layout #chatroom {
+    width: 400px;
+}
