@@ -9,6 +9,7 @@ type Player struct {
 	Y              float64     `json:"y"`
 	Name           string      `json:"name"`
 	Movement       Movement    `json:"movement"`
+	Invincible     bool        `json:"invincible"`
 	Lives          int         `json:"lives"`
 	Speed          float64     `json:"-"` //for changing how fast is movement
 	BombsLeft      int         `json:"bombsLeft"`
@@ -54,6 +55,7 @@ func CreatePlayer(name string, index int, gameMap []int) Player {
 		Name:           name,
 		Speed:          1,
 		Movement:       movement,
+		Invincible:     false,
 		X:              x,
 		Y:              y,
 		Lives:          3,
@@ -342,34 +344,28 @@ func (player *Player) GetCurrentCoordinates() (int, int) {
 
 // bool value is true only if live lost, but monster is not dead yet
 func (player *Player) CheckIfIDie(explosion *Explosion) bool {
+	if player.Invincible {return false}
 	// for each fire in explosion, check if monster is inside it
-	var lostLive = false
 	for _, fire := range explosion.Fires {
 		var monsterBurned = fire.IsMonsterInside(player.X, player.Y)
-		// if monster is inside the fire ->
 		if monsterBurned {
-			if state := player.LoseLife(); state == LostLive {
-				lostLive = true
-			}
-			break
+			player.LoseLife()
+			return player.Invincible
 		}
 	}
-	return lostLive
+	return player.Invincible
 }
-func (player *Player) LoseLife() Movement {
+func (player *Player) LoseLife() bool {
 	player.Lives = player.Lives - 1
 	if player.Lives > 0 {
-		player.Movement = LostLive
+		player.Invincible = true
 	} else {
 		player.Movement = Died
 	}
-	return player.Movement
+	return player.Invincible
 }
 
 // Check if player still alive
 func (player *Player) IsAlive() bool {
-	if player.Movement == Died || player.Movement == LostLive {
-		return false
-	}
-	return true
+	return player.Movement != Died
 }

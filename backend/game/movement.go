@@ -16,7 +16,6 @@ const (
 	RightStop Movement = "right-stop"
 
 	DropBomb Movement = "drop-bomb"
-	LostLive Movement = "lost-live"
 	Died     Movement = "died"
 )
 

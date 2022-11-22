@@ -46,6 +46,9 @@ func (g *GameState) CheckGameOverState() {
 // return slice with monster that died
 func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
 	var monstersLostLives = []int{}
+	if g.State != Play {
+		return monstersLostLives
+	}
 	for i := 0; i < len(g.Players); i++ {
 		var lostLive = g.Players[i].CheckIfIDie(explosion)
 		if lostLive {
@@ -59,6 +62,9 @@ func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
 // Loop through all active explosion in game and check if current player stepped in it
 func (g *GameState) CheckIfPlayerDied(p *Player) bool {
 	var lostLive = false
+	if g.State != Play {
+		return lostLive
+	}
 	for _, player := range g.Players {
 		for _, explosion := range player.Explosions {
 			lostLive = p.CheckIfIDie(&explosion)
@@ -84,7 +90,7 @@ func (g *GameState) RevealPowerUps(destroyedBlocks []int) {
 
 func (g *GameState) LetMonstersReborn(monstersLostLives []int) {
 	for _, i := range monstersLostLives { //reset the movement
-		g.Players[i].Movement = RightStop
+		g.Players[i].Invincible = false
 	}
 }
 

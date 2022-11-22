@@ -89,7 +89,7 @@ func (pool *Pool) Start() {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				player := &gameState.Players[currentPlayerIndex]
 
-				if player.BombsLeft <= 0 || !player.IsAlive() {
+				if player.BombsLeft <= 0 || !player.IsAlive() || player.Invincible{
 					break S
 				}
 				player.DropBomb()
