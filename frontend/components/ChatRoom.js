@@ -32,29 +32,67 @@ export function ChatRoom() {
   return {
     template: (
       <div id="chatroom">
-        <header>
-          <h2>Chat room</h2>
-          <p>Connected as: {currentPlayername}</p>
-        </header>
-
-        <div id="chat">
-          <ul>
-            {messages.map((message) => {
+        {/* <p>Connected as: {currentPlayername}</p> */}
+        {/* {messages.map((message) => {
               return (
                 <p>
                   {message.creator}: {message.body}
                 </p>
               );
-            })}
-          </ul>
-        </div>
+            })} */}
+
+        <header>
+          <h2 id="chat-header">Chatroom</h2>
+        </header>
+
+        <ul id="chat">
+          <li>
+            <p class="chat-username">Player 1</p>
+            <p>Hello there</p>
+          </li>
+
+          <li>
+            <p class="chat-username">Player 2</p>
+            <p>Whats up</p>
+          </li>
+
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+          <li>
+            <p class="chat-username">Player 3</p>
+            <p>Lets play boys</p>
+          </li>
+        </ul>
+
         <form id="send-message" onSubmit={sendMessage}>
-          <input
-            type="text"
-            name="message"
-            placeholder="Write a message..."
-          ></input>
-          <button>Send</button>
+          <input type="text" name="message" placeholder="Send message"></input>
+          <button>&gt;</button>
         </form>
       </div>
     ),

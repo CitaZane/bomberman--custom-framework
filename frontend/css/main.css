@@ -12,7 +12,10 @@
     margin: 0
 }
 
-
+ul {
+    list-style-type: none;
+    padding: 0;
+}
 body {
     font-family: 'Press Start 2P', cursive;
     color: var(--text-white);
@@ -25,6 +28,16 @@ h1 {
 
 h2 {
     margin-bottom: 5px;
+}
+
+input {
+    color: var(--text-white);
+    font-family: 'Press Start 2P',cursive;
+}
+
+::placeholder {
+    color: var(--text-white);
+    opacity: 1;
 }
 
 /* ------ Button ------*/
@@ -67,29 +80,71 @@ h2 {
     background-color: var(--clr-lg-brown);
     border: 5px solid #433C35;
     padding: 7.5px;
-    color: inherit;
-    font-family: inherit;
-    font-size: 12px;
 }
 
 #username-form input:focus {
-    /* border: none;
-     */
      outline: none;
 }
 
 /* ------ Home page END ------*/
+/* ------ Chat ------*/
 #chatroom {
-    height: 400px;
-    width: 350px;
-    padding: 20px;
-    border: 2px solid gray;
-
+    height: 600px;
+    width: 500px;
+    font-size: 12px;
+    background-color: #3A332E;
     display: flex;
     flex-direction: column;
 }
 
 #chat {
     flex: 1;
+    padding: 40px;
+    padding-bottom: 30px;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 25px;
+    overflow: scroll;
 }
 
+
+
+#chat-header {
+    padding: 40px;
+    padding-bottom: 15px;
+}
+
+.chat-username {
+    margin-bottom: 5px;
+    font-size: 10px;
+}
+
+#send-message {
+    display: flex;
+    position: relative;
+}
+
+#send-message input {
+    flex: 1;
+    background-color: #322B25;
+    padding: 15px 20px;
+    border: none;
+    font-size: 10px;
+}
+
+
+
+#send-message button {
+    position: absolute;
+    right: 20px;
+    font-family: inherit;
+    background: none;
+    color: var(--text-white);
+    border: none;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* ------ Chat END  ------*/
