@@ -1,6 +1,8 @@
 package game
 
-import "strconv"
+import (
+	uuid "github.com/satori/go.uuid"
+)
 
 type Explosion struct {
 	Fires []Fire `json:"fires"`
@@ -53,7 +55,7 @@ func (manager *ExplosionManager) incrementRange() {
 // return []Explosion tiles that makes 1 explosion and
 // []indexes for bushes destroyed int the explosion
 func NewExplosion(bomb *Bomb, m []int, player *Player) (Explosion, []int) {
-	var id = "explosion-" + player.Name + "-" + strconv.Itoa(len(player.Explosions))
+	var id = "explosion-" + player.Name + "-" + uuid.NewV4().String()
 	explosion := Explosion{Id: id} //hold end explosion
 	destroyedBlocks := []int{}     //hold index of destroyed blocks
 
