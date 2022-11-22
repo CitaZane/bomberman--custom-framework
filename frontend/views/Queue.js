@@ -20,28 +20,31 @@ export function QueueView() {
         {/* <h1>Queue</h1> */}
         {/* <h3>Users joined: {String(userQueueCount)}</h3> */}
         {/* <button onClick={startGame}>Start Game</button> */}
-        {/* <h2>
-          Game starts in<span id="timer">10</span>
+        <h2>
+          {/* Game starts in<span id="timer">10</span> */}
+          Need at least 2 players to start timer
         </h2>
         <div id="lobby-players">
           <h3>Waiting players to join...</h3>
-          <div id="lobby-players_list">
-            <div>
-              <div class="player-avatar"></div>
+          <ul id="lobby-players_list">
+            <li>
+              <div class="player-avatar" id="monster-1"></div>
               <p>Player 1</p>
-            </div>
-            <div>
-              <div class="player-avatar"></div>
+            </li>
+
+            <li>
+              <div class="player-avatar" id="monster-1"></div>
               <p>Player 2</p>
-            </div>
-            <div>
-              <div class="player-avatar"></div>
+            </li>
+
+            <li>
+              <div class="player-avatar" id="monster-1"></div>
               <p>Player 3</p>
-            </div>
-          </div>
+            </li>
+          </ul>
 
           <button class="btn">Leave Lobby</button>
-        </div> */}
+        </div>
         <ChatRoom />
       </div>
     ),
