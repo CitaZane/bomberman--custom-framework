@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --text-white: #cfc0c0;
+    --clr-lg-brown: #605851;
+}
+
 *,
 *:before,
 *:after {
@@ -5,12 +12,73 @@
     margin: 0
 }
 
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    color: var(--text-white);
+    background-color:#332D28;
+}
+
+h1 {
+    font-size: 40px;
+}
+
 h2 {
     margin-bottom: 5px;
 }
-body {
-    background-color:#332D28;
+
+/* ------ Button ------*/
+.btn {
+    background-color: var(--clr-lg-brown);
+    border: 5px solid #433C35;
+    color: inherit;
+    font-family: inherit;
+    padding: 10px;
+    font-size: 12px;
+    cursor: pointer;
 }
+
+.btn:hover {
+    background-color: #5a534c;
+}
+
+
+/* ------ Home page ------*/
+#home-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 80px;
+    padding: 150px;
+}
+
+#username-form {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    align-items: center;
+    gap: 15px;
+
+
+}
+
+#username-form input {
+    width: 75%;
+    background-color: var(--clr-lg-brown);
+    border: 5px solid #433C35;
+    padding: 7.5px;
+    color: inherit;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+#username-form input:focus {
+    /* border: none;
+     */
+     outline: none;
+}
+
+/* ------ Home page END ------*/
 #chatroom {
     height: 400px;
     width: 350px;
@@ -24,3 +92,4 @@ body {
 #chat {
     flex: 1;
 }
+

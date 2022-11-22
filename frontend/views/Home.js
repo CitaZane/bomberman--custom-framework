@@ -20,11 +20,14 @@ function createWebSocketConn(e) {
 export function HomeView() {
   return {
     template: (
-      <form onSubmit={createWebSocketConn}>
-        <label for="name">Enter your username: </label>
-        <input type="text" id="name" required></input>
-        <button>Enter queue</button>
-      </form>
+      <div id="home-layout">
+        <h1>Bomberman</h1>
+        <form onSubmit={createWebSocketConn} id="username-form">
+          <label for="name">Enter your name</label>
+          <input type="text" id="name" required></input>
+          <button class="btn">Join lobby</button>
+        </form>
+      </div>
     ),
   };
 }
