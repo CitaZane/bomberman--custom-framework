@@ -16,7 +16,7 @@
 body {
     font-family: 'Press Start 2P', cursive;
     color: var(--text-white);
-    background-color:#332D28;
+    background-color: #332D28;
 }
 
 h1 {
@@ -75,7 +75,7 @@ h2 {
 #username-form input:focus {
     /* border: none;
      */
-     outline: none;
+    outline: none;
 }
 
 /* ------ Home page END ------*/

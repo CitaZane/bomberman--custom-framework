@@ -6,6 +6,7 @@ import { BombSprite } from "../components/BombSprite";
 import { GameMap } from "../components/GameMap";
 import { store } from "../app";
 import { PowerUp } from "../components/PowerUp";
+import { Overlay } from "../components/Overlay";
 
 export function GameView() {
   let players = store.state.players;
@@ -20,7 +21,9 @@ export function GameView() {
 
   return {
     template: (
+      
       <div id="home">
+        <Overlay />
         <GameMap />
 
         {players.map((player, i) => (
