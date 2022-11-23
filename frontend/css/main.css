@@ -150,7 +150,7 @@ input {
 
 /* ------ Lobby  ------*/
 
-.player-avatar {
+.player-monster {
     width: 64px;
     height: 64px;
     background-position: 0 -64px;
@@ -214,4 +214,13 @@ input {
 
 #game {
     position: relative;
+}
+
+.player-power-ups {
+    display: flex;
+}
+
+.player-power-ups>div {
+    display: flex;
+    align-items: center;
 }

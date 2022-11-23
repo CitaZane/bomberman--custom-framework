@@ -6,18 +6,22 @@
     width: 64px;
     background-image: url("../assets/power_ups.png");
     transform: translate(var(--x-pos), var(--y-pos));
-
 }
 
 
-.powerup.increase_bombs {
+.player-power-ups .powerup {
+    position: initial;
+    transform: scale(0.5);
+}
+
+.increase_bombs {
     background-position: -128px 0;
 }
 
-.powerup.increase_flames {
+.increase_flames {
     background-position: 0 0;
 }
 
-.powerup.increase_speed {
+.increase_speed {
     background-position: -64px 0;
 }
