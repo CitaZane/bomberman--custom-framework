@@ -224,3 +224,7 @@ input {
     display: flex;
     align-items: center;
 }
+
+.life {
+    background-image: url("../assets/heart.png");
+}

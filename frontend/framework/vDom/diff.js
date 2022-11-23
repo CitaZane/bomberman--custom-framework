@@ -6,7 +6,7 @@
 
 import render from "./render";
 import { onMountedStack } from "./render";
-import {refs} from './render'
+import { refs } from './render'
 
 const zip = (xs, ys) => {
   const zipped = [];
@@ -44,10 +44,11 @@ const diffAttrs = (oldAttrs, newAttrs) => {
       } else if (k == "checked") {
         //add checked attribute
         $node.checked = v;
-      } else if(k == 'ref'){
+      } else if (k == 'ref') {
         $node.setAttribute(k, v);
         refs[v] = $node;
-      }else{
+
+      } else {
         $node.setAttribute(k, v);
       }
       return $node;
@@ -110,7 +111,7 @@ const diff = (oldVTree, newVTree) => {
   if (newVTree.template) {
     // save component onMounted function
     if (newVTree.onMounted) {
-        onMountedStack.push(newVTree.onMounted);
+      onMountedStack.push(newVTree.onMounted);
     }
     newVTree = newVTree.template;
   }

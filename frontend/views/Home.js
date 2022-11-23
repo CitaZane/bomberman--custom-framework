@@ -27,9 +27,7 @@ export function HomeView() {
               <p class="player-name">Player 1</p>
               <div class="player-monster" id="monster-1"></div>
               <div class="lives">
-                <img class="life" src="../assets/heart.png"></img>
-                <img class="life"></img>
-                <img class="life"></img>
+                <div class="life"></div>
               </div>
               <div class="player-power-ups">
                 <div>
