@@ -9,11 +9,6 @@
 }
 
 
-.player-power-ups .powerup {
-    position: initial;
-    transform: scale(0.5);
-}
-
 .increase_bombs {
     background-position: -128px 0;
 }

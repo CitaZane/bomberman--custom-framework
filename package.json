@@ -17,7 +17,12 @@
     "parcel": "^2.7.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3"
+    "@babel/core": "^7.19.3",
+    "parcel-reporter-static-files-copy": "^1.4.0"
   },
-  "description": ""
+  "description": "",
+  "staticFiles": {
+    "staticPath": "./frontend/assets",
+    "staticOutPath": "assets"
+  }
 }

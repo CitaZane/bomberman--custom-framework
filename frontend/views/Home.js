@@ -27,26 +27,35 @@ export function HomeView() {
               <p class="player-name">Player 1</p>
               <div class="player-monster" id="monster-1"></div>
               <div class="lives">
-                <div class="life"></div>
+                <img src="../assets/heart.png"></img>
+                <img src="../assets/heart.png"></img>
+                <img src="../assets/heart.png"></img>
               </div>
-              <div class="player-power-ups">
+              <div class="player-power_ups">
                 <div>
-                  <div class="powerup increase-speed"></div>
-                  <span id="increase-speed-count">1</span>
+                  <img src="../assets/increase_speed.png"></img>
+                  <span class="power-up__count" id="increase-speed-count">
+                    1
+                  </span>
                 </div>
+
                 <div>
-                  <div class="powerup increase-bombs"></div>
-                  <span id="increase-bombs-count">2</span>
+                  <img src="../assets/increase_flames.png"></img>
+                  <span class="power-up__count" id="increase-speed-count">
+                    2
+                  </span>
                 </div>
+
                 <div>
-                  <div class="powerup increase-flame"></div>
-                  <span id="increase-flame-count">2</span>
+                  <img src="../assets/increase_bombs.png"></img>
+                  <span class="power-up__count" id="increase-speed-count">
+                    3
+                  </span>
                 </div>
               </div>
             </div>
             {/* <button id="quit" class="btn">Quit</button> */}
           </div>
-
         </div>
 
         <h1>Bomberman</h1>
@@ -55,8 +64,6 @@ export function HomeView() {
           <input type="text" id="name" required></input>
           <button class="btn">Join lobby</button>
         </form>
-
-
       </div>
     ),
   };
