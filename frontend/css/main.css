@@ -16,10 +16,11 @@ ul {
     list-style-type: none;
     padding: 0;
 }
+
 body {
     font-family: 'Press Start 2P', cursive;
     color: var(--text-white);
-    background-color:#332D28;
+    background-color: #332D28;
 }
 
 h1 {
@@ -32,7 +33,7 @@ h2 {
 
 input {
     color: var(--text-white);
-    font-family: 'Press Start 2P',cursive;
+    font-family: 'Press Start 2P', cursive;
 }
 
 ::placeholder {
@@ -83,7 +84,7 @@ input {
 }
 
 #username-form input:focus {
-     outline: none;
+    outline: none;
 }
 
 
@@ -105,7 +106,7 @@ input {
     display: flex;
     flex-direction: column-reverse;
     gap: 25px;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 
@@ -175,9 +176,9 @@ input {
     grid-template-rows: auto auto;
     grid-template-columns: minmax(min-content, 550px) minmax(min-content, 500px);
     justify-content: center;
-    grid-template-areas: 
-    "header header"
-    "players chat";
+    grid-template-areas:
+        "header header"
+        "players chat";
     margin: 50px;
     margin-top: 100px;
     column-gap: 50px;
@@ -201,11 +202,16 @@ input {
 
 /* Game view */
 #game-layout {
-    margin-top: 100px;
+    margin: 50px 0px;
     display: flex;
     justify-content: center;
+
 }
 
 #game-layout #chatroom {
     width: 400px;
+}
+
+#game {
+    position: relative;
 }

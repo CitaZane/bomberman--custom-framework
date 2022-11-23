@@ -1,31 +1,33 @@
-
-#gamemap{
+#gamemap {
     height: 704px;
     width: 704px;
-    display:flex;
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-content: center;
 }
-.wall_block{
-    background-image:url('../assets/tiles.png');
-    background-position:0px 0px;
+
+.wall_block {
+    background-image: url('../assets/tiles.png');
+    background-position: 0px 0px;
     height: 64px;
     width: 64px;
     padding: none;
     margin: none;
 }
-.floor_block{
-    background-image:url('../assets/tiles.png');
-    background-position:64px 0px;
+
+.floor_block {
+    background-image: url('../assets/tiles.png');
+    background-position: 64px 0px;
     height: 64px;
     width: 64px;
     padding: none;
     margin: none;
 }
-.breakable_block{
-    background-image:url('../assets/tiles.png');
-    background-position:128px 0px;
+
+.breakable_block {
+    background-image: url('../assets/tiles.png');
+    background-position: 128px 0px;
     height: 64px;
     width: 64px;
     padding: none;
