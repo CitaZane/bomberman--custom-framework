@@ -16,11 +16,11 @@ type ExplosionManager struct {
 	Base         map[string]int  //explosion base coordinates
 	TypeMap      map[string]int  //map direction to type value
 	EndValue     int             //end incrimentor
-	BaseMap      []int
+	BaseMap      []Tile
 	Directions   []string
 }
 
-func setupManager(exlosionRange int, x, y int, baseMap []int) ExplosionManager {
+func setupManager(exlosionRange int, x, y int, baseMap []Tile) ExplosionManager {
 	return ExplosionManager{
 		Range:        exlosionRange,
 		FireAlive:    map[string]bool{"UP": true, "DOWN": true, "LEFT": true, "RIGHT": true},
@@ -54,7 +54,7 @@ func (manager *ExplosionManager) incrementRange() {
 // calculate new explosion based on bobm coordinates, base map and players explosion range
 // return []Explosion tiles that makes 1 explosion and
 // []indexes for bushes destroyed int the explosion
-func NewExplosion(bomb *Bomb, m []int, player *Player) (Explosion, []int) {
+func NewExplosion(bomb *Bomb, m []Tile, player *Player) (Explosion, []int) {
 	var id = "explosion-" + player.Name + "-" + uuid.NewV4().String()
 	explosion := Explosion{Id: id} //hold end explosion
 	destroyedBlocks := []int{}     //hold index of destroyed blocks
@@ -115,18 +115,18 @@ func (manager *ExplosionManager) findFire(direction string, x, y int) (Fire, int
 	}
 	// check if block is destroyable
 	var mapIndex = findMapIndex(x, y)
-	if manager.BaseMap[mapIndex] == 2 {
+	if manager.BaseMap[mapIndex] == Wall {
 		manager.FireAlive[direction] = false
 		return fire, blockDestroyed, false
 	}
 	var mapIndexNext = findmapNextIndex(x, y, direction)
 	// make changes to type if end of the fire
-	if manager.BaseMap[mapIndex] == 1 || manager.Range == manager.CurrentRange || manager.BaseMap[mapIndexNext] == 2 {
+	if manager.BaseMap[mapIndex] == Brick || manager.Range == manager.CurrentRange || manager.BaseMap[mapIndexNext] == 2 {
 		manager.FireAlive[direction] = false
 		fire.Type = manager.TypeMap[direction] + manager.EndValue
 	}
 	// bush destroyed -> set index
-	if manager.BaseMap[mapIndex] == 1 {
+	if manager.BaseMap[mapIndex] == Brick {
 		blockDestroyed = mapIndex
 	}
 	return fire, blockDestroyed, true

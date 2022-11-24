@@ -17,19 +17,10 @@ type Player struct {
 	ExplosionRange int         `json:"-"`
 	Explosions     []Explosion `json:"explosions"`
 	ActivePowerUp  PowerUpType `json:"active_powerup"`
-	GameMap        []int
-}
-
-type Bomb struct {
-	X        int      `json:"x"`
-	Y        int      `json:"y"`
-	Name     string   `json:"name"`
-	Movement Movement `json:"movement"`
-	Speed    int      `json:"-"` //for changing how fast is movement
 }
 
 // initialization functions returns palyer with initial state and position in  11x11 field
-func CreatePlayer(name string, index int, gameMap []int) Player {
+func CreatePlayer(name string, index int) Player {
 	var x float64
 	var y float64
 	var movement Movement
@@ -63,23 +54,22 @@ func CreatePlayer(name string, index int, gameMap []int) Player {
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
 		Explosions:     []Explosion{},
-		GameMap:        gameMap,
 	}
 }
 
 // methods for updatig monster position based on input from websocket
-func (player *Player) Move(input string, delta float64) {
+func (player *Player) Move(input string, delta float64, gameState *GameState) {
 	// update movement variable
 	player.Movement = translateMovement(input)
 
 	if player.Movement == Up {
-		player.MoveUp(delta)
+		player.MoveUp(delta, gameState)
 	} else if player.Movement == Down {
-		player.MoveDown(delta)
+		player.MoveDown(delta, gameState)
 	} else if player.Movement == Right {
-		player.MoveRight(delta)
+		player.MoveRight(delta, gameState)
 	} else if player.Movement == Left {
-		player.MoveLeft(delta)
+		player.MoveLeft(delta, gameState)
 	} else if player.Movement == DropBomb {
 		player.DropBomb()
 	}
@@ -160,7 +150,8 @@ func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
 // player drops the  bomb
 func (player *Player) DropBomb() {
 	baseX, baseY := player.GetCurrentCoordinates()
-	player.Bombs = append(player.Bombs, Bomb{X: baseX, Y: baseY})
+	tile := player.calcPlayerPosition()
+	player.Bombs = append(player.Bombs, Bomb{X: baseX, Y: baseY, Tile:tile})
 	player.BombsLeft--
 }
 func (player *Player) BombExplosionComplete() {
@@ -169,7 +160,7 @@ func (player *Player) BombExplosionComplete() {
 }
 
 // player create explosion
-func (player *Player) MakeExplosion(gameMap []int) ([]int, Explosion) {
+func (player *Player) MakeExplosion(gameMap []Tile) ([]int, Explosion) {
 	var explosion, destroyedBlocks = NewExplosion(&player.Bombs[0], gameMap, player)
 	player.Explosions = append(player.Explosions, explosion)
 	return destroyedBlocks, explosion
@@ -181,132 +172,169 @@ func (player *Player) ExplosionComplete() {
 	player.Explosions = player.Explosions[1:]
 }
 
+
 //Movement functions with delta
-func (player *Player) MoveUp(delta float64) {
-	//Checks if the charecter lined up on a tile horizontally before allowing to move vertically
-	if math.Mod(player.X, 64) != 0 {
-		//if player is near a corner xFit function will help move left or right to line up perfectly
-		xFit(player, delta)
+func (player *Player) MoveUp(delta float64, gameState *GameState) {
+	if !player.isHorizontalyAligned(){
+		xFit(player, delta, gameState)
 		return
 	}
-	//player.Movement == "up" check will fail if method is called from xFit function
-	if player.GameMap[player.calcPlayerPosition()-11] == 0 && player.Movement == "up" {
+	var nextTileIndex = player.calcPlayerPosition()-11
+	var nextTile = gameState.Map[nextTileIndex]
+	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
+	
+	if nextTile == Empty && player.Movement == Up && !bombOnNextTile{
+		player.Y -= player.Speed * delta
+		return
+	}
+	var distanceToTile = player.verticalDistanceToTile()
+	if distanceToTile > player.Speed*delta {
 		player.Y -= player.Speed * delta
 	} else {
-		//checks the distance until the obsticle and sets that as the maximum amount allowed to move (fixes running over walls)
-		if math.Mod(player.Y, 64) > player.Speed*delta {
-			player.Y -= player.Speed * delta
-		} else {
-			player.Y -= math.Mod(player.Y, 64)
-		}
+		player.Y -= distanceToTile
 	}
 }
 
-func (player *Player) MoveDown(delta float64) {
-	if math.Mod(player.X, 64) != 0 {
-		xFit(player, delta)
+func (player *Player) MoveDown(delta float64, gameState *GameState) {
+	if !player.isHorizontalyAligned(){
+		xFit(player, delta, gameState)
+			return
+	}
+	var nextTileIndex = player.calcPlayerPosition()+11
+	var nextTile = gameState.Map[nextTileIndex]
+	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
+
+
+	if nextTile == Empty && player.Movement == Down  && !bombOnNextTile{
+		player.Y += player.Speed * delta
 		return
 	}
-	if player.GameMap[player.calcPlayerPosition()+11] == 0 && player.Movement == "down" {
+
+	if player.isVerticalyAligned() {
+		return
+	}
+	var distanceToTile = 64 - player.verticalDistanceToTile()
+	if distanceToTile > player.Speed*delta {
 		player.Y += player.Speed * delta
 	} else {
-		if math.Mod(player.Y, 64) == 0 {
-			return
-		}
-		if 64-math.Mod(player.Y, 64) > player.Speed*delta {
-			player.Y += player.Speed * delta
-		} else {
-			player.Y += (64 - math.Mod(player.Y, 64))
-		}
+		player.Y += distanceToTile
 	}
 }
 
-func (player *Player) MoveLeft(delta float64) {
-	if math.Mod(player.Y, 64) != 0 {
-		yFit(player, delta)
+func (player *Player) MoveLeft(delta float64, gameState *GameState) {
+	if !player.isVerticalyAligned(){
+		yFit(player, delta, gameState)
+			return
+	}
+	var nextTileIndex = player.calcPlayerPosition()-1
+	var nextTile = gameState.Map[nextTileIndex]
+	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
+
+	if nextTile == Empty && player.Movement == Left && !bombOnNextTile{
+		player.X -= player.Speed * delta
 		return
 	}
-	if player.GameMap[player.calcPlayerPosition()-1] == 0 && player.Movement == "left" {
+	var distanceToTile = player.horizontalDistanceToTile()
+	if distanceToTile > player.Speed*delta {
 		player.X -= player.Speed * delta
 	} else {
-		if math.Mod(player.X, 64) > player.Speed*delta {
-			player.X -= player.Speed * delta
-		} else {
-			player.X -= math.Mod(player.X, 64)
-		}
+		player.X -= distanceToTile
 	}
 }
 
-func (player *Player) MoveRight(delta float64) {
-	if math.Mod(player.Y, 64) != 0 {
-		yFit(player, delta)
+func (player *Player) MoveRight(delta float64, gameState *GameState) {
+	if !player.isVerticalyAligned(){
+		yFit(player, delta, gameState)
+			return
+	}
+	var nextTileIndex = player.calcPlayerPosition()+1
+	var nextTile = gameState.Map[nextTileIndex]
+	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
+
+	if nextTile == Empty && player.Movement == Right && !bombOnNextTile{
+		player.X += player.Speed * delta
 		return
 	}
-	if player.GameMap[player.calcPlayerPosition()+1] == 0 && player.Movement == "right" {
+
+	if player.isHorizontalyAligned() {
+		return
+	}
+	var distanceToTile = 64 - player.horizontalDistanceToTile()
+	if distanceToTile  > player.Speed*delta {
 		player.X += player.Speed * delta
 	} else {
-		if math.Mod(player.X, 64) == 0 {
-			return
-		}
-		if 64-math.Mod(player.X, 64) > player.Speed*delta {
-			player.X += player.Speed * delta
-		} else {
-			player.X += 64 - math.Mod(player.X, 64)
-		}
+		player.X += distanceToTile 
 	}
 }
 
-//helps going around the corners
-func xFit(player *Player, delta float64) {
-	if math.Mod(player.X, 64) > 32 {
-		if player.Movement == "down" {
-			if player.GameMap[player.calcPlayerPosition()+11] == 0 {
-				player.MoveRight(delta)
+//if player is near a corner xFit function will help move left or right to line up perfectly
+func xFit(player *Player, delta float64, gameState *GameState) {
+	var playerPosition = player.calcPlayerPosition()
+	if player.horizontalDistanceToTile() > 32 {
+		if player.Movement == Down {
+			if gameState.Map[playerPosition+11] == Empty {
+				player.MoveRight(delta, gameState)
 			}
 		}
-		if player.Movement == "up" {
-			if player.GameMap[player.calcPlayerPosition()-11] == 0 {
-				player.MoveRight(delta)
+		if player.Movement == Up {
+			if gameState.Map[playerPosition-11] == Empty {
+				player.MoveRight(delta, gameState)
 			}
 		}
 	} else {
-		if player.Movement == "down" {
-			if player.GameMap[player.calcPlayerPosition()+11] == 0 {
-				player.MoveLeft(delta)
+		if player.Movement == Down {
+			if gameState.Map[playerPosition+11] == Empty {
+				player.MoveLeft(delta, gameState)
 			}
 		}
-		if player.Movement == "up" {
-			if player.GameMap[player.calcPlayerPosition()-11] == 0 {
-				player.MoveLeft(delta)
+		if player.Movement == Up {
+			if gameState.Map[playerPosition-11] == Empty {
+				player.MoveLeft(delta, gameState)
 			}
 		}
 	}
 }
 
-func yFit(player *Player, delta float64) {
-	if math.Mod(player.Y, 64) > 32 {
-		if player.Movement == "right" {
-			if player.GameMap[player.calcPlayerPosition()+1] == 0 {
-				player.MoveDown(delta)
+func yFit(player *Player, delta float64, gameState *GameState) {
+	var playerPosition = player.calcPlayerPosition()
+	if player.verticalDistanceToTile() > 32 {
+		if player.Movement == Right {
+			if gameState.Map[playerPosition+1] == Empty {
+				player.MoveDown(delta, gameState)
 			}
 		}
-		if player.Movement == "left" {
-			if player.GameMap[player.calcPlayerPosition()-1] == 0 {
-				player.MoveDown(delta)
+		if player.Movement == Left {
+			if gameState.Map[playerPosition-1] == Empty {
+				player.MoveDown(delta, gameState)
 			}
 		}
 	} else {
-		if player.Movement == "right" {
-			if player.GameMap[player.calcPlayerPosition()+1] == 0 {
-				player.MoveUp(delta)
+		if player.Movement == Right {
+			if gameState.Map[playerPosition+1] == Empty {
+				player.MoveUp(delta, gameState)
 			}
 		}
-		if player.Movement == "left" {
-			if player.GameMap[player.calcPlayerPosition()-1] == 0 {
-				player.MoveUp(delta)
+		if player.Movement == Left {
+			if gameState.Map[playerPosition-1] == Empty {
+				player.MoveUp(delta, gameState)
 			}
 		}
 	}
+}
+
+
+func (player *Player) isHorizontalyAligned() bool{
+	return  player.horizontalDistanceToTile() == 0
+}
+func (player *Player) isVerticalyAligned() bool{
+	return  player.verticalDistanceToTile() == 0
+}
+
+func (player *Player) horizontalDistanceToTile() float64{
+	return math.Mod(player.X, 64)
+}
+func (player *Player) verticalDistanceToTile()float64{
+	return math.Mod(player.Y, 64)
 }
 
 // Calculates on which map cell player is standing. Cell is map index.

@@ -29,12 +29,12 @@ func(pool *Pool)RemoveClient(clientGoingAway *Client){
 	}
 }
 
-func (pool *Pool) createPlayers(gameMap []int) []game.Player {
+func (pool *Pool) createPlayers() []game.Player {
 	keys := []game.Player{}
 
 	i := 0
 	for _,client := range pool.Clients {
-		keys = append(keys, game.CreatePlayer(client.ID, i, gameMap))
+		keys = append(keys, game.CreatePlayer(client.ID, i))
 		if i == 3{break} //max 4 players
 		i++
 	}
@@ -85,7 +85,7 @@ func (pool *Pool) Start() {
 			if gameState.State == game.Lobby{
 				if message.Type == "START_GAME"{
 					gameState.StartGame()
-					gameState.Players = pool.createPlayers(gameState.Map)
+					gameState.Players = pool.createPlayers()
 				}
 			}else {			
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
@@ -99,7 +99,7 @@ func (pool *Pool) Start() {
 						break S
 					}
 					//update player movement
-					player.Move(message.Body, message.Delta)
+					player.Move(message.Body, message.Delta, gameState)
 
 					if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
 						go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})

@@ -2,7 +2,7 @@ package game
 
 type GameState struct {
 	Players  []Player   `json:"players"`
-	Map      []int      `json:"map"`
+	Map      []Tile     `json:"map"`
 	Bombs    []Bomb     `json:"bombs"`
 	PowerUps []*PowerUp `json:"power_ups"` // holds power ups, which are shown on screen
 	State    State      `json:"state"`
@@ -12,7 +12,7 @@ func NewGame() *GameState {
 	return &GameState{
 		Players:  make([]Player, 0),
 		Bombs:    make([]Bomb, 0),
-		Map:      make([]int, 0),
+		Map:      make([]Tile, 0),
 		PowerUps: make([]*PowerUp, 0),
 		State:    Lobby,
 	}
@@ -22,7 +22,7 @@ func (g *GameState) StartGame() {
 	g.State = Play
 }
 func (g *GameState) FinishGame() {
-	g.Map = []int{}
+	g.Map = []Tile{}
 	// g.Players = []Player{}
 	g.Bombs = []Bomb{}
 	g.PowerUps = []*PowerUp{}
@@ -112,4 +112,15 @@ func (g *GameState) FindWinner() string {
 		}
 	}
 	return ""
+}
+
+func (g *GameState) IsThereBomb(tileIndex int) bool {
+	for _, player := range g.Players {
+		for _, bomb := range player.Bombs {
+			if bomb.Tile == tileIndex {
+				return true
+			}
+		}
+	}
+	return false
 }

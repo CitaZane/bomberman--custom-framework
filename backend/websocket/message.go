@@ -88,7 +88,7 @@ func (m Message)AutoGuideWinner(pool *Pool, winner string){
 // calculate indexes in spirale
 // example -> from [0,1,2,3,4,5,6,7,8] in grid 3x3
 // result  ->      [0,1,2,5,8,7,6,3,4]
-func formSpiral(base []int) []int{
+func formSpiral(base []g.Tile) []int{
 	var(
 		rows = 11;
 		col = 11;
