@@ -7,12 +7,20 @@ export function GamePlayers() {
       <div class="players">
         <div>
           <p class="player-name">Player 1</p>
-          <div class="player-monster" id="monster-1"></div>
+          <div class="player-status">
+            <div class="player-monster" id="monster-1"></div>
+            <div class="lives">
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+            </div>
+          </div>
+          {/* <div class="player-monster" id="monster-1"></div>
           <div class="lives">
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
-          </div>
+          </div> */}
           <div class="player-power_ups">
             <div>
               <img src="../assets/increase_speed.png"></img>
@@ -38,12 +46,20 @@ export function GamePlayers() {
         </div>
         <div>
           <p class="player-name">Player 1</p>
-          <div class="player-monster" id="monster-1"></div>
+          <div class="player-status">
+            <div class="player-monster" id="monster-1"></div>
+            <div class="lives">
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+            </div>
+          </div>
+          {/* <div class="player-monster" id="monster-1"></div>
           <div class="lives">
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
-          </div>
+          </div> */}
           <div class="player-power_ups">
             <div>
               <img src="../assets/increase_speed.png"></img>
@@ -69,12 +85,20 @@ export function GamePlayers() {
         </div>
         <div>
           <p class="player-name">Player 1</p>
-          <div class="player-monster" id="monster-1"></div>
+          <div class="player-status">
+            <div class="player-monster" id="monster-1"></div>
+            <div class="lives">
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+            </div>
+          </div>
+          {/* <div class="player-monster" id="monster-1"></div>
           <div class="lives">
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
-          </div>
+          </div> */}
           <div class="player-power_ups">
             <div>
               <img src="../assets/increase_speed.png"></img>
@@ -100,12 +124,20 @@ export function GamePlayers() {
         </div>
         <div>
           <p class="player-name">Player 1</p>
-          <div class="player-monster" id="monster-1"></div>
+          <div class="player-status">
+            <div class="player-monster" id="monster-1"></div>
+            <div class="lives">
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+              <img src="../assets/heart.png"></img>
+            </div>
+          </div>
+          {/* <div class="player-monster" id="monster-1"></div>
           <div class="lives">
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
             <img src="../assets/heart.png"></img>
-          </div>
+          </div> */}
           <div class="player-power_ups">
             <div>
               <img src="../assets/increase_speed.png"></img>

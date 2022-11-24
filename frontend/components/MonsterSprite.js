@@ -12,6 +12,9 @@ function updateMovement(player, id) {
 
 function updateAnimation(player, id) {
   refs[`monster-${id}`].classList.add(`monster-${player.movement}`);
+  if (player.invincible){
+    refs[`monster-${id}`].classList.add(`invincible`);
+  }
 }
 
 export function MonsterSprite({ player, id }) {

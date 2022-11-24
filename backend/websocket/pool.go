@@ -9,7 +9,7 @@ import (
 type Pool struct {
 	Register   chan *Client
 	Unregister chan *Client
-	Clients    map[*Client]bool
+	Clients    []*Client
 	Broadcast  chan Message
 }
 
@@ -17,21 +17,39 @@ func NewPool() *Pool {
 	return &Pool{
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
-		Clients:    make(map[*Client]bool),
+		Clients:    []*Client{},
 		Broadcast:  make(chan Message),
 	}
 }
+func (pool *Pool) RemoveClient(clientGoingAway *Client) {
+	for i, client := range pool.Clients {
+		if client.ID == clientGoingAway.ID {
+			pool.Clients = append(pool.Clients[:i], pool.Clients[i+1:]...)
+		}
+	}
+}
 
-func (pool *Pool) createPlayers(gameMap []int) []game.Player {
-	keys := make([]game.Player, len(pool.Clients))
+func (pool *Pool) createPlayers() []game.Player {
+	keys := []game.Player{}
 
 	i := 0
-	for client := range pool.Clients {
-		keys[i] = game.CreatePlayer(client.ID, i, gameMap)
+	for _, client := range pool.Clients {
+		keys = append(keys, game.CreatePlayer(client.ID, i))
+		if i == 3 {
+			break
+		} //max 4 players
 		i++
 	}
 
 	return keys
+}
+func (pool *Pool) UsernameUnique(username string) bool {
+	for _, client := range pool.Clients {
+		if client.ID == username {
+			return false
+		}
+	}
+	return true
 }
 
 func (pool *Pool) Start() {
@@ -42,102 +60,99 @@ func (pool *Pool) Start() {
 	S:
 		select {
 		case client := <-pool.Register:
-			pool.Clients[client] = true
-
-			for client := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: "JOIN_QUEUE", Body: strconv.Itoa(len(pool.Clients))})
+			pool.Clients = append(pool.Clients, client)
+			if gameState.State == game.Lobby {
+				message := Message{Type: "JOIN_QUEUE", Body: strconv.Itoa(len(pool.Clients))}
+				for _, client := range pool.Clients {
+					client.Conn.WriteJSON(message)
+				}
+			} else {
+				message := Message{
+					Type:      "JOIN_SPECTATOR",
+					Body:      strconv.Itoa(len(pool.Clients) - len(gameState.Players)), //-th in next queue
+					GameState: gameState,
+				}
+				client.Conn.WriteJSON(message)
 			}
 
 		case client := <-pool.Unregister:
-			delete(pool.Clients, client)
+			pool.RemoveClient(client)
+			// delete(pool.Clients, client)
 
-			for client := range pool.Clients {
+			for _, client := range pool.Clients {
 				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
 			}
 		case message := <-pool.Broadcast:
 
-			/*
-				had to move these because before the "START_GAME" message we dont have players yet
-			*/
-
-			// currentPlayerIndex := gameState.FindPlayer(message.Creator)
-			// 	player := &gameState.Players[currentPlayerIndex]
-
-			switch message.Type {
-			case "START_GAME":
-				gameState.Map = game.CreateBaseMap()
-				gameState.Players = pool.createPlayers(gameState.Map)
-
-			case "PLAYER_MOVE":
+			if gameState.State == game.Lobby {
+				if message.Type == "START_GAME" {
+					gameState.StartGame()
+					gameState.Players = pool.createPlayers()
+				}
+			} else {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				player := &gameState.Players[currentPlayerIndex]
-				if !player.IsAlive() || gameState.State != game.Play {
+				if currentPlayerIndex == -1 { //this is a watcher do not register moves
 					break S
 				}
-				//update player movement
-				player.Move(message.Body, message.Delta)
-
-				if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
-					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
-				}
-				if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
-					message.Body = "PICKED_UP_POWERUP"
-
-				}
-
-			case "PLAYER_DROPPED_BOMB":
-				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				player := &gameState.Players[currentPlayerIndex]
+				switch message.Type {
+				case "PLAYER_MOVE":
+					if !player.IsAlive() || gameState.State != game.Play {
+						break S
+					}
+					//update player movement
+					player.Move(message.Body, message.Delta, gameState)
 
-				if player.BombsLeft <= 0 || !player.IsAlive() {
-					break S
+					if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
+						go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
+					}
+					if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
+						message.Body = "PICKED_UP_POWERUP"
+					}
+
+				case "PLAYER_DROPPED_BOMB":
+					if player.BombsLeft <= 0 || !player.IsAlive() || player.Invincible {
+						break S
+					}
+					player.DropBomb()
+
+					go message.BombExploded(pool)
+
+				case "BOMB_EXPLODED":
+					destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
+					player.BombExplosionComplete()
+					monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
+					//trigger side effects
+					go message.MonstersReborn(pool, gameState, monstersLostLives)
+					go message.UpdateMap(pool, gameState, destroyedBlocks)
+					go message.ExplosionComplete(pool)
+
+				case "EXPLOSION_COMPLETED":
+					player.ExplosionComplete()
+				case "PLAYER_AUTO_MOVE":
+					//update player movement wthouth obstacles
+					done := player.AutoMove(message.Body)
+					message.Type = "PLAYER_MOVE"
+					if !done {
+						go message.AutoGuideWinner(pool, message.Creator)
+					} else {
+						gameState.State = game.Finish
+					}
 				}
-				player.DropBomb()
 
-				go message.BombExploded(pool)
-
-			case "BOMB_EXPLODED":
-				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				player := &gameState.Players[currentPlayerIndex]
-
-				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
-				player.BombExplosionComplete()
-				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
-				//trigger monster-reborn
-				go message.MonstersReborn(pool, gameState, monstersLostLives)
-				//trigger map update
-				go message.UpdateMap(pool, gameState, destroyedBlocks)
-				//trigger end of explosion
-				go message.ExplosionComplete(pool)
-
-			case "EXPLOSION_COMPLETED":
-				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				player := &gameState.Players[currentPlayerIndex]
-
-				player.ExplosionComplete()
-			case "PLAYER_AUTO_MOVE":
-				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				player := &gameState.Players[currentPlayerIndex]
-
-				//update player movement wthouth obstacles
-				done := player.AutoMove(message.Body)
-				message.Type = "PLAYER_MOVE"
-				if !done {
-					go message.AutoGuideWinner(pool, message.Creator)
-				} else {
-					gameState.State = game.Finish
-				}
 			}
-
 			if gameState.State == game.GameOver {
 				message.ActivateGameOverScreen(pool, gameState)
 				gameState.State = game.WalkOfFame
-				var winner = gameState.FindWinner()
-				go message.AutoGuideWinner(pool, gameState.Players[winner].Name)
+				go message.AutoGuideWinner(pool, gameState.FindWinner())
 			}
-
+			if gameState.State == game.Finish {
+				message.Type = "FINISH"
+				gameState.FinishGame()
+				fmt.Println("Finish!")
+			}
 			message.GameState = gameState
-			for client := range pool.Clients {
+			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)
 					return

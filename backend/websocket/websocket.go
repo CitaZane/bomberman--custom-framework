@@ -20,8 +20,15 @@ func SocketHandler(pool *Pool) http.HandlerFunc {
 			log.Print("Error during connection upgradation:", err)
 			return
 		}
-
+		
 		username := r.URL.Query()["username"][0]
+		
+		if isUnique := pool.UsernameUnique(username); !isUnique{
+			closeMessage := websocket.FormatCloseMessage(websocket.ClosePolicyViolation, "Username already taken") 	
+			conn.WriteMessage(websocket.CloseMessage,closeMessage)
+		 	conn.Close()
+			return
+		}
 
 		client := Client{
 			ID:   username,

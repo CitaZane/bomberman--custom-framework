@@ -77,15 +77,12 @@
 .monster-left-stop {
 	animation-name: monster-left;
 }
-
-.monster-lost-live {
-	background-image: url("../assets/monster-die.png") !important;
-	animation-timing-function: steps(6);
-	animation-duration: 0.2s;
-	animation-name: monster-left;
+.invincible{
+	filter: grayscale();
 }
 
-.monster-died {
+
+.monster-died{
 	background-image: url("../assets/monster-die.png") !important;
 	animation-duration: 3s;
 	animation-name: monster-die;

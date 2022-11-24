@@ -2,7 +2,7 @@ package game
 
 type GameState struct {
 	Players  []Player   `json:"players"`
-	Map      []int      `json:"map"`
+	Map      []Tile     `json:"map"`
 	Bombs    []Bomb     `json:"bombs"`
 	PowerUps []*PowerUp `json:"power_ups"` // holds power ups, which are shown on screen
 	State    State      `json:"state"`
@@ -12,10 +12,21 @@ func NewGame() *GameState {
 	return &GameState{
 		Players:  make([]Player, 0),
 		Bombs:    make([]Bomb, 0),
-		Map:      make([]int, 0),
+		Map:      make([]Tile, 0),
 		PowerUps: make([]*PowerUp, 0),
-		State:    Play,
+		State:    Lobby,
 	}
+}
+func (g *GameState) StartGame() {
+	g.Map = CreateBaseMap()
+	g.State = Play
+}
+func (g *GameState) FinishGame() {
+	g.Map = []Tile{}
+	// g.Players = []Player{}
+	g.Bombs = []Bomb{}
+	g.PowerUps = []*PowerUp{}
+	g.State = Lobby
 }
 
 func (g *GameState) FindPlayer(name string) int {
@@ -46,6 +57,9 @@ func (g *GameState) CheckGameOverState() {
 // return slice with monster that died
 func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
 	var monstersLostLives = []int{}
+	if g.State != Play {
+		return monstersLostLives
+	}
 	for i := 0; i < len(g.Players); i++ {
 		var lostLive = g.Players[i].CheckIfIDie(explosion)
 		if lostLive {
@@ -59,6 +73,9 @@ func (g *GameState) CheckIfSomebodyDied(explosion *Explosion) []int {
 // Loop through all active explosion in game and check if current player stepped in it
 func (g *GameState) CheckIfPlayerDied(p *Player) bool {
 	var lostLive = false
+	if g.State != Play {
+		return lostLive
+	}
 	for _, player := range g.Players {
 		for _, explosion := range player.Explosions {
 			lostLive = p.CheckIfIDie(&explosion)
@@ -84,15 +101,26 @@ func (g *GameState) RevealPowerUps(destroyedBlocks []int) {
 
 func (g *GameState) LetMonstersReborn(monstersLostLives []int) {
 	for _, i := range monstersLostLives { //reset the movement
-		g.Players[i].Movement = RightStop
+		g.Players[i].Invincible = false
 	}
 }
 
-func (g *GameState) FindWinner() int {
-	for i, player := range g.Players {
+func (g *GameState) FindWinner() string {
+	for _, player := range g.Players {
 		if player.Movement != Died {
-			return i
+			return player.Name
 		}
 	}
-	return -1
+	return ""
+}
+
+func (g *GameState) IsThereBomb(tileIndex int) bool {
+	for _, player := range g.Players {
+		for _, bomb := range player.Bombs {
+			if bomb.Tile == tileIndex {
+				return true
+			}
+		}
+	}
+	return false
 }

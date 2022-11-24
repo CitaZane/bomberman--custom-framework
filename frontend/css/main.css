@@ -236,6 +236,12 @@ input {
     position: absolute;
     left: -161px;
     top: 0;
+    height: 704px;
+    background-color: var(--clr-brown);
+    border: var(--brown-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* ------ Game Players List  ------*/
@@ -246,16 +252,13 @@ input {
     gap: 30px;
     justify-content: center;
     padding: 30px 20px;
-    background-color: var(--clr-brown);
-    height: 704px;
-    border: var(--brown-border);
     border-bottom: none;
 }
 .players>div {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .players .player-monster {
@@ -266,6 +269,12 @@ input {
     display: flex;
     gap: 10px;
 }
+
+.player-status {
+    display: flex;
+    gap: 15px;
+}
+
 
 .player-power_ups > div {
     display: flex;
@@ -279,7 +288,8 @@ input {
 
 .lives {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 5px;
     
 }
 
@@ -291,5 +301,6 @@ input {
 
 #quit {
     width: 100%;
+    border-width: 3px;
 }
 
