@@ -14,8 +14,19 @@ func NewGame() *GameState {
 		Bombs:    make([]Bomb, 0),
 		Map:      make([]int, 0),
 		PowerUps: make([]*PowerUp, 0),
-		State:    Play,
+		State:    Lobby,
 	}
+}
+func (g *GameState) StartGame() {
+	g.Map = CreateBaseMap()
+	g.State = Play
+}
+func (g *GameState) FinishGame() {
+	g.Map = []int{}
+	// g.Players = []Player{}
+	g.Bombs = []Bomb{}
+	g.PowerUps = []*PowerUp{}
+	g.State = Lobby
 }
 
 func (g *GameState) FindPlayer(name string) int {
@@ -94,11 +105,11 @@ func (g *GameState) LetMonstersReborn(monstersLostLives []int) {
 	}
 }
 
-func (g *GameState) FindWinner() int {
-	for i, player := range g.Players {
+func (g *GameState) FindWinner() string {
+	for _, player := range g.Players {
 		if player.Movement != Died {
-			return i
+			return player.Name
 		}
 	}
-	return -1
+	return ""
 }
