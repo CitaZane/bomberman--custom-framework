@@ -27,22 +27,22 @@ export function QueueView() {
           <h3>Waiting players to join...</h3>
           <ul id="lobby-players_list">
             <li>
-              <div class="player-avatar" id="monster-1"></div>
-              <p>Player 1</p>
+              <div class="player-monster" id="monster-1"></div>
+              <p class="player-name">Player 1</p>
             </li>
 
             <li>
-              <div class="player-avatar" id="monster-1"></div>
-              <p>Player 2</p>
+              <div class="player-monster" id="monster-1"></div>
+              <p class="player-name">Player 2</p>
             </li>
 
             <li>
-              <div class="player-avatar" id="monster-1"></div>
-              <p>Player 3</p>
+              <div class="player-monster" id="monster-1"></div>
+              <p class="player-name">Player 3</p>
             </li>
           </ul>
 
-          <button class="btn">Leave Lobby</button>
+          <button class="btn">Leave lobby</button>
         </div>
         <ChatRoom />
       </div>

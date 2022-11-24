@@ -2,7 +2,10 @@
 
 :root {
     --text-white: #cfc0c0;
+    --brown-border: 4px solid #433C35;
     --clr-lg-brown: #605851;
+    --clr-brown: #3A332E;
+    
 }
 
 *,
@@ -48,7 +51,7 @@ input {
 /* ------ Button ------*/
 .btn {
     background-color: var(--clr-lg-brown);
-    border: 5px solid #433C35;
+    border: var(--brown-border);
     color: inherit;
     font-family: inherit;
     padding: 10px;
@@ -83,7 +86,7 @@ input {
 #username-form input {
     width: 75%;
     background-color: var(--clr-lg-brown);
-    border: 5px solid #433C35;
+    border: var(--brown-border);
     padding: 7.5px;
 }
 
@@ -97,7 +100,7 @@ input {
 #chatroom {
     height: 600px;
     font-size: 12px;
-    background-color: #3A332E;
+    background-color: var(--clr-brown);
     display: flex;
     flex-direction: column;
 }
@@ -162,6 +165,7 @@ input {
 
 #lobby-players {
     padding: 30px;
+    padding-top: 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -172,6 +176,10 @@ input {
     display: flex;
     align-items: center;
     gap: 20px;
+}
+
+#lobby-players_list .player-name {
+    font-size: 14px;
 }
 
 
@@ -211,22 +219,47 @@ input {
     justify-content: center;
 
 }
-
-#game-layout #chatroom {
-    width: 400px;
+#game-wrapper {
+    position: relative;
 }
 
-#game {
-    position: relative;
+#game-wrapper #chatroom {
+    position: absolute;
+    top: 0;
+    right: -400px;
+    height: 704px;
+    width: 400px;
+    border: var(--brown-border);
+}
+
+.left-sidebar {
+    position: absolute;
+    left: -161px;
+    top: 0;
 }
 
 /* ------ Game Players List  ------*/
 
+.players {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+    padding: 30px 20px;
+    background-color: var(--clr-brown);
+    height: 704px;
+    border: var(--brown-border);
+    border-bottom: none;
+}
 .players>div {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+}
+
+.players .player-monster {
+    transform: scale(1.1);
 }
 
 .player-power_ups {
@@ -251,8 +284,12 @@ input {
 }
 
 .lives > img {
-    height: 16px;
-    width: 16px;
+    height: 18px;
+    width: 18px;
 }
 
+
+#quit {
+    width: 100%;
+}
 

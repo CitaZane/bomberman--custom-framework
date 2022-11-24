@@ -2,6 +2,8 @@
     --x-pos: 0;
     --y-pos: 0;
     position: absolute;
+    top: 0;
+    left: 0;
     height: 64px;
     width: 64px;
     background-image: url("../assets/power_ups.png");

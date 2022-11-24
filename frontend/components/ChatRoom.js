@@ -27,7 +27,6 @@ function sendMessage(e) {
 export function ChatRoom() {
   const messages = store.state.messages;
   const currentPlayername = store.state.currentPlayerName;
-  console.log("messages:", messages);
 
   return {
     template: (
