@@ -34,6 +34,11 @@ h2 {
     margin-bottom: 5px;
 }
 
+h1,h2,h3 {
+    text-align: center;
+    line-height: 1.75;
+}
+
 p {
     font-size: 12px;
 }
@@ -47,6 +52,9 @@ input {
     color: var(--text-white);
     opacity: 1;
 }
+
+
+
 
 /* ------ Button ------*/
 .btn {
@@ -112,7 +120,7 @@ input {
     margin: 10px 0;
     display: flex;
     flex-direction: column-reverse;
-    gap: 25px;
+    gap: 40px;
     overflow-y: scroll;
 }
 
@@ -121,6 +129,7 @@ input {
 #chat-header {
     padding: 40px;
     padding-bottom: 15px;
+    text-align: left;
 }
 
 .chat-username {
@@ -304,3 +313,19 @@ input {
     border-width: 3px;
 }
 
+
+#monster-0+.player-name {
+    color: #4DADB0;
+}
+
+#monster-1+.player-name {
+    color: #F48A88;
+}
+
+#monster-2+.player-name {
+    color: #F3A228;
+}
+
+#monster-3+.player-name {
+    color: #89AB6D;
+}

@@ -3,6 +3,7 @@ import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
 import { ChatRoom } from "../components/ChatRoom";
 import { ws } from "../websocket";
+import { LobbyPlayers } from "../components/LobbyPlayers";
 function startGame() {
   ws.send(
     JSON.stringify({
@@ -23,27 +24,7 @@ export function QueueView() {
           {/* Game starts in<span id="timer">10</span> */}
           Need at least 2 players to start timer
         </h2>
-        <div id="lobby-players">
-          <h3>Waiting players to join...</h3>
-          <ul id="lobby-players_list">
-            <li>
-              <div class="player-monster" id="monster-1"></div>
-              <p class="player-name">Player 1</p>
-            </li>
-
-            <li>
-              <div class="player-monster" id="monster-1"></div>
-              <p class="player-name">Player 2</p>
-            </li>
-
-            <li>
-              <div class="player-monster" id="monster-1"></div>
-              <p class="player-name">Player 3</p>
-            </li>
-          </ul>
-
-          <button class="btn">Leave lobby</button>
-        </div>
+        <LobbyPlayers />
         <ChatRoom />
       </div>
     ),

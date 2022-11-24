@@ -55,6 +55,7 @@ func (pool *Pool) UsernameUnique(username string) bool {
 func (pool *Pool) Start() {
 
 	var gameState = game.NewGame()
+	var playerNames = make([]string, 0) // playerNames is for sending player names to lobby without creating actual players
 
 	for {
 	S:
@@ -62,7 +63,10 @@ func (pool *Pool) Start() {
 		case client := <-pool.Register:
 			pool.Clients = append(pool.Clients, client)
 			if gameState.State == game.Lobby {
-				message := Message{Type: "JOIN_QUEUE", Body: strconv.Itoa(len(pool.Clients))}
+
+				playerNames = append(playerNames, client.ID)
+
+				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
 				}
@@ -77,8 +81,11 @@ func (pool *Pool) Start() {
 
 		case client := <-pool.Unregister:
 			pool.RemoveClient(client)
-			// delete(pool.Clients, client)
-
+			for i, name := range playerNames {
+				if name == client.ID {
+					playerNames = append(playerNames[:i], playerNames[i+1:]...)
+				}
+			}
 			for _, client := range pool.Clients {
 				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
 			}
