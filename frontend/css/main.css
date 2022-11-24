@@ -50,7 +50,8 @@ input {
 
 ::placeholder {
     color: var(--text-white);
-    opacity: 1;
+    opacity: 0.8;
+    font-size: 8px;
 }
 
 
@@ -314,18 +315,16 @@ input {
 }
 
 
-#monster-0+.player-name {
+
+.monster-0__color {
     color: #4DADB0;
 }
-
-#monster-1+.player-name {
+.monster-1__color {
     color: #F48A88;
 }
-
-#monster-2+.player-name {
+.monster-2__color {
     color: #F3A228;
 }
-
-#monster-3+.player-name {
+.monster-3__color {
     color: #89AB6D;
 }

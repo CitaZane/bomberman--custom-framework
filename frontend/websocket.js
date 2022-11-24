@@ -1,5 +1,6 @@
 import { store } from "./app";
 import { setupGame } from "./app";
+import { router } from "./app";
 export let ws;
 export function defineWebSocket(name) {
   ws = new WebSocket(`ws://localhost:8080/ws?username=${name}`);
@@ -21,21 +22,21 @@ export function defineWebSocket(name) {
     // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
-        store.commit("updatePlayers", data.gameState.players);
         store.commit("updateMap", data.gameState.map);
-        window.location.href = window.location.origin + "/#/game";
+        store.commit("updatePlayers", data.gameState.players);
         setupGame();
+        window.location.href = window.location.origin + "/#/game";
         break;
 
       // queue cases
       case "USER_LEFT":
         store.commit("updatePlayers", data["player_names"]);
-        store.commit("updateUserQueueCount", data.body);
+        // store.commit("updateUserQueueCount", data.body);
         break;
 
       case "JOIN_QUEUE":
-        store.commit("updateUserQueueCount", data.body);
-        store.commit("updatePlayers", data["player_names"]);
+        const lobbyPlayerNames = data["player_names"];
+        store.commit("updateLobbyPlayersNames", lobbyPlayerNames);
         window.location.href = window.location.origin + "/#/queue";
         break;
       case "JOIN_SPECTATOR":

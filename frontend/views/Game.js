@@ -48,7 +48,7 @@ export function GameView() {
           <div class="left-sidebar">
             <GamePlayers />
             <button id="quit" class="btn">
-              Quit{" "}
+              Quit
             </button>
           </div>
 

@@ -145,6 +145,7 @@ func (pool *Pool) Start() {
 					} else {
 						gameState.State = game.Finish
 					}
+
 				}
 
 			}

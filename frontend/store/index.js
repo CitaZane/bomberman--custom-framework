@@ -1,13 +1,14 @@
-import inputs from "./inputs"
-import gameState from "./game"
+import inputs from "./inputs";
+import gameState from "./game";
 
 export default {
   state: {
     userQueueCount: 0,
     messages: [],
+    lobbyPlayersNames: [],
     currentPlayerName: "",
     ...inputs.state,
-    ...gameState.state
+    ...gameState.state,
   },
 
   mutations: {
@@ -17,11 +18,17 @@ export default {
     updateMessages(state, messages) {
       state.messages = messages;
     },
+
     changePlayerName(state, name) {
       state.currentPlayerName = name;
     },
+
+    updateLobbyPlayersNames(state, lobbyPlayerNames) {
+      state.lobbyPlayersNames = lobbyPlayerNames;
+    },
+
     ...inputs.mutations,
-    ...gameState.mutations
+    ...gameState.mutations,
   },
 
   actions: {
@@ -32,10 +39,10 @@ export default {
     },
     savePlayerName({ state, commit }, newName) {
       let name = state.currentPlayerName;
-      name = newName
+      name = newName;
       commit("changePlayerName", name);
     },
     ...inputs.actions,
-    ...gameState.actions
+    ...gameState.actions,
   },
 };

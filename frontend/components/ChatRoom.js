@@ -2,7 +2,7 @@
 
 import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
-import { ws } from "../websocket";
+import { myMonsterColorClass, ws } from "../websocket";
 
 function sendMessage(e) {
   e.preventDefault();
@@ -13,10 +13,6 @@ function sendMessage(e) {
     type: "TEXT_MESSAGE",
     creator: store.state.currentPlayerName,
     body: formInput.value,
-    // body: {
-    //     username: store.state.currentPlayerName,
-    //     message: formInput.value
-    // }
   };
 
   ws.send(JSON.stringify(msg));
@@ -26,67 +22,22 @@ function sendMessage(e) {
 
 export function ChatRoom() {
   const messages = store.state.messages;
-  const currentPlayername = store.state.currentPlayerName;
-
   return {
     template: (
       <div id="chatroom">
-        {/* <p>Connected as: {currentPlayername}</p> */}
-        {/* {messages.map((message) => {
-              return (
-                <p>
-                  {message.creator}: {message.body}
-                </p>
-              );
-            })} */}
-
         <header>
           <h2 id="chat-header">Chatroom</h2>
         </header>
 
         <ul id="chat">
-          <li>
-            <p class="chat-username">Player 1</p>
-            <p>Hello there</p>
-          </li>
-
-          <li>
-            <p class="chat-username">Player 2</p>
-            <p>Whats up</p>
-          </li>
-
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
-          <li>
-            <p class="chat-username">Player 3</p>
-            <p>Lets play boys</p>
-          </li>
+          {messages.map((message) => {
+            return (
+              <li>
+                <p class={`chat-username`}>{message.creator}</p>
+                <p>{message.body}</p>
+              </li>
+            );
+          })}
         </ul>
 
         <form id="send-message" onSubmit={sendMessage}>
