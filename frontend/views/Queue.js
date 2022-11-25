@@ -18,7 +18,6 @@ export function QueueView() {
   return {
     template: (
       <div id="lobby-layout">
-        <h3>Users joined: {String(userQueueCount)}</h3>
         <button onClick={startGame}>Start Game</button>
         <h2>
           {/* Game starts in<span id="timer">10</span> */}

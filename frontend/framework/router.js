@@ -42,7 +42,6 @@ class Router {
   updateView() {
     // get route name from address bar
     var routeName = location.hash.replace("#", "");
-    console.log("RouteName", routeName);
     let _res = this.matchRoutes(routeName);
     if (!this.vApp) {
       const view = this.currentRoute.component();

@@ -2,11 +2,10 @@
 
 import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
-import { myMonsterColorClass, ws } from "../websocket";
+import { ws } from "../websocket";
 
 function sendMessage(e) {
   e.preventDefault();
-  console.log("state", store.state);
   const formInput = e.target.elements.message;
 
   const msg = {
@@ -21,8 +20,9 @@ function sendMessage(e) {
 }
 
 export function ChatRoom() {
-  const messages = store.state.messages;  
-  return {    
+  const messages = store.state.messages;
+  const lobbyPlayersNames = store.state.lobbyPlayersNames;
+  return {
     template: (
       <div id="chatroom">
         <header>
@@ -31,18 +31,12 @@ export function ChatRoom() {
 
         <ul id="chat">
           {messages.map((message) => {
-            let index = null;
-            store.state.lobbyPlayersNames.forEach((lobby_player_name, i) => {              
-              if (message.creator == lobby_player_name){
-                index = i
-              }              
-            });
+            let index = lobbyPlayersNames.findIndex((name) => name === message.creator);
+
             return (
               <li>
-                {/* <p class={`chat-username`}>{message.creator}</p> */}
-                <p class={`player-name monster-${index}__color`}>{message.creator}</p>
-                {/* <p>{message.body}</p> */}
-                <p class={`player-name monster-${index}__color`}>{message.body}</p>
+                <p class={`chat-username player-name monster-${index}__color`}>{message.creator}</p>
+                <p>{message.body}</p>
               </li>
             );
           })}
