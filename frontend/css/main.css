@@ -28,11 +28,12 @@ body {
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 32px;
     color: var(--clr-neon-green);
 }
 
 h2 {
+    font-size: 22px;
     margin-bottom: 5px;
     color: var(--clr-neon-green);
 }
@@ -56,13 +57,15 @@ input {
     font-size: 10px;
 }
 
+input:focus {
+    outline: 1px solid #928E8E;
+}
+
 ::placeholder {
     color: var(--text-white);
     opacity: 0.8;
     font-size: 10px;
 }
-
-
 
 
 /* ------ Button ------*/
@@ -107,15 +110,11 @@ input {
     padding: 7.5px;
 }
 
-#username-form input:focus {
-    outline: none;
-}
-
 
 
 /* ------ Chat ------*/
 #chatroom {
-    height: 600px;
+    height: 500px;
     font-size: 12px;
     background-color: var(--clr-brown);
     display: flex;
@@ -124,20 +123,24 @@ input {
 
 #chat {
     flex: 1;
-    padding: 40px;
-    padding-bottom: 30px;
+    padding: 20px 40px;
     margin: 10px 0;
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 40px;
     overflow-y: scroll;
+}
+
+#chat > :first-child {
+    /* margin-top: auto !important; */
+    margin-top: auto;
 }
 
 
 
 #chat-header {
     padding: 40px;
-    padding-bottom: 15px;
+    padding-bottom: 0px;
     text-align: left;
     color: var(--text-white);
 }

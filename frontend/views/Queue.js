@@ -21,7 +21,7 @@ export function QueueView() {
         <button onClick={startGame}>Start Game</button>
         <h2>
           {/* Game starts in<span id="timer">10</span> */}
-          Need at least 2 players to start timer
+          Need one more player to start game
         </h2>
         <LobbyPlayers />
         <ChatRoom />
