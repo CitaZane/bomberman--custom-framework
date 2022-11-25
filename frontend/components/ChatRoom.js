@@ -30,47 +30,6 @@ export function ChatRoom() {
         </header>
 
         <ul id="chat">
-          {/* <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li>
-          <li>
-            <p class={`chat-username player-name monster-1__color`}>Thomas</p>
-            <p>Boys</p>
-          </li> */}
-
           {messages.map((message) => {
             let index = lobbyPlayersNames.findIndex((name) => name === message.creator);
 

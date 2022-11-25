@@ -1,6 +1,5 @@
 import { store } from "./app";
 import { setupGame } from "./app";
-import { router } from "./app";
 export let ws;
 export function defineWebSocket(name) {
   ws = new WebSocket(`ws://localhost:8080/ws?username=${name}`);
@@ -31,12 +30,10 @@ export function defineWebSocket(name) {
       // queue cases
       case "USER_LEFT":
         store.commit("updatePlayers", data["player_names"]);
-        // store.commit("updateUserQueueCount", data.body);
         break;
 
       case "JOIN_QUEUE":
-        const lobbyPlayerNames = data["player_names"];
-        store.commit("updateLobbyPlayersNames", lobbyPlayerNames);
+        store.commit("updateLobbyPlayersNames", data["player_names"]);
         window.location.href = window.location.origin + "/#/queue";
         break;
       case "JOIN_SPECTATOR":

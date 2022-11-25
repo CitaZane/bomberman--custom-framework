@@ -13,8 +13,6 @@ function startGame() {
 }
 
 export function QueueView() {
-  let userQueueCount = store.state.userQueueCount;
-
   return {
     template: (
       <div id="lobby-layout">
