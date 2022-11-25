@@ -87,7 +87,7 @@ func (pool *Pool) Start() {
 				}
 			}
 			for _, client := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
+				client.Conn.WriteJSON(Message{Type: "USER_LEFT", PlayerNames: playerNames})
 			}
 		case message := <-pool.Broadcast:
 
