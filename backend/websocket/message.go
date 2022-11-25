@@ -57,6 +57,7 @@ func (m Message)ActivateGameOverScreen(pool *Pool, gameState *g.GameState){
 		i:=index 
 		go func(){
 			time.Sleep( time.Duration(miliseconds)* time.Millisecond)
+			if len(gameState.Map) == 0 {return} //abort mission game alrady cleared
 			gameState.Map[i] = 2 //turn into wall
 			// remove power up if detected on tile
 			for idx,powerUp := range gameState.PowerUps{
@@ -80,6 +81,15 @@ func (m Message)AutoGuideWinner(pool *Pool, winner string){
 	m.Type = "PLAYER_AUTO_MOVE"
 	pool.Broadcast <- m
 
+}
+
+func (m Message)PlayerLeftGame(pool *Pool,playerIndex int, gameState *g.GameState){
+	gameState.Players[playerIndex].Movement = g.Died
+	m.Creator = gameState.Players[playerIndex].Name
+	m.Type = "PLAYER_LEFT"
+	gameState.CheckGameOverState()
+	gameState.ClearGameIfLastPlayerLeft()
+	pool.Broadcast <- m
 }
 
 /* -------------------------------------------------------------------------- */

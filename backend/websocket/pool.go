@@ -76,14 +76,23 @@ func (pool *Pool) Start() {
 			}
 
 		case client := <-pool.Unregister:
+			message := Message{}
+			if gameState.State != game.Lobby && gameState.IsPlayer(client.ID) {
+				currentPlayerIndex := gameState.FindPlayer(client.ID)
+				go message.PlayerLeftGame(pool, currentPlayerIndex, gameState)
+			} else {
+				message.Type = "USER_LEFT"
+				message.Body = strconv.Itoa(len(pool.Clients) - 1)
+			}
 			pool.RemoveClient(client)
-			// delete(pool.Clients, client)
-
+			fmt.Println("sending message to clients, 88", message)
 			for _, client := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: "USER_LEFT", Body: strconv.Itoa(len(pool.Clients))})
+				client.Conn.WriteJSON(message)
 			}
 		case message := <-pool.Broadcast:
-
+			if message.Type == "PLAYER_LEFT" {
+				fmt.Println("player left")
+			}
 			if gameState.State == game.Lobby {
 				if message.Type == "START_GAME" {
 					gameState.StartGame()
@@ -91,7 +100,7 @@ func (pool *Pool) Start() {
 				}
 			} else {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				if currentPlayerIndex == -1 { //this is a watcher do not register moves
+				if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
 					break S
 				}
 				player := &gameState.Players[currentPlayerIndex]
@@ -149,13 +158,12 @@ func (pool *Pool) Start() {
 			if gameState.State == game.Finish {
 				message.Type = "FINISH"
 				gameState.FinishGame()
-				fmt.Println("Finish!")
 			}
 			message.GameState = gameState
 			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
-					return
+					fmt.Println("WEBSOCKET ERROR: ", err)
+					gameState.FinishGame()
 				}
 			}
 

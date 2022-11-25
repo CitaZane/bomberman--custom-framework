@@ -11,7 +11,15 @@ function startGame() {
   );
 }
 
+function leaveLobby() {
+  window.location.href = window.location.origin + "/";
+}
+
 export function QueueView() {
+  if (!ws) {
+    window.location.href = window.location.origin + "/";
+    return;
+  }
   let userQueueCount = store.state.userQueueCount;
 
   return {
@@ -42,7 +50,9 @@ export function QueueView() {
             </li>
           </ul>
 
-          <button class="btn">Leave lobby</button>
+          <button class="btn" onClick={leaveLobby}>
+            Leave lobby
+          </button>
         </div>
         <ChatRoom />
       </div>
