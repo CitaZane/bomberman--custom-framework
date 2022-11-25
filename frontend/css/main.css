@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
-    --text-white: #cfc0c0;
+    --text-white: #cec1c1;
     --brown-border: 4px solid #433C35;
     --clr-lg-brown: #605851;
     --clr-brown: #3A332E;
+    --clr-neon-green: #D1D291;
     
 }
 
@@ -28,10 +29,16 @@ body {
 
 h1 {
     font-size: 40px;
+    color: var(--clr-neon-green);
 }
 
 h2 {
     margin-bottom: 5px;
+    color: var(--clr-neon-green);
+}
+
+h3 {
+    font-size: 16px;
 }
 
 h1,h2,h3 {
@@ -132,6 +139,7 @@ input {
     padding: 40px;
     padding-bottom: 15px;
     text-align: left;
+    color: var(--text-white);
 }
 
 .chat-username {
@@ -179,7 +187,7 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 50px;
+    gap: 35px;
 }
 
 #lobby-players_list li {

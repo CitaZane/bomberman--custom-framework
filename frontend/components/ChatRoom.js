@@ -26,7 +26,7 @@ export function ChatRoom() {
     template: (
       <div id="chatroom">
         <header>
-          <h2 id="chat-header">Chatroom</h2>
+          <h3 id="chat-header">Chatroom</h3>
         </header>
 
         <ul id="chat">
