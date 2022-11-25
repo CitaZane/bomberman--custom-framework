@@ -5,18 +5,24 @@ import (
 )
 
 type Player struct {
-	X              float64     `json:"x"`
-	Y              float64     `json:"y"`
-	Name           string      `json:"name"`
-	Movement       Movement    `json:"movement"`
-	Invincible     bool        `json:"invincible"`
-	Lives          int         `json:"lives"`
-	Speed          float64     `json:"-"` //for changing how fast is movement
-	BombsLeft      int         `json:"bombsLeft"`
-	Bombs          []Bomb      `json:"bombs"`
-	ExplosionRange int         `json:"-"`
-	Explosions     []Explosion `json:"explosions"`
-	ActivePowerUp  PowerUpType `json:"active_powerup"`
+	X              float64        `json:"x"`
+	Y              float64        `json:"y"`
+	Name           string         `json:"name"`
+	Movement       Movement       `json:"movement"`
+	Invincible     bool           `json:"invincible"`
+	Lives          int            `json:"lives"`
+	Speed          float64        `json:"-"` //for changing how fast is movement
+	BombsLeft      int            `json:"bombsLeft"`
+	Bombs          []Bomb         `json:"bombs"`
+	ExplosionRange int            `json:"-"`
+	Explosions     []Explosion    `json:"explosions"`
+	ActivePowerUps ActivePowerUps `json:"active_powerups"`
+}
+
+type ActivePowerUps struct {
+	Bombs  int `json:"bombs"`
+	Flames int `json:"flames"`
+	Speed  int `json:"speed"`
 }
 
 // initialization functions returns palyer with initial state and position in  11x11 field
@@ -54,6 +60,7 @@ func CreatePlayer(name string, index int) Player {
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
 		Explosions:     []Explosion{},
+		ActivePowerUps: ActivePowerUps{},
 	}
 }
 
@@ -82,33 +89,33 @@ func (player *Player) AutoMove(input string) bool {
 
 	if player.X < 320 {
 		player.Movement = Right
-		if player.X + player.Speed > 320{
+		if player.X+player.Speed > 320 {
 			player.X = 320
-		}else{
+		} else {
 			player.X += player.Speed
 		}
 	} else if player.X > 320 {
 		player.Movement = Left
-		if player.X + player.Speed < 320{
+		if player.X+player.Speed < 320 {
 			player.X = 320
-		}else{
+		} else {
 			player.X -= player.Speed
 		}
 	} else if player.Y < 320 {
 		player.Movement = Down
-		if player.Y + player.Speed > 320{
+		if player.Y+player.Speed > 320 {
 			player.Y = 320
-		}else{
+		} else {
 			player.Y += player.Speed
 		}
 	} else if player.Y > 320 {
 		player.Movement = Up
-		if player.Y + player.Speed < 320{
+		if player.Y+player.Speed < 320 {
 			player.Y = 320
-		}else{
+		} else {
 			player.Y -= player.Speed
 		}
-		
+
 	}
 
 	if player.X == 320 && player.Y == 320 {
@@ -131,10 +138,14 @@ func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
 			switch powerUp.Type {
 			case INCREASE_BOMBS:
 				player.BombsLeft++
+				player.ActivePowerUps.Bombs++
 			case INCREASE_SPEED:
 				player.Speed += 0.5
+				player.ActivePowerUps.Speed++
 			case INCREASE_FLAMES:
 				player.ExplosionRange++
+				player.ActivePowerUps.Flames++
+
 			}
 
 			// remove the powerup from powerups array
@@ -151,7 +162,7 @@ func (player *Player) PickedUpPowerUp(powerUps *[]*PowerUp) bool {
 func (player *Player) DropBomb() {
 	baseX, baseY := player.GetCurrentCoordinates()
 	tile := player.calcPlayerPosition()
-	player.Bombs = append(player.Bombs, Bomb{X: baseX, Y: baseY, Tile:tile})
+	player.Bombs = append(player.Bombs, Bomb{X: baseX, Y: baseY, Tile: tile})
 	player.BombsLeft--
 }
 func (player *Player) BombExplosionComplete() {
@@ -172,18 +183,17 @@ func (player *Player) ExplosionComplete() {
 	player.Explosions = player.Explosions[1:]
 }
 
-
-//Movement functions with delta
+// Movement functions with delta
 func (player *Player) MoveUp(delta float64, gameState *GameState) {
-	if !player.isHorizontalyAligned(){
+	if !player.isHorizontalyAligned() {
 		xFit(player, delta, gameState)
 		return
 	}
-	var nextTileIndex = player.calcPlayerPosition()-11
+	var nextTileIndex = player.calcPlayerPosition() - 11
 	var nextTile = gameState.Map[nextTileIndex]
 	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
-	
-	if nextTile == Empty && player.Movement == Up && !bombOnNextTile{
+
+	if nextTile == Empty && player.Movement == Up && !bombOnNextTile {
 		player.Y -= player.Speed * delta
 		return
 	}
@@ -196,16 +206,15 @@ func (player *Player) MoveUp(delta float64, gameState *GameState) {
 }
 
 func (player *Player) MoveDown(delta float64, gameState *GameState) {
-	if !player.isHorizontalyAligned(){
+	if !player.isHorizontalyAligned() {
 		xFit(player, delta, gameState)
-			return
+		return
 	}
-	var nextTileIndex = player.calcPlayerPosition()+11
+	var nextTileIndex = player.calcPlayerPosition() + 11
 	var nextTile = gameState.Map[nextTileIndex]
 	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
 
-
-	if nextTile == Empty && player.Movement == Down  && !bombOnNextTile{
+	if nextTile == Empty && player.Movement == Down && !bombOnNextTile {
 		player.Y += player.Speed * delta
 		return
 	}
@@ -222,15 +231,15 @@ func (player *Player) MoveDown(delta float64, gameState *GameState) {
 }
 
 func (player *Player) MoveLeft(delta float64, gameState *GameState) {
-	if !player.isVerticalyAligned(){
+	if !player.isVerticalyAligned() {
 		yFit(player, delta, gameState)
-			return
+		return
 	}
-	var nextTileIndex = player.calcPlayerPosition()-1
+	var nextTileIndex = player.calcPlayerPosition() - 1
 	var nextTile = gameState.Map[nextTileIndex]
 	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
 
-	if nextTile == Empty && player.Movement == Left && !bombOnNextTile{
+	if nextTile == Empty && player.Movement == Left && !bombOnNextTile {
 		player.X -= player.Speed * delta
 		return
 	}
@@ -243,15 +252,15 @@ func (player *Player) MoveLeft(delta float64, gameState *GameState) {
 }
 
 func (player *Player) MoveRight(delta float64, gameState *GameState) {
-	if !player.isVerticalyAligned(){
+	if !player.isVerticalyAligned() {
 		yFit(player, delta, gameState)
-			return
+		return
 	}
-	var nextTileIndex = player.calcPlayerPosition()+1
+	var nextTileIndex = player.calcPlayerPosition() + 1
 	var nextTile = gameState.Map[nextTileIndex]
 	var bombOnNextTile = gameState.IsThereBomb(nextTileIndex)
 
-	if nextTile == Empty && player.Movement == Right && !bombOnNextTile{
+	if nextTile == Empty && player.Movement == Right && !bombOnNextTile {
 		player.X += player.Speed * delta
 		return
 	}
@@ -260,14 +269,14 @@ func (player *Player) MoveRight(delta float64, gameState *GameState) {
 		return
 	}
 	var distanceToTile = 64 - player.horizontalDistanceToTile()
-	if distanceToTile  > player.Speed*delta {
+	if distanceToTile > player.Speed*delta {
 		player.X += player.Speed * delta
 	} else {
-		player.X += distanceToTile 
+		player.X += distanceToTile
 	}
 }
 
-//if player is near a corner xFit function will help move left or right to line up perfectly
+// if player is near a corner xFit function will help move left or right to line up perfectly
 func xFit(player *Player, delta float64, gameState *GameState) {
 	var playerPosition = player.calcPlayerPosition()
 	if player.horizontalDistanceToTile() > 32 {
@@ -322,18 +331,17 @@ func yFit(player *Player, delta float64, gameState *GameState) {
 	}
 }
 
-
-func (player *Player) isHorizontalyAligned() bool{
-	return  player.horizontalDistanceToTile() == 0
+func (player *Player) isHorizontalyAligned() bool {
+	return player.horizontalDistanceToTile() == 0
 }
-func (player *Player) isVerticalyAligned() bool{
-	return  player.verticalDistanceToTile() == 0
+func (player *Player) isVerticalyAligned() bool {
+	return player.verticalDistanceToTile() == 0
 }
 
-func (player *Player) horizontalDistanceToTile() float64{
+func (player *Player) horizontalDistanceToTile() float64 {
 	return math.Mod(player.X, 64)
 }
-func (player *Player) verticalDistanceToTile()float64{
+func (player *Player) verticalDistanceToTile() float64 {
 	return math.Mod(player.Y, 64)
 }
 
@@ -372,7 +380,9 @@ func (player *Player) GetCurrentCoordinates() (int, int) {
 
 // bool value is true only if live lost, but monster is not dead yet
 func (player *Player) CheckIfIDie(explosion *Explosion) bool {
-	if player.Invincible {return false}
+	if player.Invincible {
+		return false
+	}
 	// for each fire in explosion, check if monster is inside it
 	for _, fire := range explosion.Fires {
 		var monsterBurned = fire.IsMonsterInside(player.X, player.Y)

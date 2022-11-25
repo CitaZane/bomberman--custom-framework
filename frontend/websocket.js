@@ -18,7 +18,6 @@ export function defineWebSocket(name) {
 
   ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
-    // console.log("DATA", data)
     switch (data["type"]) {
       case "START_GAME":
         store.commit("updateMap", data.gameState.map);
@@ -29,7 +28,7 @@ export function defineWebSocket(name) {
 
       // queue cases
       case "USER_LEFT":
-        store.commit("updatePlayers", data["player_names"]);
+        store.commit("updateLobbyPlayersNames", data["player_names"]);
         break;
 
       case "JOIN_QUEUE":

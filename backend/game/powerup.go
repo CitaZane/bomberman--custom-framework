@@ -116,23 +116,23 @@ func GeneratePowerUp(basemap []Tile, breakableBricks []int) {
 
 			if breakableBricks[randomPos]+12 < len(basemap) {
 				// down 1 tile
-				if basemap[breakableBricks[randomPos]+11] == Brick  {
+				if basemap[breakableBricks[randomPos]+11] == Brick {
 					basemap[breakableBricks[randomPos]+11] = Blocked
 				}
 
 				// diagonal down left 1 tile
-				if basemap[breakableBricks[randomPos]+10] == Brick  {
+				if basemap[breakableBricks[randomPos]+10] == Brick {
 					basemap[breakableBricks[randomPos]+10] = Blocked
 				}
 
 				// diagonal right 1 tile
-				if basemap[breakableBricks[randomPos]+12] == Brick  {
+				if basemap[breakableBricks[randomPos]+12] == Brick {
 					basemap[breakableBricks[randomPos]+12] = Blocked
 				}
 
 				if breakableBricks[randomPos]+22 < len(basemap) {
 					// down 2 tile
-					if basemap[breakableBricks[randomPos]+22] == Brick  {
+					if basemap[breakableBricks[randomPos]+22] == Brick {
 						basemap[breakableBricks[randomPos]+22] = Blocked
 					}
 				}

@@ -63,7 +63,7 @@ input:focus {
 
 ::placeholder {
     color: var(--text-white);
-    opacity: 0.8;
+    opacity: 0.5;
     font-size: 10px;
 }
 
@@ -89,7 +89,7 @@ input:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 80px;
+    gap: 50px;
     padding: 150px;
 }
 
@@ -115,6 +115,7 @@ input:focus {
 /* ------ Chat ------*/
 #chatroom {
     height: 500px;
+    width: 400px;
     font-size: 12px;
     background-color: var(--clr-brown);
     display: flex;
