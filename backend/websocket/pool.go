@@ -7,18 +7,22 @@ import (
 )
 
 type Pool struct {
-	Register   chan *Client
-	Unregister chan *Client
-	Clients    []*Client
-	Broadcast  chan Message
+	Register    chan *Client
+	Unregister  chan *Client
+	Clients     []*Client
+	Broadcast   chan Message
+	Timer       chan Message
+	GameStarted bool
 }
 
 func NewPool() *Pool {
 	return &Pool{
-		Register:   make(chan *Client),
-		Unregister: make(chan *Client),
-		Clients:    []*Client{},
-		Broadcast:  make(chan Message),
+		Register:    make(chan *Client),
+		Unregister:  make(chan *Client),
+		Clients:     []*Client{},
+		Broadcast:   make(chan Message),
+		Timer:       make(chan Message),
+		GameStarted: false,
 	}
 }
 func (pool *Pool) RemoveClient(clientGoingAway *Client) {
@@ -83,6 +87,7 @@ func (pool *Pool) Start() {
 
 	var gameState = game.NewGame()
 	var playerNames = make(PlayerNames, 0) // playerNames is for sending player names to lobby without creating actual players
+	timer := newTimer(5, 1)
 
 	for {
 	S:
@@ -96,6 +101,14 @@ func (pool *Pool) Start() {
 				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
+				}
+
+				if len(pool.Clients) > 1 && timer.expired { //starts the 20 sec timer
+					timer = newTimer(20, 1)
+					go timer.start(pool)
+				} else if len(pool.Clients) == 4 {
+					timer.stop <- true //stops the 20 second timer
+					startGame(pool)
 				}
 
 			} else {
@@ -197,8 +210,32 @@ func (pool *Pool) Start() {
 					gameState.Clear()
 				}
 			}
+		case timer := <-pool.Timer:
+			// fmt.Println("TIMER: Sending message to all clients in Pool")
+			for _, client := range pool.Clients {
+				if timer.Body == "0" && !pool.GameStarted {
+					if len(pool.Clients) > 1 {
+						startGame(pool)
+					} else {
+						//game canceled
+						fmt.Println("Not enough players")
+					}
+				}
+				if err := client.Conn.WriteJSON(timer); err != nil {
+					fmt.Println(err)
+					return
+				}
+				fmt.Println(timer)
+			}
 
 		}
 
 	}
+}
+
+func startGame(pool *Pool) { //temp func to start the game
+	//game lobby should be locked for new players
+	//game should start with 10 second timer
+	fmt.Println("Game starting")
+	pool.GameStarted = true
 }
