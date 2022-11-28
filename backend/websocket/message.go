@@ -51,25 +51,29 @@ func (m Message) UpdateMap(pool *Pool, gameState *g.GameState, destroyedBlocks [
 // Game over screen updates game map in spiral
 // turning all tiles to walls
 // in case of open power up on screen -> remove it
-func (m Message) ActivateGameOverScreen(pool *Pool, gameState *g.GameState) {
-	spiralLoop := formSpiral(gameState.Map) //calcuklate spiral, ints corresponds to index of original map
-	for t, index := range spiralLoop {
-		miliseconds := t * 45 //make delay different for each tile
-		i := index
-		go func() {
-			time.Sleep(time.Duration(miliseconds) * time.Millisecond)
-			gameState.Map[i] = 2 //turn into wall
-			// remove power up if detected on tile
-			for idx, powerUp := range gameState.PowerUps {
-				if powerUp.Tile == i {
-					gameState.PowerUps = append(gameState.PowerUps[:idx], gameState.PowerUps[idx+1:]...)
-				}
-			}
-			m.Type = "MAP_UPDATE"
-			pool.Broadcast <- m
-		}()
+func (m Message)ActivateGameOverScreen(pool *Pool, gameState *g.GameState){
+	spiralLoop := formSpiral(gameState.Map)
+	for t, index :=range spiralLoop{
+		delay := t * 50 //make delay different for each tile
+		go m.SendGameOverTile(pool,gameState, delay, index)
 	}
 }
+
+func (m Message) SendGameOverTile(pool *Pool, gameState *g.GameState, delay, i int){
+	lastTileIndex := 60
+	time.Sleep( time.Duration(delay)* time.Millisecond)
+	if gameState.MapIsEmpty() {return}
+	gameState.RemovePowerupInPlace(i)
+	gameState.TurnTileIntoWall(i)
+	if (i == lastTileIndex ){
+		m.Type = "FINISH"
+	}else{
+		m.Type = "MAP_UPDATE"
+	}
+	pool.Broadcast <- m
+}
+	
+
 
 // Auto guide winner to the middle
 // spawn movement after sleep time
@@ -90,7 +94,12 @@ func (m Message) PlayerLeftGame(pool *Pool, playerIndex int, gameState *g.GameSt
 	gameState.ClearGameIfLastPlayerLeft()
 	pool.Broadcast <- m
 }
-
+func (m Message) ClearGame(pool *Pool, gameState *g.GameState){
+	time.Sleep(2* time.Second)
+	m.Type = "CLEAR_GAME"
+	gameState.Clear()
+	pool.Broadcast <- m
+}
 /* -------------------------------------------------------------------------- */
 /*                                   helper                                   */
 /* -------------------------------------------------------------------------- */

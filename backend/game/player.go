@@ -86,34 +86,34 @@ func (player *Player) Move(input string, delta float64, gameState *GameState) {
 // automate movement to the middle of the screen
 // for the walk of fame
 func (player *Player) AutoMove(input string) bool {
-
+	autoSpeed := 1.4
 	if player.X < 320 {
 		player.Movement = Right
-		if player.X+player.Speed > 320 {
+		if player.X+autoSpeed > 320 {
 			player.X = 320
 		} else {
-			player.X += player.Speed
+			player.X += autoSpeed
 		}
 	} else if player.X > 320 {
 		player.Movement = Left
-		if player.X+player.Speed < 320 {
+		if player.X+autoSpeed < 320 {
 			player.X = 320
 		} else {
-			player.X -= player.Speed
+			player.X -= autoSpeed
 		}
 	} else if player.Y < 320 {
 		player.Movement = Down
-		if player.Y+player.Speed > 320 {
+		if player.Y+autoSpeed > 320 {
 			player.Y = 320
 		} else {
-			player.Y += player.Speed
+			player.Y += autoSpeed
 		}
 	} else if player.Y > 320 {
 		player.Movement = Up
-		if player.Y+player.Speed < 320 {
+		if player.Y+autoSpeed < 320 {
 			player.Y = 320
 		} else {
-			player.Y -= player.Speed
+			player.Y -= autoSpeed
 		}
 
 	}

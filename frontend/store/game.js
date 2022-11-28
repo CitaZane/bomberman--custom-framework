@@ -4,6 +4,7 @@ export default {
     map: [],
     powerUps: [],
     explosionTime: {},
+    winner:""
   },
   mutations: {
     updatePlayers(state, players) {
@@ -19,6 +20,9 @@ export default {
     updateExplosionTime(state, explosionTime) {
       state.explosionTime = explosionTime;
     },
+    updateWinner(state, winner){
+      state.winner = winner
+    }
   },
   actions: {
     addStartTime({ state, commit }, { time, explosionId }) {

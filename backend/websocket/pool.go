@@ -101,7 +101,6 @@ func (pool *Pool) Start() {
 				client.Conn.WriteJSON(message)
 			}
 		case message := <-pool.Broadcast:
-
 			if gameState.State == game.Lobby {
 				if message.Type == "START_GAME" {
 					gameState.StartGame()
@@ -153,10 +152,10 @@ func (pool *Pool) Start() {
 					message.Type = "PLAYER_MOVE"
 					if !done {
 						go message.AutoGuideWinner(pool, message.Creator)
-					} else {
-						gameState.State = game.Finish
 					}
-
+				case "FINISH":
+					go message.ClearGame(pool, gameState)
+					message.Body = gameState.FindWinner() //send winner name
 				}
 
 			}
@@ -165,15 +164,11 @@ func (pool *Pool) Start() {
 				gameState.State = game.WalkOfFame
 				go message.AutoGuideWinner(pool, gameState.FindWinner())
 			}
-			if gameState.State == game.Finish {
-				message.Type = "FINISH"
-				gameState.FinishGame()
-			}
 			message.GameState = gameState
 			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println("WEBSOCKET ERROR: ", err)
-					gameState.FinishGame()
+					gameState.Clear()
 				}
 			}
 

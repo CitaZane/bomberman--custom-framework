@@ -21,9 +21,8 @@ func (g *GameState) StartGame() {
 	g.Map = CreateBaseMap()
 	g.State = Play
 }
-func (g *GameState) FinishGame() {
+func (g *GameState) Clear() {
 	g.Map = []Tile{}
-	// g.Players = []Player{}
 	g.Bombs = []Bomb{}
 	g.PowerUps = []*PowerUp{}
 	g.State = Lobby
@@ -66,7 +65,7 @@ func (g *GameState) ClearGameIfLastPlayerLeft() {
 		}
 	}
 	if playersAlive == 0 {
-		g.FinishGame()
+		g.Clear()
 	}
 }
 
@@ -140,4 +139,19 @@ func (g *GameState) IsThereBomb(tileIndex int) bool {
 		}
 	}
 	return false
+}
+
+func (g *GameState) MapIsEmpty() bool {
+	return len(g.Map) == 0
+}
+func (g *GameState) TurnTileIntoWall(index int) {
+	g.Map[index] = Wall
+}
+
+func (g *GameState) RemovePowerupInPlace(index int) {
+	for puIndex, powerUp := range g.PowerUps {
+		if powerUp.Tile == index {
+			g.PowerUps = append(g.PowerUps[:puIndex], g.PowerUps[puIndex+1:]...)
+		}
+	}
 }
