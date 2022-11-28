@@ -34,6 +34,7 @@ func (t *Timer) start(pool *Pool) {
 				pool.Timer <- Message{Type: "TIMER", Body: strconv.Itoa(int(t.duration))}
 				if t.duration == 0 {
 					ticker.Stop()
+					t.expired = true
 					return
 				}
 			}
@@ -41,5 +42,6 @@ func (t *Timer) start(pool *Pool) {
 	}()
 	time.Sleep(time.Duration(t.duration) * time.Second)
 	ticker.Stop()
+	t.expired = true
 	t.stop <- true
 }

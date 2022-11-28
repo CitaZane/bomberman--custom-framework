@@ -108,7 +108,8 @@ func (pool *Pool) Start() {
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the 20 second timer
-					startGame(pool)
+					timer.expired = true
+					go startGame(pool)
 				}
 
 			} else {
@@ -144,6 +145,12 @@ func (pool *Pool) Start() {
 				if message.Type == "START_GAME" {
 					gameState.StartGame()
 					gameState.Players = pool.createPlayers()
+					for _, client := range pool.Clients {
+						if err := client.Conn.WriteJSON(message); err != nil {
+							fmt.Println("WEBSOCKET ERROR: ", err)
+							gameState.Clear()
+						}
+					}
 				}
 			} else {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
@@ -215,7 +222,7 @@ func (pool *Pool) Start() {
 			for _, client := range pool.Clients {
 				if timer.Body == "0" && !pool.GameStarted {
 					if len(pool.Clients) > 1 {
-						startGame(pool)
+						go startGame(pool)
 					} else {
 						//game canceled
 						fmt.Println("Not enough players")

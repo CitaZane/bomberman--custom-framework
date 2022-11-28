@@ -20,7 +20,6 @@ export function defineWebSocket(name) {
 		const data = JSON.parse(e.data);
 		switch (data["type"]) {
 			case "START_GAME":
-				console.log("here");
 				store.commit("updateMap", data.gameState.map);
 				store.commit("updatePlayers", data.gameState.players);
 				setupGame();
