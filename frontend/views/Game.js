@@ -7,7 +7,7 @@ import { GameMap } from "../components/GameMap";
 import { store } from "../app";
 import { PowerUp } from "../components/PowerUp";
 import { ChatRoom } from "../components/ChatRoom";
-import { GamePlayers } from "../components/GamePlayers/GamePlayers";
+import { GamePlayers } from "../components/gamePlayers/GamePlayers";
 import { ws } from "../websocket";
 
 function leaveGame() {

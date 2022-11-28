@@ -2,6 +2,7 @@ package websocket
 
 import (
 	g "bomberman-dom/game"
+	"fmt"
 	"time"
 )
 
@@ -51,29 +52,30 @@ func (m Message) UpdateMap(pool *Pool, gameState *g.GameState, destroyedBlocks [
 // Game over screen updates game map in spiral
 // turning all tiles to walls
 // in case of open power up on screen -> remove it
-func (m Message)ActivateGameOverScreen(pool *Pool, gameState *g.GameState){
+func (m Message) ActivateGameOverScreen(pool *Pool, gameState *g.GameState) {
 	spiralLoop := formSpiral(gameState.Map)
-	for t, index :=range spiralLoop{
+	for t, index := range spiralLoop {
 		delay := t * 50 //make delay different for each tile
-		go m.SendGameOverTile(pool,gameState, delay, index)
+		go m.SendGameOverTile(pool, gameState, delay, index)
 	}
 }
 
-func (m Message) SendGameOverTile(pool *Pool, gameState *g.GameState, delay, i int){
+func (m Message) SendGameOverTile(pool *Pool, gameState *g.GameState, delay, i int) {
 	lastTileIndex := 60
-	time.Sleep( time.Duration(delay)* time.Millisecond)
-	if gameState.MapIsEmpty() {return}
+	time.Sleep(time.Duration(delay) * time.Millisecond)
+	if gameState.MapIsEmpty() {
+		return
+	}
 	gameState.RemovePowerupInPlace(i)
 	gameState.TurnTileIntoWall(i)
-	if (i == lastTileIndex ){
+	if i == lastTileIndex {
 		m.Type = "FINISH"
-	}else{
+		fmt.Println(m.PlayerNames)
+	} else {
 		m.Type = "MAP_UPDATE"
 	}
 	pool.Broadcast <- m
 }
-	
-
 
 // Auto guide winner to the middle
 // spawn movement after sleep time
@@ -94,12 +96,14 @@ func (m Message) PlayerLeftGame(pool *Pool, playerIndex int, gameState *g.GameSt
 	gameState.ClearGameIfLastPlayerLeft()
 	pool.Broadcast <- m
 }
-func (m Message) ClearGame(pool *Pool, gameState *g.GameState){
-	time.Sleep(2* time.Second)
+func (m Message) ClearGame(pool *Pool, gameState *g.GameState, playerNames *PlayerNames) {
+	time.Sleep(2 * time.Second)
 	m.Type = "CLEAR_GAME"
 	gameState.Clear()
+	playerNames.AddSpectators(pool.Clients) // add spectators to player names
 	pool.Broadcast <- m
 }
+
 /* -------------------------------------------------------------------------- */
 /*                                   helper                                   */
 /* -------------------------------------------------------------------------- */

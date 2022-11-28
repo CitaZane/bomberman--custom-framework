@@ -65,15 +65,15 @@ export function defineWebSocket(name) {
         break;
       case "FINISH":
         store.commit("updateMap", data.gameState.map);
-        store.commit("updateWinner", data.body)
+        store.commit("updateWinner", data.body);
         break;
       case "CLEAR_GAME":
         store.commit("updateMap", data.gameState.map);
-        var isPlayer = data.gameState.players.some(player => player.name == store.state.currentPlayerName)
-        if (isPlayer){
+        var isPlayer = data.gameState.players.some((player) => player.name == store.state.currentPlayerName);
+        if (isPlayer) {
           window.location.href = window.location.origin + "/";
-        }else{
-          window.location.href = window.location.origin + "/#/queue"
+        } else {
+          window.location.href = window.location.origin + "/#/queue";
         }
         break;
     }

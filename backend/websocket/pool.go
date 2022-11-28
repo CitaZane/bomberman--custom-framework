@@ -52,10 +52,37 @@ func (pool *Pool) UsernameUnique(username string) bool {
 	return true
 }
 
+type PlayerNames []string
+
+func (playerNames *PlayerNames) addName(name string) {
+	*playerNames = append(*playerNames, name)
+}
+
+func (playerNames *PlayerNames) removeName(name1 string) {
+	playerNamesValue := *playerNames
+
+	for i, name := range *playerNames {
+		if name == name1 {
+			playerNamesValue = append(playerNamesValue[:i], playerNamesValue[i+1:]...)
+			*playerNames = playerNamesValue
+		}
+	}
+}
+
+// when game is finished make new players names from spectators
+func (playerNames *PlayerNames) AddSpectators(clients []*Client) {
+	spectatorClients := clients[len(*playerNames):]
+
+	for _, client := range spectatorClients {
+		*playerNames = append(*playerNames, client.ID)
+	}
+
+}
+
 func (pool *Pool) Start() {
 
 	var gameState = game.NewGame()
-	var playerNames = make([]string, 0) // playerNames is for sending player names to lobby without creating actual players
+	var playerNames = make(PlayerNames, 0) // playerNames is for sending player names to lobby without creating actual players
 
 	for {
 	S:
@@ -64,12 +91,13 @@ func (pool *Pool) Start() {
 			pool.Clients = append(pool.Clients, client)
 			if gameState.State == game.Lobby {
 
-				playerNames = append(playerNames, client.ID)
+				playerNames.addName(client.ID)
 
 				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
 				}
+
 			} else {
 				message := Message{
 					Type:      "JOIN_SPECTATOR",
@@ -80,26 +108,24 @@ func (pool *Pool) Start() {
 			}
 
 		case client := <-pool.Unregister:
+			pool.RemoveClient(client)
+			playerNames.removeName(client.ID)
+
 			message := Message{}
+
 			if gameState.State != game.Lobby && gameState.IsPlayer(client.ID) {
 				currentPlayerIndex := gameState.FindPlayer(client.ID)
 				go message.PlayerLeftGame(pool, currentPlayerIndex, gameState)
 			} else {
 				message.Type = "USER_LEFT"
 				message.Body = strconv.Itoa(len(pool.Clients) - 1)
-				for i, name := range playerNames {
-					if name == client.ID {
-						playerNames = append(playerNames[:i], playerNames[i+1:]...)
-					}
-				}
 				message.PlayerNames = playerNames
 
+				for _, client := range pool.Clients {
+					client.Conn.WriteJSON(message)
+				}
 			}
-			pool.RemoveClient(client)
 
-			for _, client := range pool.Clients {
-				client.Conn.WriteJSON(message)
-			}
 		case message := <-pool.Broadcast:
 			if gameState.State == game.Lobby {
 				if message.Type == "START_GAME" {
@@ -154,7 +180,7 @@ func (pool *Pool) Start() {
 						go message.AutoGuideWinner(pool, message.Creator)
 					}
 				case "FINISH":
-					go message.ClearGame(pool, gameState)
+					go message.ClearGame(pool, gameState, &playerNames)
 					message.Body = gameState.FindWinner() //send winner name
 				}
 
