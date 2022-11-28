@@ -7,9 +7,18 @@ import { GameMap } from "../components/GameMap";
 import { store } from "../app";
 import { PowerUp } from "../components/PowerUp";
 import { ChatRoom } from "../components/ChatRoom";
-import { GamePlayers } from "../components/gamePlayers/GamePlayers";
+import { GamePlayers } from "../components/GamePlayers";
+import { ws } from "../websocket";
+
+function leaveGame() {
+  window.location.href = window.location.origin + "/";
+}
 
 export function GameView() {
+  if (!ws) {
+    window.location.href = window.location.origin + "/";
+    return;
+  }
   let players = store.state.players;
   let powerUps = store.state.powerUps;
 
@@ -47,7 +56,7 @@ export function GameView() {
           {/* Position element relative to the game-wrapper */}
           <div class="left-sidebar">
             <GamePlayers />
-            <button id="quit" class="btn">
+            <button id="quit" class="btn" onClick={leaveGame}>
               Quit
             </button>
           </div>

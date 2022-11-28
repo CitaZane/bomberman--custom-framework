@@ -13,6 +13,11 @@ function startGame() {
 }
 
 export function QueueView() {
+  if (!ws) {
+    window.location.href = window.location.origin + "/";
+    return;
+  }
+
   return {
     template: (
       <div id="lobby-layout">

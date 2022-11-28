@@ -82,6 +82,15 @@ func (m Message) AutoGuideWinner(pool *Pool, winner string) {
 
 }
 
+func (m Message) PlayerLeftGame(pool *Pool, playerIndex int, gameState *g.GameState) {
+	gameState.Players[playerIndex].Movement = g.Died
+	m.Creator = gameState.Players[playerIndex].Name
+	m.Type = "PLAYER_LEFT"
+	gameState.CheckGameOverState()
+	gameState.ClearGameIfLastPlayerLeft()
+	pool.Broadcast <- m
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   helper                                   */
 /* -------------------------------------------------------------------------- */

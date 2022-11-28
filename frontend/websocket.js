@@ -59,6 +59,7 @@ export function defineWebSocket(name) {
       case "PLAYER_DROPPED_BOMB":
       case "BOMB_EXPLODED":
       case "EXPLOSION_COMPLETED":
+      case "PLAYER_LEFT":
       case "PLAYER_REBORN":
         store.commit("updatePlayers", data.gameState.players);
         break;

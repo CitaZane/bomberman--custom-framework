@@ -2,6 +2,10 @@
 import { store } from "../app";
 import jsx from "../framework/vDom/jsx";
 
+function leaveLobby() {
+  window.location.href = window.location.origin + "/";
+}
+
 export function LobbyPlayers() {
   const lobbyPlayersNames = store.state.lobbyPlayersNames;
   return {
@@ -20,7 +24,9 @@ export function LobbyPlayers() {
           })}
         </ul>
 
-        <button class="btn">Leave lobby</button>
+        <button class="btn" onClick={leaveLobby}>
+          Leave lobby
+        </button>
       </div>
     ),
   };

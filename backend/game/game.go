@@ -39,6 +39,11 @@ func (g *GameState) FindPlayer(name string) int {
 	return -1
 }
 
+func (g *GameState) IsPlayer(name string) bool {
+	playerIndex := g.FindPlayer(name)
+	return playerIndex != -1
+}
+
 // check how many players are still alive.
 // in case of 1 player left -> game over
 func (g *GameState) CheckGameOverState() {
@@ -50,6 +55,18 @@ func (g *GameState) CheckGameOverState() {
 	}
 	if playersAlive == 1 && len(g.Players) != 1 {
 		g.State = GameOver
+	}
+}
+
+func (g *GameState) ClearGameIfLastPlayerLeft() {
+	playersAlive := 0
+	for _, player := range g.Players {
+		if player.Movement != Died {
+			playersAlive += 1
+		}
+	}
+	if playersAlive == 0 {
+		g.FinishGame()
 	}
 }
 
