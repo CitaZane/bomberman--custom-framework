@@ -6,11 +6,12 @@ import (
 )
 
 type Message struct {
-	Type      string       `json:"type"`
-	Creator   string       `json:"creator"`
-	Body      string       `json:"body"`
-	GameState *g.GameState `json:"gameState"`
-	Delta     float64      `json:"delta"`
+	Type        string       `json:"type"`
+	Creator     string       `json:"creator"`
+	Body        string       `json:"body"`
+	GameState   *g.GameState `json:"gameState"`
+	Delta       float64      `json:"delta"`
+	PlayerNames []string     `json:"player_names"`
 }
 
 func (m Message) ExplosionComplete(pool *Pool) {
@@ -50,19 +51,18 @@ func (m Message) UpdateMap(pool *Pool, gameState *g.GameState, destroyedBlocks [
 // Game over screen updates game map in spiral
 // turning all tiles to walls
 // in case of open power up on screen -> remove it
-func (m Message)ActivateGameOverScreen(pool *Pool, gameState *g.GameState){
+func (m Message) ActivateGameOverScreen(pool *Pool, gameState *g.GameState) {
 	spiralLoop := formSpiral(gameState.Map) //calcuklate spiral, ints corresponds to index of original map
-	for t, index :=range spiralLoop{
-		miliseconds := t *45 //make delay different for each tile
-		i:=index 
-		go func(){
-			time.Sleep( time.Duration(miliseconds)* time.Millisecond)
-			if len(gameState.Map) == 0 {return} //abort mission game alrady cleared
+	for t, index := range spiralLoop {
+		miliseconds := t * 45 //make delay different for each tile
+		i := index
+		go func() {
+			time.Sleep(time.Duration(miliseconds) * time.Millisecond)
 			gameState.Map[i] = 2 //turn into wall
 			// remove power up if detected on tile
-			for idx,powerUp := range gameState.PowerUps{
-				if powerUp.Tile == i{
-					gameState.PowerUps = append(gameState.PowerUps[:idx], gameState.PowerUps[idx +1:]...)
+			for idx, powerUp := range gameState.PowerUps {
+				if powerUp.Tile == i {
+					gameState.PowerUps = append(gameState.PowerUps[:idx], gameState.PowerUps[idx+1:]...)
 				}
 			}
 			m.Type = "MAP_UPDATE"
@@ -71,11 +71,10 @@ func (m Message)ActivateGameOverScreen(pool *Pool, gameState *g.GameState){
 	}
 }
 
-
 // Auto guide winner to the middle
 // spawn movement after sleep time
-func (m Message)AutoGuideWinner(pool *Pool, winner string){
-	time.Sleep(4* time.Millisecond)
+func (m Message) AutoGuideWinner(pool *Pool, winner string) {
+	time.Sleep(4 * time.Millisecond)
 
 	m.Creator = winner
 	m.Type = "PLAYER_AUTO_MOVE"
@@ -83,7 +82,7 @@ func (m Message)AutoGuideWinner(pool *Pool, winner string){
 
 }
 
-func (m Message)PlayerLeftGame(pool *Pool,playerIndex int, gameState *g.GameState){
+func (m Message) PlayerLeftGame(pool *Pool, playerIndex int, gameState *g.GameState) {
 	gameState.Players[playerIndex].Movement = g.Died
 	m.Creator = gameState.Players[playerIndex].Name
 	m.Type = "PLAYER_LEFT"
@@ -98,42 +97,50 @@ func (m Message)PlayerLeftGame(pool *Pool,playerIndex int, gameState *g.GameStat
 // calculate indexes in spirale
 // example -> from [0,1,2,3,4,5,6,7,8] in grid 3x3
 // result  ->      [0,1,2,5,8,7,6,3,4]
-func formSpiral(base []g.Tile) []int{
-	var(
-		rows = 11;
-		col = 11;
-		left = 0;
-		top = 0;
-		bottom = rows-1;
-		right = col -1;
-	) 
+func formSpiral(base []g.Tile) []int {
+	var (
+		rows   = 11
+		col    = 11
+		left   = 0
+		top    = 0
+		bottom = rows - 1
+		right  = col - 1
+	)
 	var result = []int{}
 	for {
 		// calculate top row
-		if (left>right) {break};
-		for i:= left; i<=right; i++ {
-			result = append(result, i + top * col)
+		if left > right {
+			break
 		}
-		top +=1;
+		for i := left; i <= right; i++ {
+			result = append(result, i+top*col)
+		}
+		top += 1
 		// calculate right column
-		if(top >bottom){break};
-		for i:= top; i<=bottom; i++{
-			result = append(result, right + i * col)
+		if top > bottom {
+			break
 		}
-		right -=1
+		for i := top; i <= bottom; i++ {
+			result = append(result, right+i*col)
+		}
+		right -= 1
 
 		// calculate bottom row
-		if(left> right){break} ;
-		for i:= right; i>=left; i--{
-			result = append(result, i + bottom * col)
+		if left > right {
+			break
 		}
-		bottom -= 1;
+		for i := right; i >= left; i-- {
+			result = append(result, i+bottom*col)
+		}
+		bottom -= 1
 		// claculate left column
-		if (top>bottom){ break};
-		for i:= bottom; i>=top; i--{
-			result = append(result, left + i * col)
+		if top > bottom {
+			break
 		}
-		left +=1
-	}	
+		for i := bottom; i >= top; i-- {
+			result = append(result, left+i*col)
+		}
+		left += 1
+	}
 	return result
 }

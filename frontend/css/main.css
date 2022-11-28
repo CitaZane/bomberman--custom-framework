@@ -1,10 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 :root {
-    --text-white: #cfc0c0;
+    --text-white: #cec1c1;
     --brown-border: 4px solid #433C35;
     --clr-lg-brown: #605851;
     --clr-brown: #3A332E;
+    --clr-neon-green: #D1D291;
     
 }
 
@@ -27,11 +28,23 @@ body {
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 32px;
+    color: var(--clr-neon-green);
 }
 
 h2 {
+    font-size: 22px;
     margin-bottom: 5px;
+    color: var(--clr-neon-green);
+}
+
+h3 {
+    font-size: 16px;
+}
+
+h1,h2,h3 {
+    text-align: center;
+    line-height: 1.75;
 }
 
 p {
@@ -41,12 +54,19 @@ p {
 input {
     color: var(--text-white);
     font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+}
+
+input:focus {
+    outline: 1px solid #928E8E;
 }
 
 ::placeholder {
     color: var(--text-white);
-    opacity: 1;
+    opacity: 0.8;
+    font-size: 10px;
 }
+
 
 /* ------ Button ------*/
 .btn {
@@ -55,7 +75,7 @@ input {
     color: inherit;
     font-family: inherit;
     padding: 10px;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
 }
 
@@ -90,15 +110,11 @@ input {
     padding: 7.5px;
 }
 
-#username-form input:focus {
-    outline: none;
-}
-
 
 
 /* ------ Chat ------*/
 #chatroom {
-    height: 600px;
+    height: 500px;
     font-size: 12px;
     background-color: var(--clr-brown);
     display: flex;
@@ -107,20 +123,26 @@ input {
 
 #chat {
     flex: 1;
-    padding: 40px;
-    padding-bottom: 30px;
+    padding: 20px 40px;
     margin: 10px 0;
     display: flex;
-    flex-direction: column-reverse;
-    gap: 25px;
+    flex-direction: column;
+    gap: 40px;
     overflow-y: scroll;
+}
+
+#chat > :first-child {
+    /* margin-top: auto !important; */
+    margin-top: auto;
 }
 
 
 
 #chat-header {
     padding: 40px;
-    padding-bottom: 15px;
+    padding-bottom: 0px;
+    text-align: left;
+    color: var(--text-white);
 }
 
 .chat-username {
@@ -138,7 +160,6 @@ input {
     background-color: #322B25;
     padding: 15px 20px;
     border: none;
-    font-size: 10px;
 }
 
 
@@ -169,7 +190,7 @@ input {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 50px;
+    gap: 35px;
 }
 
 #lobby-players_list li {
@@ -304,3 +325,17 @@ input {
     border-width: 3px;
 }
 
+
+
+.monster-0__color {
+    color: #4DADB0;
+}
+.monster-1__color {
+    color: #F48A88;
+}
+.monster-2__color {
+    color: #F3A228;
+}
+.monster-3__color {
+    color: #89AB6D;
+}

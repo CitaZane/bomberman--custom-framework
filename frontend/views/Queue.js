@@ -3,6 +3,7 @@ import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
 import { ChatRoom } from "../components/ChatRoom";
 import { ws } from "../websocket";
+import { LobbyPlayers } from "../components/LobbyPlayers";
 function startGame() {
   ws.send(
     JSON.stringify({
@@ -11,49 +12,21 @@ function startGame() {
   );
 }
 
-function leaveLobby() {
-  window.location.href = window.location.origin + "/";
-}
-
 export function QueueView() {
   if (!ws) {
     window.location.href = window.location.origin + "/";
     return;
   }
-  let userQueueCount = store.state.userQueueCount;
 
   return {
     template: (
       <div id="lobby-layout">
-        <h3>Users joined: {String(userQueueCount)}</h3>
         <button onClick={startGame}>Start Game</button>
         <h2>
           {/* Game starts in<span id="timer">10</span> */}
-          Need at least 2 players to start timer
+          Need one more player to start game
         </h2>
-        <div id="lobby-players">
-          <h3>Waiting players to join...</h3>
-          <ul id="lobby-players_list">
-            <li>
-              <div class="player-monster" id="monster-1"></div>
-              <p class="player-name">Player 1</p>
-            </li>
-
-            <li>
-              <div class="player-monster" id="monster-1"></div>
-              <p class="player-name">Player 2</p>
-            </li>
-
-            <li>
-              <div class="player-monster" id="monster-1"></div>
-              <p class="player-name">Player 3</p>
-            </li>
-          </ul>
-
-          <button class="btn" onClick={leaveLobby}>
-            Leave lobby
-          </button>
-        </div>
+        <LobbyPlayers />
         <ChatRoom />
       </div>
     ),

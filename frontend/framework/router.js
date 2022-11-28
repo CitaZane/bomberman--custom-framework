@@ -26,9 +26,7 @@ class Router {
       this.updateView();
       return;
     }
-
-    // console.log("dom updated");
-
+    // console.log("Updating DOM with route", this.currentRoute);
     const view = this.currentRoute.component();
     const vNewApp = view.template;
     const patch = diff(this.vApp, vNewApp);
@@ -128,7 +126,6 @@ class Route {
 
 export default function createRouter(routes) {
   let router = new Router(routes);
-
   // start listening for changes
   watchEffect(() => {
     router.updateDom();
