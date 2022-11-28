@@ -225,7 +225,6 @@ func (pool *Pool) Start() {
 					fmt.Println(err)
 					return
 				}
-				fmt.Println(timer)
 			}
 
 		}
@@ -238,4 +237,5 @@ func startGame(pool *Pool) { //temp func to start the game
 	//game should start with 10 second timer
 	fmt.Println("Game starting")
 	pool.GameStarted = true
+	pool.Broadcast <- Message{Type: "START_GAME", Body: ""}
 }
