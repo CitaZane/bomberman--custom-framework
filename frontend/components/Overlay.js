@@ -6,7 +6,9 @@ export function Overlay({ content }) {
   return {
     template: (
       <div id="overlay">
-        <div id="overlay-counter">{content}</div>
+        <div class="overlay-content" id="winner">
+          {content}
+        </div>
       </div>
     ),
   };

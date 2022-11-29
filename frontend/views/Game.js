@@ -40,7 +40,7 @@ export function GameView() {
             {store.state.winner && (
               <h2>
                 {" "}
-                <Overlay content={store.state.winner} />
+                <Overlay content={`${store.state.winner} won!`} />
               </h2>
             )}
 

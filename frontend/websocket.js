@@ -68,6 +68,7 @@ export function defineWebSocket(name) {
         store.commit("updateWinner", data.body);
         break;
       case "CLEAR_GAME":
+        store.commit("updateWinner", "");
         store.commit("updateMap", data.gameState.map);
         var isPlayer = data.gameState.players.some((player) => player.name == store.state.currentPlayerName);
         if (isPlayer) {

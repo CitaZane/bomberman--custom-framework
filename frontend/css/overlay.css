@@ -12,17 +12,16 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background:rgba(19, 19, 19, 0.75);
+    background:rgba(19, 19, 19, 0.65);
     /* Specify a stack order in case you're using a different order for other elements */
     z-index: 11;
     
 }
-#overlay-counter{
+.overlay-content{
     position: absolute;
     top: 50%;
     left: 50%;
-    font-size: 50px;
-    color: white;
+    font-size: 35px;
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
   }
