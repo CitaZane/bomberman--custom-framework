@@ -1,0 +1,28 @@
+#overlay {
+    /* Sit on top of the page content */
+    position: fixed;    
+    display: block;
+    /* Full width,height (cover the whole page) */
+    width: 100%;    
+    height: 100%;
+    /*Cover only gamefield*/
+    /* height: 704px;
+    width: 704px; */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:rgba(19, 19, 19, 0.75);
+    /* Specify a stack order in case you're using a different order for other elements */
+    z-index: 11;
+    
+}
+#overlay-counter{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 50px;
+    color: white;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+  }
