@@ -82,6 +82,10 @@ export function defineWebSocket(name) {
 					window.location.href = window.location.origin + "/#/queue";
 				}
 				break;
+			case "TIMER":
+				document.getElementById("queueMessage").innerHTML =
+					"Time left to join the game: " + data.body;
+				break;
 		}
 	};
 }
