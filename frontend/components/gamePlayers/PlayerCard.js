@@ -1,8 +1,16 @@
 /* @jsx jsx */
 import jsx from "../../framework/vDom/jsx";
 
-export function PlayerCard({ player, id }) {
+function createLivesHTML(player) {
   let lives = [];
+  for (let i = 0; i < player.lives; i++) {
+    lives.push(<img src="../assets/heart.png"></img>);
+  }
+
+  return lives;
+}
+
+export function PlayerCard({ player, id }) {
   let placeholderPlayer = false;
 
   if (!player) {
@@ -18,17 +26,16 @@ export function PlayerCard({ player, id }) {
     };
   }
 
-  for (let i = 0; i < player.lives; i++) {
-    lives.push(<img src="../assets/heart.png"></img>);
-  }
+  let lives = createLivesHTML(player);
+  let playerDead = player.lives < 1;
 
   return {
     template: (
-      <div class={placeholderPlayer ? "invincible" : ""}>
+      <div class={placeholderPlayer || playerDead ? "invincible" : ""}>
         <p class="player-name">{player.name}</p>
         <div class="player-status">
           <div class="player-monster" id={`monster-${placeholderPlayer ? 1 : id}`}></div>
-          <div class="lives">{lives}</div>
+          {!playerDead && <div class="lives">{lives}</div>}
         </div>
 
         <div class="player-power_ups">
