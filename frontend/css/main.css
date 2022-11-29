@@ -340,3 +340,12 @@ input:focus {
 .monster-3__color {
     color: #89AB6D;
 }
+
+#winner {
+    padding: 20px 70px;
+    background-color: var(--clr-brown);
+    border: var(--brown-border);
+    color: var(--clr-neon-green);
+    font-size: 20px;
+    top: 25%;
+}

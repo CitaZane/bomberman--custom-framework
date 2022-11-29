@@ -8,6 +8,8 @@ import { store } from "../app";
 import { PowerUp } from "../components/PowerUp";
 import { ChatRoom } from "../components/ChatRoom";
 import { GamePlayers } from "../components/gamePlayers/GamePlayers";
+import { Overlay } from "../components/Overlay";
+
 import { ws } from "../websocket";
 
 function leaveGame() {
@@ -35,6 +37,12 @@ export function GameView() {
         <div id="game-wrapper">
           <div id="game">
             <GameMap />
+            {store.state.winner && (
+              <h2>
+                {" "}
+                <Overlay content={`${store.state.winner} won!`} />
+              </h2>
+            )}
 
             {players.map((player, i) => (
               <MonsterSprite player={player} id={i} />
@@ -51,8 +59,6 @@ export function GameView() {
             {powerUps.map((powerUp, i) => (
               <PowerUp powerUp={powerUp} id={i} />
             ))}
-
-            {store.state.winner && <h2> WINNER IS : {store.state.winner}</h2>}
           </div>
 
           {/* Position element relative to the game-wrapper */}
