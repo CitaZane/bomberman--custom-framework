@@ -4,6 +4,12 @@ import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
 import { ws } from "../websocket";
 
+function focus() {
+  store.commit("updateFocusOnChat", true);
+}
+function blur() {
+  store.commit("updateFocusOnChat", false);
+}
 function sendMessage(e) {
   e.preventDefault();
   const formInput = e.target.elements.message;
@@ -17,6 +23,7 @@ function sendMessage(e) {
   ws.send(JSON.stringify(msg));
 
   formInput.value = "";
+  formInput.blur();
 }
 
 export function ChatRoom() {
@@ -31,11 +38,15 @@ export function ChatRoom() {
 
         <ul id="chat">
           {messages.map((message) => {
-            let index = lobbyPlayersNames.findIndex((name) => name === message.creator);
+            let index = lobbyPlayersNames.findIndex(
+              (name) => name === message.creator
+            );
 
             return (
               <li>
-                <p class={`chat-username player-name monster-${index}__color`}>{message.creator}</p>
+                <p class={`chat-username player-name monster-${index}__color`}>
+                  {message.creator}
+                </p>
                 <p>{message.body}</p>
               </li>
             );
@@ -43,7 +54,13 @@ export function ChatRoom() {
         </ul>
 
         <form id="send-message" onSubmit={sendMessage}>
-          <input type="text" name="message" placeholder="Send message"></input>
+          <input
+            type="text"
+            name="message"
+            placeholder="Send message"
+            onFocus={focus}
+            onBlur={blur}
+          ></input>
           <button>&gt;</button>
         </form>
       </div>

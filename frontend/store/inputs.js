@@ -2,6 +2,7 @@ export default {
   state: {
     inputs: {},
     movement: { move: "", stop: "", bomb: "" },
+    focusOnChat: false,
   },
   mutations: {
     updateInputs(state, inputs) {
@@ -9,6 +10,9 @@ export default {
     },
     updateMovement(state, movement) {
       state.movement = movement;
+    },
+    updateFocusOnChat(state, focusOnChat) {
+      state.focusOnChat = focusOnChat;
     },
   },
   actions: {
@@ -37,8 +41,8 @@ export default {
           movement.move = "";
           movement.stop = "UP-STOP";
         }
-      }else if (key == "Space"){
-        movement.bomb = ""
+      } else if (key == "Space") {
+        movement.bomb = "";
       }
 
       commit("updateInputs", inputs);
@@ -61,7 +65,7 @@ export default {
       } else if (key == "ArrowUp") {
         movement.stop = "";
         movement.move = "UP";
-      } else if (key == "Space") {
+      } else if (key == "Space" && !state.focusOnChat) {
         movement.bomb = "REGISTER";
       }
       commit("updateInputs", inputs);
