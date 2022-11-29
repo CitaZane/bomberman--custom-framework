@@ -83,8 +83,13 @@ export function defineWebSocket(name) {
 				}
 				break;
 			case "TIMER":
-				document.getElementById("queueMessage").innerHTML =
-					"Time left to join the game: " + data.body;
+				if (data.body == 0) {
+					document.getElementById("queueMessage").innerHTML =
+						"Not enough players to start the game.";
+				} else {
+					document.getElementById("queueMessage").innerHTML =
+						"Time left to join the game: " + data.body;
+				}
 				break;
 		}
 	};
