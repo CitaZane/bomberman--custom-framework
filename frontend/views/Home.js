@@ -3,6 +3,7 @@ import jsx from "../framework/vDom/jsx";
 import { store } from "../app";
 
 import { defineWebSocket } from "../websocket";
+import { Overlay } from "../components/Overlay";
 
 function createWebSocketConn(e) {
   e.preventDefault();

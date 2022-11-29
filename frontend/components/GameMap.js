@@ -5,6 +5,7 @@ export function GameMap() {
   let map_data = store.state.map;
   return {
     template: (
+      
       <div id="gamemap">
         {map_data.map((tile) => {
           switch (tile) {

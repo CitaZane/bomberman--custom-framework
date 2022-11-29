@@ -2,7 +2,6 @@ package websocket
 
 import (
 	g "bomberman-dom/game"
-	"fmt"
 	"time"
 )
 
@@ -70,7 +69,6 @@ func (m Message) SendGameOverTile(pool *Pool, gameState *g.GameState, delay, i i
 	gameState.TurnTileIntoWall(i)
 	if i == lastTileIndex {
 		m.Type = "FINISH"
-		fmt.Println(m.PlayerNames)
 	} else {
 		m.Type = "MAP_UPDATE"
 	}
