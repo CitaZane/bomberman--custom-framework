@@ -7,27 +7,28 @@ import { LobbyPlayers } from "../components/LobbyPlayers";
 import { state } from "../store/index";
 
 function startGame() {
-	ws.send(
-		JSON.stringify({
-			type: "START_GAME",
-		})
-	);
+  ws.send(
+    JSON.stringify({
+      type: "START_GAME",
+    })
+  );
 }
 
 export function QueueView() {
-	if (!ws) {
-		window.location.href = window.location.origin + "/";
-		return;
-	}
+  let timer = store.state.timer;
+  if (!ws) {
+    window.location.href = window.location.origin + "/";
+    return;
+  }
 
-	return {
-		template: (
-			<div id="lobby-layout">
-				<button onClick={startGame}>Start Game</button>
-				<h2 id="queueMessage"></h2>
-				<LobbyPlayers />
-				<ChatRoom />
-			</div>
-		),
-	};
+  return {
+    template: (
+      <div id="lobby-layout">
+        <button onClick={startGame}>Start Game</button>
+        <h2 id="queueMessage">{timer ? `Game will start in ${String(timer)}` : "Not enough players"}</h2>
+        <LobbyPlayers />
+        <ChatRoom />
+      </div>
+    ),
+  };
 }

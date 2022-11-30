@@ -14,7 +14,6 @@ export function LobbyPlayers() {
         <h3>Waiting players to join...</h3>
         <ul id="lobby-players_list">
           {lobbyPlayersNames.map((playerName, i) => {
-            console.log("playerName", playerName);
             return (
               <li>
                 <div class="player-monster" id={`monster-${i}`}></div>

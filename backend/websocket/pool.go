@@ -104,11 +104,10 @@ func (pool *Pool) Start() {
 				}
 
 				if len(pool.Clients) > 1 && timer.expired { //starts the 20 sec timer
-					timer = newTimer(20, 1)
+					timer = newTimer(8, 1)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the 20 second timer
-					timer.expired = true
 					go startGame(pool)
 				}
 
@@ -217,18 +216,18 @@ func (pool *Pool) Start() {
 					gameState.Clear()
 				}
 			}
-		case timer := <-pool.Timer:
-			// fmt.Println("TIMER: Sending message to all clients in Pool")
+		case timerMsg := <-pool.Timer:
 			for _, client := range pool.Clients {
-				if timer.Body == "0" && !pool.GameStarted {
-					if len(pool.Clients) > 1 {
+				if gameState.State == game.Lobby {
+					if len(pool.Clients) < 2 {
+						timer.stop <- true
+						timerMsg.StopTimer = true
+					} else if timerMsg.Body == "0" {
 						go startGame(pool)
-					} else {
-						//game canceled
-						fmt.Println("Not enough players")
 					}
 				}
-				if err := client.Conn.WriteJSON(timer); err != nil {
+
+				if err := client.Conn.WriteJSON(timerMsg); err != nil {
 					fmt.Println(err)
 					return
 				}
@@ -239,10 +238,7 @@ func (pool *Pool) Start() {
 	}
 }
 
-func startGame(pool *Pool) { //temp func to start the game
-	//game lobby should be locked for new players
-	//game should start with 10 second timer
+func startGame(pool *Pool) {
 	fmt.Println("Game starting")
-	pool.GameStarted = true
 	pool.Broadcast <- Message{Type: "START_GAME", Body: ""}
 }

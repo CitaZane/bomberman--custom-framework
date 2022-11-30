@@ -12,6 +12,7 @@ type Message struct {
 	GameState   *g.GameState `json:"gameState"`
 	Delta       float64      `json:"delta"`
 	PlayerNames []string     `json:"player_names"`
+	StopTimer   bool         `json:"stop_timer"` // indicates whether to stop the timer
 }
 
 func (m Message) ExplosionComplete(pool *Pool) {

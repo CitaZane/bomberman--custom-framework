@@ -6,6 +6,7 @@ export default {
     userQueueCount: 0,
     messages: [],
     lobbyPlayersNames: [],
+    timer: 0,
     currentPlayerName: "",
     ...inputs.state,
     ...gameState.state,
@@ -25,6 +26,9 @@ export default {
 
     updateLobbyPlayersNames(state, lobbyPlayerNames) {
       state.lobbyPlayersNames = lobbyPlayerNames;
+    },
+    updateTimer(state, timer) {
+      state.timer = timer;
     },
 
     ...inputs.mutations,
