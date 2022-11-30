@@ -7,22 +7,20 @@ import (
 )
 
 type Pool struct {
-	Register    chan *Client
-	Unregister  chan *Client
-	Clients     []*Client
-	Broadcast   chan Message
-	Timer       chan Message
-	GameStarted bool
+	Register   chan *Client
+	Unregister chan *Client
+	Clients    []*Client
+	Broadcast  chan Message
+	Timer      chan Message
 }
 
 func NewPool() *Pool {
 	return &Pool{
-		Register:    make(chan *Client),
-		Unregister:  make(chan *Client),
-		Clients:     []*Client{},
-		Broadcast:   make(chan Message),
-		Timer:       make(chan Message),
-		GameStarted: false,
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Clients:    []*Client{},
+		Broadcast:  make(chan Message),
+		Timer:      make(chan Message),
 	}
 }
 func (pool *Pool) RemoveClient(clientGoingAway *Client) {
@@ -218,22 +216,20 @@ func (pool *Pool) Start() {
 				}
 			}
 		case timer := <-pool.Timer:
-			// fmt.Println("TIMER: Sending message to all clients in Pool")
-			for _, client := range pool.Clients {
-				if timer.Body == "0" && !pool.GameStarted {
-					if len(pool.Clients) > 1 {
-						go startGame(pool)
-					} else {
-						//game canceled
-						fmt.Println("Not enough players")
-					}
+			if timer.Body == "0" && gameState.State == game.Lobby {
+				if len(pool.Clients) > 1 {
+					go startGame(pool)
+				} else {
+					//game canceled
+					fmt.Println("Not enough players")
 				}
+			}
+			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(timer); err != nil {
 					fmt.Println(err)
 					return
 				}
 			}
-
 		}
 
 	}
@@ -243,6 +239,5 @@ func startGame(pool *Pool) { //temp func to start the game
 	//game lobby should be locked for new players
 	//game should start with 10 second timer
 	fmt.Println("Game starting")
-	pool.GameStarted = true
 	pool.Broadcast <- Message{Type: "START_GAME", Body: ""}
 }
