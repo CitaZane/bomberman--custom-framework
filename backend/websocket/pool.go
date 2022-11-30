@@ -102,11 +102,11 @@ func (pool *Pool) Start() {
 				}
 
 				if len(pool.Clients) > 1 && timer.Expired { //starts the 20 sec timer
-					timer = newTimer(5, 1, QUEUE)
+					timer = newTimer(20, 1, QUEUE)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the 20 second timer
-					go message.startGame(pool)
+					go message.initGame(pool)
 				}
 
 			} else {
@@ -132,6 +132,9 @@ func (pool *Pool) Start() {
 				message.Body = strconv.Itoa(len(pool.Clients) - 1)
 				message.PlayerNames = playerNames
 
+				if len(pool.Clients) < 2 && gameState.State == game.Lobby {
+					timer.stop <- true
+				}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
 				}
@@ -144,7 +147,7 @@ func (pool *Pool) Start() {
 					gameState.Players = pool.createPlayers()
 					message.GameState = gameState
 
-					timer = newTimer(5, 1, START_GAME)
+					timer = newTimer(10, 1, START_GAME)
 					go timer.start(pool)
 
 				} else if message.Type == "START_GAME" {
@@ -217,13 +220,6 @@ func (pool *Pool) Start() {
 				}
 			}
 		case message := <-pool.Timer:
-			// if during lobby there is less than 2 players, stop the timer
-			if gameState.State == game.Lobby {
-				if len(pool.Clients) < 2 {
-					timer.stop <- true
-				}
-			}
-
 			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)
@@ -239,7 +235,9 @@ func (pool *Pool) Start() {
 					go message.initGame(pool)
 
 				}
+
 			}
+
 		}
 
 	}

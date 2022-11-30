@@ -34,21 +34,24 @@ func (t *Timer) start(pool *Pool) {
 	t.Expired = false
 	ticker := time.NewTicker(time.Duration(t.interval) * time.Second)
 	go func() {
+	F:
 		for {
 			select {
 			case <-t.stop:
 				t.Expired = true
 				ticker.Stop()
-				return
+				break F
 			case <-ticker.C:
 				t.Duration--
-				pool.Timer <- Message{Type: "TIMER", Timer: t}
 				if t.Duration == 0 {
 					ticker.Stop()
 					t.Expired = true
-					return
+					break F
 				}
+				pool.Timer <- Message{Type: "TIMER", Timer: t}
 			}
 		}
+		// send last message to channel after we break at line 49 or 43
+		pool.Timer <- Message{Type: "TIMER", Timer: t}
 	}()
 }

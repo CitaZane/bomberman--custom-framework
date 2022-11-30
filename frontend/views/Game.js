@@ -44,6 +44,13 @@ export function GameView() {
               </h2>
             )}
 
+            {/* {store.state.timer && (
+              <h2>
+                {" "}
+                <Overlay content={store.state.timer} />
+              </h2>
+            )} */}
+
             {players.map((player, i) => (
               <MonsterSprite player={player} id={i} />
             ))}

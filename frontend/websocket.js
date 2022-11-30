@@ -82,6 +82,7 @@ export function defineWebSocket(name) {
         }
         break;
       case "TIMER":
+        console.log("Timer", data.timer);
         if (data.timer.expired) {
           store.commit("updateTimer", 0);
         } else {
