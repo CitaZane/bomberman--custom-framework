@@ -7,22 +7,20 @@ import (
 )
 
 type Pool struct {
-	Register    chan *Client
-	Unregister  chan *Client
-	Clients     []*Client
-	Broadcast   chan Message
-	Timer       chan Message
-	GameStarted bool
+	Register   chan *Client
+	Unregister chan *Client
+	Clients    []*Client
+	Broadcast  chan Message
+	Timer      chan Message
 }
 
 func NewPool() *Pool {
 	return &Pool{
-		Register:    make(chan *Client),
-		Unregister:  make(chan *Client),
-		Clients:     []*Client{},
-		Broadcast:   make(chan Message),
-		Timer:       make(chan Message),
-		GameStarted: false,
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Clients:    []*Client{},
+		Broadcast:  make(chan Message),
+		Timer:      make(chan Message),
 	}
 }
 func (pool *Pool) RemoveClient(clientGoingAway *Client) {
@@ -232,7 +230,6 @@ func (pool *Pool) Start() {
 					return
 				}
 			}
-
 		}
 
 	}
