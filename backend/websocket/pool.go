@@ -54,6 +54,10 @@ func (pool *Pool) UsernameUnique(username string) bool {
 	return true
 }
 
+func (pool *Pool) EnoughClientsForGame() bool {
+	return len(pool.Clients) > 1
+}
+
 type PlayerNames []string
 
 func (playerNames *PlayerNames) addName(name string) {
@@ -217,7 +221,7 @@ func (pool *Pool) Start() {
 			}
 		case timer := <-pool.Timer:
 			if timer.Body == "0" && gameState.State == game.Lobby {
-				if len(pool.Clients) > 1 {
+				if pool.EnoughClientsForGame() {
 					go startGame(pool)
 				} else {
 					//game canceled
