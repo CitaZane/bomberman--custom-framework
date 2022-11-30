@@ -7,6 +7,7 @@ export default {
     messages: [],
     lobbyPlayersNames: [],
     timer: 0,
+    gameTimerActive: false,
     currentPlayerName: "",
     ...inputs.state,
     ...gameState.state,
@@ -30,6 +31,9 @@ export default {
     updateTimer(state, timer) {
       state.timer = timer;
     },
+    updateGameTimer(state, timer) {
+      state.gameTimerActive = timer;
+    },
 
     ...inputs.mutations,
     ...gameState.mutations,
@@ -45,6 +49,10 @@ export default {
       let name = state.currentPlayerName;
       name = newName;
       commit("changePlayerName", name);
+    },
+    initializeGameTimer({commit}){
+      commit("updateGameTimer", true);
+      commit("updateTimer", 10);
     },
     ...inputs.actions,
     ...gameState.actions,
