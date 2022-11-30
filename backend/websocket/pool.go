@@ -102,7 +102,7 @@ func (pool *Pool) Start() {
 				}
 
 				if len(pool.Clients) > 1 && timer.Expired { //starts the 20 sec timer
-					timer = newTimer(20, 1, QUEUE)
+					timer = newTimer(5, 1, QUEUE)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the 20 second timer
@@ -131,9 +131,8 @@ func (pool *Pool) Start() {
 				message.Type = "USER_LEFT"
 				message.PlayerNames = playerNames
 
-				if len(pool.Clients) < 2 && gameState.State == game.Lobby {
-					fmt.Println("TODO -> stop timer ")
-					// timer.stop <- true
+				if len(pool.Clients) < 2 && gameState.State == game.Lobby && !timer.Expired {
+					timer.stop <- true
 				}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
