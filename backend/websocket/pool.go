@@ -85,7 +85,7 @@ func (pool *Pool) Start() {
 
 	var gameState = game.NewGame()
 	var playerNames = make(PlayerNames, 0) // playerNames is for sending player names to lobby without creating actual players
-	timer := newTimer(5, 1)
+	timer := newTimer(0, 0, None)
 
 	for {
 	S:
@@ -101,12 +101,12 @@ func (pool *Pool) Start() {
 					client.Conn.WriteJSON(message)
 				}
 
-				if len(pool.Clients) > 1 && timer.expired { //starts the 20 sec timer
-					timer = newTimer(8, 1)
+				if len(pool.Clients) > 1 && timer.Expired { //starts the 20 sec timer
+					timer = newTimer(5, 1, QUEUE)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the 20 second timer
-					go startGame(pool)
+					go message.startGame(pool)
 				}
 
 			} else {
@@ -139,16 +139,18 @@ func (pool *Pool) Start() {
 
 		case message := <-pool.Broadcast:
 			if gameState.State == game.Lobby {
-				if message.Type == "START_GAME" {
+				if message.Type == "INIT_GAME" {
 					gameState.StartGame()
 					gameState.Players = pool.createPlayers()
-					for _, client := range pool.Clients {
-						if err := client.Conn.WriteJSON(message); err != nil {
-							fmt.Println("WEBSOCKET ERROR: ", err)
-							gameState.Clear()
-						}
-					}
+					message.GameState = gameState
+
+					timer = newTimer(5, 1, START_GAME)
+					go timer.start(pool)
+
+				} else if message.Type == "START_GAME" {
+					gameState.State = game.Play
 				}
+
 			} else {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
@@ -214,28 +216,31 @@ func (pool *Pool) Start() {
 					gameState.Clear()
 				}
 			}
-		case timerMsg := <-pool.Timer:
-			for _, client := range pool.Clients {
-				if gameState.State == game.Lobby {
-					if len(pool.Clients) < 2 {
-						timer.stop <- true
-						timerMsg.StopTimer = true
-					} else if timerMsg.Body == "0" {
-						go startGame(pool)
-					}
+		case message := <-pool.Timer:
+			// if during lobby there is less than 2 players, stop the timer
+			if gameState.State == game.Lobby {
+				if len(pool.Clients) < 2 {
+					timer.stop <- true
 				}
+			}
 
-				if err := client.Conn.WriteJSON(timerMsg); err != nil {
+			for _, client := range pool.Clients {
+				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println(err)
 					return
+				}
+			}
+
+			// if timer has ended
+			if message.Timer.Duration == 0 {
+				if message.Timer.Type == START_GAME {
+					go message.startGame(pool)
+				} else if message.Timer.Type == QUEUE {
+					go message.initGame(pool)
+
 				}
 			}
 		}
 
 	}
-}
-
-func startGame(pool *Pool) {
-	fmt.Println("Game starting")
-	pool.Broadcast <- Message{Type: "START_GAME", Body: ""}
 }

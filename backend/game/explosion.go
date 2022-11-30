@@ -34,9 +34,10 @@ func setupManager(exlosionRange int, x, y int, baseMap []Tile) ExplosionManager 
 }
 
 // stopsserching for fire in certain direction
-func (manager *ExplosionManager) turnOffFire(direction string) {
-	manager.FireAlive[direction] = false
-}
+//
+//	func (manager *ExplosionManager) turnOffFire(direction string) {
+//		manager.FireAlive[direction] = false
+//	}
 func (manager *ExplosionManager) incrementRange() {
 	manager.CurrentRange += 1
 }

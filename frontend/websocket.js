@@ -19,18 +19,20 @@ export function defineWebSocket(name) {
   ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
     switch (data["type"]) {
-      case "START_GAME":
+      case "INIT_GAME":
+        console.log("Init game");
         store.commit("updateMap", data.gameState.map);
         store.commit("updatePlayers", data.gameState.players);
-        setupGame();
         window.location.href = window.location.origin + "/#/game";
+        break;
+
+      case "START_GAME":
+        console.log("Starting game");
+        setupGame();
         break;
 
       // queue cases
       case "USER_LEFT":
-        if (data["stop_timer"]) {
-          // clear timer
-        }
         store.commit("updateLobbyPlayersNames", data["player_names"]);
         break;
 
@@ -80,10 +82,10 @@ export function defineWebSocket(name) {
         }
         break;
       case "TIMER":
-        if (data["stop_timer"]) {
+        if (data.timer.expired) {
           store.commit("updateTimer", 0);
         } else {
-          store.commit("updateTimer", data.body);
+          store.commit("updateTimer", data.timer.duration);
         }
         break;
     }

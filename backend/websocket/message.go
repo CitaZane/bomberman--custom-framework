@@ -12,7 +12,17 @@ type Message struct {
 	GameState   *g.GameState `json:"gameState"`
 	Delta       float64      `json:"delta"`
 	PlayerNames []string     `json:"player_names"`
-	StopTimer   bool         `json:"stop_timer"` // indicates whether to stop the timer
+	Timer       *Timer       `json:"timer"`
+}
+
+func (m Message) initGame(pool *Pool) {
+	m.Type = "INIT_GAME"
+	pool.Broadcast <- m
+}
+
+func (m Message) startGame(pool *Pool) {
+	m.Type = "START_GAME"
+	pool.Broadcast <- m
 }
 
 func (m Message) ExplosionComplete(pool *Pool) {
