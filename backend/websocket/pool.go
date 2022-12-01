@@ -96,15 +96,15 @@ func (pool *Pool) Start() {
 
 				playerNames.addName(client.ID)
 
-				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames}
+				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames, Timer: timer}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
 				}
 
-				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
-					timer = newTimer(10, 1, QUEUE)
+				if len(pool.Clients) > 0 && timer.Expired { //starts the queue timer
+					timer = newTimer(6, 1, QUEUE)
 					go timer.start(pool)
-				} else if len(pool.Clients) == 3 {
+				} else if len(pool.Clients) == 2 {
 					timer.stop <- true //stops the timer
 
 				}
@@ -139,72 +139,58 @@ func (pool *Pool) Start() {
 				}
 			}
 		case message := <-pool.Broadcast:
-			if gameState.State == game.Lobby {
-				if message.Type == "INIT_GAME" {
-					gameState.StartGame()
-					gameState.Players = pool.createPlayers()
-					message.GameState = gameState
 
-					timer = newTimer(7, 1, START_GAME)
-					go timer.start(pool)
-
-				} else if message.Type == "START_GAME" {
-					gameState.State = game.Play
-				}
-
-			} else {
-				currentPlayerIndex := gameState.FindPlayer(message.Creator)
-				if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
+			currentPlayerIndex := gameState.FindPlayer(message.Creator)
+			if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
+				break S
+			}
+			player := &gameState.Players[currentPlayerIndex]
+			switch message.Type {
+			case "PLAYER_MOVE":
+				if !player.IsAlive() || gameState.State != game.Play {
 					break S
 				}
-				player := &gameState.Players[currentPlayerIndex]
-				switch message.Type {
-				case "PLAYER_MOVE":
-					if !player.IsAlive() || gameState.State != game.Play {
-						break S
-					}
-					//update player movement
-					player.Move(message.Body, message.Delta, gameState)
+				//update player movement
+				player.Move(message.Body, message.Delta, gameState)
 
-					if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
-						go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
-					}
-					if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
-						message.Body = "PICKED_UP_POWERUP"
-					}
-
-				case "PLAYER_DROPPED_BOMB":
-					if player.BombsLeft <= 0 || !player.IsAlive() || player.Invincible {
-						break S
-					}
-					player.DropBomb()
-
-					go message.BombExploded(pool)
-
-				case "BOMB_EXPLODED":
-					destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
-					player.BombExplosionComplete()
-					monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
-					//trigger side effects
-					go message.MonstersReborn(pool, gameState, monstersLostLives)
-					go message.UpdateMap(pool, gameState, destroyedBlocks)
-					go message.ExplosionComplete(pool)
-
-				case "EXPLOSION_COMPLETED":
-					player.ExplosionComplete()
-				case "PLAYER_AUTO_MOVE":
-					//update player movement wthouth obstacles
-					done := player.AutoMove(message.Body)
-					message.Type = "PLAYER_MOVE"
-					if !done {
-						go message.AutoGuideWinner(pool, message.Creator)
-					}
-				case "FINISH":
-					go message.ClearGame(pool, gameState, &playerNames)
-					message.Body = gameState.FindWinner() //send winner name
+				if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
+					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
+				}
+				if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
+					message.Body = "PICKED_UP_POWERUP"
 				}
 
+			case "PLAYER_DROPPED_BOMB":
+				if player.BombsLeft <= 0 || !player.IsAlive() || player.Invincible {
+					break S
+				}
+				player.DropBomb()
+
+				go message.BombExploded(pool)
+
+			case "BOMB_EXPLODED":
+				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
+				player.BombExplosionComplete()
+				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
+				//trigger side effects
+				go message.MonstersReborn(pool, gameState, monstersLostLives)
+				go message.UpdateMap(pool, gameState, destroyedBlocks)
+				go message.ExplosionComplete(pool)
+
+			case "EXPLOSION_COMPLETED":
+				player.ExplosionComplete()
+			case "PLAYER_AUTO_MOVE":
+				//update player movement wthouth obstacles
+				done := player.AutoMove(message.Body)
+				message.Type = "PLAYER_MOVE"
+				if !done {
+					go message.AutoGuideWinner(pool, message.Creator)
+				}
+			case "FINISH":
+				go message.ClearGame(pool, gameState, &playerNames)
+				message.Body = gameState.FindWinner() //send winner name
 			}
+
 			if gameState.State == game.GameOver {
 				message.ActivateGameOverScreen(pool, gameState)
 				gameState.State = game.WalkOfFame
@@ -218,6 +204,24 @@ func (pool *Pool) Start() {
 				}
 			}
 		case message := <-pool.Timer:
+			if message.Timer.startGameTimerStarted(message) {
+				gameState.StartGame()
+				gameState.Players = pool.createPlayers()
+				message.Type = "INIT_GAME"
+				message.GameState = gameState
+
+			} else if message.Timer.startGameTimerEnded(pool) {
+				message.Type = "START_GAME"
+
+			} else if message.Timer.queueTimerEnded(pool) {
+				timer = newTimer(7, 1, START_GAME)
+				go timer.start(pool)
+				break S
+
+			} else {
+				message.Type = "TIMER"
+			}
+
 			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println("TIMER ERROR  : ", err)
@@ -225,17 +229,20 @@ func (pool *Pool) Start() {
 				}
 			}
 
-			// if timer finished
-			if message.Timer.Expired && len(pool.Clients) > 1 {
-				if message.Timer.Type == START_GAME {
-					go message.startGame(pool)
-				} else if message.Timer.Type == QUEUE {
-					go message.initGame(pool)
-
-				}
-			}
-
 		}
 
 	}
+}
+
+func (t *Timer) startGameTimerEnded(pool *Pool) bool {
+	return t.Expired && len(pool.Clients) > 1 && t.Type == START_GAME
+}
+
+func (t *Timer) queueTimerEnded(pool *Pool) bool {
+	fmt.Println("Queue timer ended")
+	return t.Expired && len(pool.Clients) > 1 && t.Type == QUEUE
+}
+
+func (t *Timer) startGameTimerStarted(message Message) bool {
+	return message.Type == "START_TIMER" && t.Type == START_GAME
 }

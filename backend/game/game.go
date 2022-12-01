@@ -19,7 +19,7 @@ func NewGame() *GameState {
 }
 func (g *GameState) StartGame() {
 	g.Map = CreateBaseMap()
-	// g.State = Play
+	g.State = Play
 }
 func (g *GameState) Clear() {
 	g.Map = []Tile{}

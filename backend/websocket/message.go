@@ -113,6 +113,10 @@ func (m Message) ClearGame(pool *Pool, gameState *g.GameState, playerNames *Play
 	pool.Broadcast <- m
 }
 
+func (m Message) StartGameTimerStarted() {
+
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                   helper                                   */
 /* -------------------------------------------------------------------------- */

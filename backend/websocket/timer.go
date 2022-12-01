@@ -32,7 +32,8 @@ func newTimer(duration, interval int, timerType TimerType) *Timer {
 
 func (t *Timer) start(pool *Pool) {
 	t.Expired = false
-	pool.Timer <- Message{Type: "TIMER", Timer: t} // send message to render timer on frontend instantly
+
+	pool.Timer <- Message{Type: "START_TIMER", Timer: t} // send message to render timer on frontend instantly
 	ticker := time.NewTicker(time.Duration(t.interval) * time.Second * 1)
 	go func() {
 	F:

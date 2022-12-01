@@ -22,12 +22,12 @@ export function defineWebSocket(name) {
       case "INIT_GAME":
         store.commit("updateMap", data.gameState.map);
         store.commit("updatePlayers", data.gameState.players);
+        store.commit("updateTimer", data.timer.duration);
         window.location.href = window.location.origin + "/#/game";
         break;
 
       case "START_GAME":
-        store.commit("updateGameTimer", false);
-        console.log("Starting game");
+        store.commit("updateTimer", 0);
         setupGame();
         break;
 
@@ -38,6 +38,7 @@ export function defineWebSocket(name) {
 
       case "JOIN_QUEUE":
         store.commit("updateLobbyPlayersNames", data["player_names"]);
+        store.commit("updateTimer", data.timer.duration);
         window.location.href = window.location.origin + "/#/queue";
         break;
       case "JOIN_SPECTATOR":
