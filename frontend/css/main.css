@@ -349,3 +349,11 @@ input:focus {
     font-size: 20px;
     top: 25%;
 }
+
+#timer {
+    font-size: 30px;
+    padding: 10px 20px;
+    background-color: var(--clr-brown);
+    border: var(--brown-border);
+    color: var(--clr-neon-green);
+}

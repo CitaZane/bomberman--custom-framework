@@ -101,12 +101,12 @@ func (pool *Pool) Start() {
 					client.Conn.WriteJSON(message)
 				}
 
-				if len(pool.Clients) > 1 && timer.Expired { //starts the 20 sec timer
-					timer = newTimer(5, 1, QUEUE)
+				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
+					timer = newTimer(10, 1, QUEUE)
 					go timer.start(pool)
-				} else if len(pool.Clients) == 4 {
-					timer.stop <- true //stops the 20 second timer
-					go message.initGame(pool)
+				} else if len(pool.Clients) == 3 {
+					timer.stop <- true //stops the timer
+
 				}
 
 			} else {
@@ -145,7 +145,7 @@ func (pool *Pool) Start() {
 					gameState.Players = pool.createPlayers()
 					message.GameState = gameState
 
-					timer = newTimer(10, 1, START_GAME)
+					timer = newTimer(7, 1, START_GAME)
 					go timer.start(pool)
 
 				} else if message.Type == "START_GAME" {
@@ -225,15 +225,14 @@ func (pool *Pool) Start() {
 				}
 			}
 
-			// if timer has ended
-			if message.Timer.Duration == 0 {
+			// if timer finished
+			if message.Timer.Expired && len(pool.Clients) > 1 {
 				if message.Timer.Type == START_GAME {
 					go message.startGame(pool)
 				} else if message.Timer.Type == QUEUE {
 					go message.initGame(pool)
 
 				}
-
 			}
 
 		}
