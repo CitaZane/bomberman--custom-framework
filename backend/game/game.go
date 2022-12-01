@@ -45,7 +45,7 @@ func (g *GameState) IsPlayer(name string) bool {
 
 // check how many players are still alive.
 // in case of 1 player left -> game over
-func (g *GameState) CheckGameOverState() {
+func (g *GameState) CheckGameOverState() bool {
 	playersAlive := 0
 	for _, player := range g.Players {
 		if player.Movement != Died {
@@ -54,19 +54,26 @@ func (g *GameState) CheckGameOverState() {
 	}
 	if playersAlive == 1 && len(g.Players) != 1 {
 		g.State = GameOver
+		return true
 	}
+
+	return false
 }
 
-func (g *GameState) ClearGameIfLastPlayerLeft() {
+func (g *GameState) ClearGameIfLastPlayerLeft() bool {
 	playersAlive := 0
 	for _, player := range g.Players {
 		if player.Movement != Died {
 			playersAlive += 1
 		}
 	}
-	if playersAlive == 0 {
+	if playersAlive == 1 {
 		g.Clear()
+		return true
 	}
+
+	return false
+
 }
 
 // Loop through all players in game and check if somebody is in the explosion

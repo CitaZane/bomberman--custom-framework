@@ -57,3 +57,15 @@ func (t *Timer) start(pool *Pool) {
 		pool.Timer <- Message{Type: "TIMER", Timer: t}
 	}()
 }
+
+func (t *Timer) startGameTimerEnded(pool *Pool) bool {
+	return t.Duration == 0 && t.Type == START_GAME
+}
+
+func (t *Timer) queueTimerEnded(pool *Pool) bool {
+	return t.Expired && t.Type == QUEUE
+}
+
+func (t *Timer) startGameTimerStarted(message Message) bool {
+	return message.Type == "START_TIMER" && t.Type == START_GAME
+}

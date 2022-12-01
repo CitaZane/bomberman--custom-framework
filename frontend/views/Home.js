@@ -25,7 +25,7 @@ export function HomeView() {
         <h1>Bomberman</h1>
         <form onSubmit={createWebSocketConn} id="username-form">
           <label for="name">Enter your name</label>
-          <input type="text" id="name" required></input>
+          <input type="text" id="name" required maxlength="9"></input>
           <button class="btn">Join lobby</button>
         </form>
       </div>

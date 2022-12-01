@@ -93,20 +93,21 @@ func (pool *Pool) Start() {
 		case client := <-pool.Register:
 			pool.Clients = append(pool.Clients, client)
 			if gameState.State == game.Lobby {
-
 				playerNames.addName(client.ID)
 
-				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames, Timer: timer}
-				for _, client := range pool.Clients {
-					client.Conn.WriteJSON(message)
-				}
-
-				if len(pool.Clients) > 0 && timer.Expired { //starts the queue timer
+				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
 					timer = newTimer(6, 1, QUEUE)
 					go timer.start(pool)
-				} else if len(pool.Clients) == 2 {
+				} else if len(pool.Clients) == 3 {
 					timer.stop <- true //stops the timer
+				}
 
+				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames, Timer: timer}
+
+				for _, client := range pool.Clients {
+					if err := client.Conn.WriteJSON(message); err != nil {
+						fmt.Println("Err", err)
+					}
 				}
 
 			} else {
@@ -114,6 +115,7 @@ func (pool *Pool) Start() {
 					Type:      "JOIN_SPECTATOR",
 					Body:      strconv.Itoa(len(pool.Clients) - len(gameState.Players)), //-th in next queue
 					GameState: gameState,
+					Timer:     timer,
 				}
 				client.Conn.WriteJSON(message)
 			}
@@ -126,7 +128,7 @@ func (pool *Pool) Start() {
 
 			if gameState.State != game.Lobby && gameState.IsPlayer(leaverName) {
 				currentPlayerIndex := gameState.FindPlayer(leaverName)
-				go message.PlayerLeftGame(pool, currentPlayerIndex, gameState)
+				go message.PlayerLeftGame(pool, currentPlayerIndex, gameState, timer)
 			} else {
 				message.Type = "USER_LEFT"
 				message.PlayerNames = playerNames
@@ -213,7 +215,7 @@ func (pool *Pool) Start() {
 			} else if message.Timer.startGameTimerEnded(pool) {
 				message.Type = "START_GAME"
 
-			} else if message.Timer.queueTimerEnded(pool) {
+			} else if message.Timer.queueTimerEnded(pool) && len(pool.Clients) > 1 {
 				timer = newTimer(7, 1, START_GAME)
 				go timer.start(pool)
 				break S
@@ -229,20 +231,12 @@ func (pool *Pool) Start() {
 				}
 			}
 
+			// reset the timer
+			if timer.Expired {
+				timer = newTimer(0, 0, None)
+			}
+
 		}
 
 	}
-}
-
-func (t *Timer) startGameTimerEnded(pool *Pool) bool {
-	return t.Expired && len(pool.Clients) > 1 && t.Type == START_GAME
-}
-
-func (t *Timer) queueTimerEnded(pool *Pool) bool {
-	fmt.Println("Queue timer ended")
-	return t.Expired && len(pool.Clients) > 1 && t.Type == QUEUE
-}
-
-func (t *Timer) startGameTimerStarted(message Message) bool {
-	return message.Type == "START_TIMER" && t.Type == START_GAME
 }

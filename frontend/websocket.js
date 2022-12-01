@@ -44,7 +44,8 @@ export function defineWebSocket(name) {
       case "JOIN_SPECTATOR":
         store.commit("updatePlayers", data.gameState.players);
         store.commit("updateMap", data.gameState.map);
-        console.log("Game is already in action. And you are ", data.body, "in list");
+        store.commit("updateTimer", data.timer.duration);
+        // console.log("Game is already in action. And you are ", data.body, "in list");
         window.location.href = window.location.origin + "/#/game";
         break;
       // game  stuff
@@ -74,7 +75,7 @@ export function defineWebSocket(name) {
         store.commit("updateWinner", data.body);
         break;
       case "CLEAR_GAME":
-        store.commit("updateGameTimer", false);
+        store.commit("updateWinner", "");
         store.commit("updateMap", data.gameState.map);
         var isPlayer = data.gameState.players.some((player) => player.name == store.state.currentPlayerName);
         if (isPlayer) {
