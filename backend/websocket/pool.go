@@ -100,6 +100,7 @@ func (pool *Pool) Start() {
 					go timer.start(pool)
 				} else if len(pool.Clients) == 3 {
 					timer.stop <- true //stops the timer
+					break S
 				}
 
 				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames, Timer: timer}
@@ -139,6 +140,8 @@ func (pool *Pool) Start() {
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
 				}
+
+				fmt.Println("Sent user left values")
 			}
 		case message := <-pool.Broadcast:
 
@@ -206,6 +209,7 @@ func (pool *Pool) Start() {
 				}
 			}
 		case message := <-pool.Timer:
+			fmt.Println("Timer", timer)
 			if message.Timer.startGameTimerStarted(message) {
 				gameState.StartGame()
 				gameState.Players = pool.createPlayers()
