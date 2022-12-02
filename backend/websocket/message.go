@@ -108,6 +108,7 @@ func (m Message) ClearGame(pool *Pool, gameState *g.GameState, playerNames *Play
 	m.Type = "CLEAR_GAME"
 	gameState.Clear()
 	playerNames.AddSpectators(pool.Clients) // add spectators to player names
+	m.GameState = gameState
 	pool.Broadcast <- m
 }
 
