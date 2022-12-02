@@ -146,6 +146,11 @@ func (pool *Pool) Start() {
 			if gameState.State != game.Lobby {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
+					if message.Type == "TEXT_MESSAGE" {
+						for _, client := range pool.Clients {
+							client.Conn.WriteJSON(message)
+						}
+					}
 					break S
 				}
 				player := &gameState.Players[currentPlayerIndex]
