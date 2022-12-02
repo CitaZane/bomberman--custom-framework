@@ -98,7 +98,7 @@ func (pool *Pool) Start() {
 				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
 					timer = newTimer(10, 1, QUEUE)
 					go timer.start(pool)
-				} else if len(pool.Clients) == 3 {
+				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the timer
 					break S
 				}
@@ -219,6 +219,7 @@ func (pool *Pool) Start() {
 			if message.Timer.startGameTimerStarted(message) {
 				gameState.StartGame()
 				gameState.Players = pool.createPlayers()
+				message.PlayerNames = playerNames
 				message.Type = "INIT_GAME"
 				message.GameState = gameState
 
