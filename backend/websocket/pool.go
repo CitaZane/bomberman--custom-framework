@@ -96,7 +96,7 @@ func (pool *Pool) Start() {
 				playerNames.addName(client.ID)
 
 				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
-					timer = newTimer(10, 1, QUEUE)
+					timer = newTimer(20, 1, QUEUE)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
 					timer.stop <- true //stops the timer
@@ -230,7 +230,7 @@ func (pool *Pool) Start() {
 				// if queue timer ended and there are enough players to initialize a game
 				// create start game timer and break out
 			} else if message.Timer.queueTimerExpired(pool) && len(pool.Clients) > 1 {
-				timer = newTimer(5, 1, START_GAME)
+				timer = newTimer(10, 1, START_GAME)
 				go timer.start(pool)
 				break S
 

@@ -55,7 +55,7 @@ func CreatePlayer(name string, index int) Player {
 		Invincible:     false,
 		X:              x,
 		Y:              y,
-		Lives:          1,
+		Lives:          3,
 		ExplosionRange: 1,
 		BombsLeft:      1,
 		Bombs:          make([]Bomb, 0),
