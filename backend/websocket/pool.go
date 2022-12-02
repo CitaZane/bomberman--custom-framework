@@ -96,7 +96,7 @@ func (pool *Pool) Start() {
 				playerNames.addName(client.ID)
 
 				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
-					timer = newTimer(6, 1, QUEUE)
+					timer = newTimer(10, 1, QUEUE)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 3 {
 					timer.stop <- true //stops the timer
@@ -141,7 +141,6 @@ func (pool *Pool) Start() {
 					client.Conn.WriteJSON(message)
 				}
 
-				fmt.Println("Sent user left values")
 			}
 		case message := <-pool.Broadcast:
 
@@ -209,18 +208,21 @@ func (pool *Pool) Start() {
 				}
 			}
 		case message := <-pool.Timer:
-			fmt.Println("Timer", timer)
+			// if start game timer started, initialize game state and start start game countdown
 			if message.Timer.startGameTimerStarted(message) {
 				gameState.StartGame()
 				gameState.Players = pool.createPlayers()
 				message.Type = "INIT_GAME"
 				message.GameState = gameState
 
+				// if start game timer has ended start the game by setting up eventlisteners in frontend
 			} else if message.Timer.startGameTimerEnded(pool) {
 				message.Type = "START_GAME"
 
-			} else if message.Timer.queueTimerEnded(pool) && len(pool.Clients) > 1 {
-				timer = newTimer(7, 1, START_GAME)
+				// if queue timer ended and there are enough players to initialize a game
+				// create start game timer and break out
+			} else if message.Timer.queueTimerExpired(pool) && len(pool.Clients) > 1 {
+				timer = newTimer(5, 1, START_GAME)
 				go timer.start(pool)
 				break S
 

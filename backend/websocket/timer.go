@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -54,7 +53,6 @@ func (t *Timer) start(pool *Pool) {
 				pool.Timer <- Message{Type: "TIMER", Timer: t}
 			}
 		}
-		fmt.Println("Sending value")
 		// send last message to channel after we break at line 49 or 43
 		pool.Timer <- Message{Type: "TIMER", Timer: t}
 	}()
@@ -64,7 +62,7 @@ func (t *Timer) startGameTimerEnded(pool *Pool) bool {
 	return t.Duration == 0 && t.Type == START_GAME
 }
 
-func (t *Timer) queueTimerEnded(pool *Pool) bool {
+func (t *Timer) queueTimerExpired(pool *Pool) bool {
 	return t.Expired && t.Type == QUEUE
 }
 
