@@ -143,64 +143,66 @@ func (pool *Pool) Start() {
 
 			}
 		case message := <-pool.Broadcast:
-
-			currentPlayerIndex := gameState.FindPlayer(message.Creator)
-			if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
-				break S
-			}
-			player := &gameState.Players[currentPlayerIndex]
-			switch message.Type {
-			case "PLAYER_MOVE":
-				if !player.IsAlive() || gameState.State != game.Play {
+			if gameState.State != game.Lobby {
+				currentPlayerIndex := gameState.FindPlayer(message.Creator)
+				if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
 					break S
 				}
-				//update player movement
-				player.Move(message.Body, message.Delta, gameState)
+				player := &gameState.Players[currentPlayerIndex]
+				switch message.Type {
+				case "PLAYER_MOVE":
+					if !player.IsAlive() || gameState.State != game.Play {
+						break S
+					}
+					//update player movement
+					player.Move(message.Body, message.Delta, gameState)
 
-				if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
-					go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
+					if lostLive := gameState.CheckIfPlayerDied(player); lostLive {
+						go message.MonstersReborn(pool, gameState, []int{currentPlayerIndex})
+					}
+					if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
+						message.Body = "PICKED_UP_POWERUP"
+					}
+
+				case "PLAYER_DROPPED_BOMB":
+					if player.BombsLeft <= 0 || !player.IsAlive() || player.Invincible {
+						break S
+					}
+					player.DropBomb()
+
+					go message.BombExploded(pool)
+
+				case "BOMB_EXPLODED":
+					destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
+					player.BombExplosionComplete()
+					monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
+					//trigger side effects
+					go message.MonstersReborn(pool, gameState, monstersLostLives)
+					go message.UpdateMap(pool, gameState, destroyedBlocks)
+					go message.ExplosionComplete(pool)
+
+				case "EXPLOSION_COMPLETED":
+					player.ExplosionComplete()
+				case "PLAYER_AUTO_MOVE":
+					//update player movement wthouth obstacles
+					done := player.AutoMove(message.Body)
+					message.Type = "PLAYER_MOVE"
+					if !done {
+						go message.AutoGuideWinner(pool, message.Creator)
+					}
+				case "FINISH":
+					go message.ClearGame(pool, gameState, &playerNames)
+					message.Body = gameState.FindWinner() //send winner name
 				}
-				if pickedUpPowerUp := player.PickedUpPowerUp(&gameState.PowerUps); pickedUpPowerUp {
-					message.Body = "PICKED_UP_POWERUP"
+
+				if gameState.State == game.GameOver {
+					message.ActivateGameOverScreen(pool, gameState)
+					gameState.State = game.WalkOfFame
+					go message.AutoGuideWinner(pool, gameState.FindWinner())
 				}
-
-			case "PLAYER_DROPPED_BOMB":
-				if player.BombsLeft <= 0 || !player.IsAlive() || player.Invincible {
-					break S
-				}
-				player.DropBomb()
-
-				go message.BombExploded(pool)
-
-			case "BOMB_EXPLODED":
-				destroyedBlocks, explosion := player.MakeExplosion(gameState.Map)
-				player.BombExplosionComplete()
-				monstersLostLives := gameState.CheckIfSomebodyDied(&explosion)
-				//trigger side effects
-				go message.MonstersReborn(pool, gameState, monstersLostLives)
-				go message.UpdateMap(pool, gameState, destroyedBlocks)
-				go message.ExplosionComplete(pool)
-
-			case "EXPLOSION_COMPLETED":
-				player.ExplosionComplete()
-			case "PLAYER_AUTO_MOVE":
-				//update player movement wthouth obstacles
-				done := player.AutoMove(message.Body)
-				message.Type = "PLAYER_MOVE"
-				if !done {
-					go message.AutoGuideWinner(pool, message.Creator)
-				}
-			case "FINISH":
-				go message.ClearGame(pool, gameState, &playerNames)
-				message.Body = gameState.FindWinner() //send winner name
+				message.GameState = gameState
 			}
 
-			if gameState.State == game.GameOver {
-				message.ActivateGameOverScreen(pool, gameState)
-				gameState.State = game.WalkOfFame
-				go message.AutoGuideWinner(pool, gameState.FindWinner())
-			}
-			message.GameState = gameState
 			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
 					fmt.Println("WEBSOCKET ERROR  : ", err)
