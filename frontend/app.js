@@ -10,11 +10,18 @@ let gameStarted = false;
 
 // add keyup and KeyDown listeners
 export function setupGame() {
+  let throttleKeyDown = throttle((e) => {
+    store.dispatch("registerKeyDown", e.code);
+  });
   document.addEventListener("keyup", (e) => {
     store.dispatch("registerKeyUp", e.code);
   });
   document.addEventListener("keydown", (e) => {
-    store.dispatch("registerKeyDown", e.code);
+    if (e.code == "Space") {
+      throttleKeyDown(e);
+    } else {
+      store.dispatch("registerKeyDown", e.code);
+    }
   });
   if (!gameStarted) {
     gameStarted = true;
@@ -39,7 +46,6 @@ function animate(timestamp) {
     //send movement stop only once, so clear the variable after sending
     store.dispatch("clearStopMovement");
   }
-
   if (movement.bomb) {
     SendWsMessage("PLAYER_DROPPED_BOMB", currentPlayerName);
     store.dispatch("clearBombDrop");
@@ -50,3 +56,17 @@ function animate(timestamp) {
 }
 
 export { store, router };
+
+function throttle(cb, delay = 250) {
+  let shouldWait = false;
+
+  return (...args) => {
+    if (shouldWait) return;
+
+    cb(...args);
+    shouldWait = true;
+    setTimeout(() => {
+      shouldWait = false;
+    }, delay);
+  };
+}
