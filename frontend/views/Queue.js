@@ -6,13 +6,13 @@ import { ws } from "../websocket";
 import { LobbyPlayers } from "../components/LobbyPlayers";
 import { state } from "../store/index";
 
-function startGame() {
-  ws.send(
-    JSON.stringify({
-      type: "START_GAME",
-    })
-  );
-}
+// function startGame() {
+//   ws.send(
+//     JSON.stringify({
+//       type: "START_GAME",
+//     })
+//   );
+// }
 
 export function QueueView() {
   let timer = store.state.timer;
@@ -24,8 +24,8 @@ export function QueueView() {
   return {
     template: (
       <div id="lobby-layout">
-        <button onClick={startGame}>Start Game</button>
-        <h2 id="queueMessage">{timer ? `Game will start in ${String(timer)}` : "Not enough players"}</h2>
+        {/* <button onClick={startGame}>Start Game</button> */}
+        <h2 id="queueMessage">{timer ? `Game will start in ${String(timer)}` : "Not enough players to start game"}</h2>
         <LobbyPlayers />
         <ChatRoom />
       </div>

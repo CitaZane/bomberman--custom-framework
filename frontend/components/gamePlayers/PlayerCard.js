@@ -27,7 +27,7 @@ export function PlayerCard({ player, id }) {
   }
 
   let lives = createLivesHTML(player);
-  let playerDead = player.lives < 1;
+  let playerDead = player.lives < 1 || player.movement === "died";
 
   return {
     template: (

@@ -29,6 +29,13 @@ func (c *Client) Read() {
 			return
 		}
 		// send created message to broadcast channel
+		// if m.Type == "CHAT_MESSAGE" {
+		// 	c.Pool.Chat <- msg
+		// } else {
+		// 	c.Pool.Broadcast <- msg
+
+		// }
+
 		c.Pool.Broadcast <- msg
 		// fmt.Printf("Text message Received: %+v\n", msg)
 	}

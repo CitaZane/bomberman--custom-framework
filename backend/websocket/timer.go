@@ -1,47 +1,71 @@
 package websocket
 
 import (
-	"strconv"
 	"time"
 )
 
+type TimerType string
+
+const (
+	None       TimerType = "none"
+	START_GAME TimerType = "start_game"
+	QUEUE      TimerType = "queue"
+)
+
 type Timer struct {
-	stop     chan bool
-	expired  bool
+	Type     TimerType
+	Expired  bool `json:"expired"`
+	Duration int  `json:"duration"`
 	interval int
-	duration int
+	stop     chan bool
 }
 
-func newTimer(duration, interval int) *Timer {
+func newTimer(duration, interval int, timerType TimerType) *Timer {
 	return &Timer{
 		stop:     make(chan bool),
-		duration: duration,
+		Duration: duration,
 		interval: interval,
-		expired:  true,
+		Expired:  true,
+		Type:     timerType,
 	}
 }
+
 func (t *Timer) start(pool *Pool) {
-	t.expired = false
-	ticker := time.NewTicker(time.Duration(t.interval) * time.Second)
+	t.Expired = false
+
+	pool.Timer <- Message{Type: "START_TIMER", Timer: t} // send message to render timer on frontend instantly
+	ticker := time.NewTicker(time.Duration(t.interval) * time.Second * 1)
 	go func() {
+	F:
 		for {
 			select {
 			case <-t.stop:
-				t.expired = true
-				return
+				t.Expired = true
+				ticker.Stop()
+				break F
 			case <-ticker.C:
-				t.duration--
-				pool.Timer <- Message{Type: "TIMER", Body: strconv.Itoa(int(t.duration))}
-				if t.duration == 0 {
+				t.Duration--
+				if t.Duration == 0 {
 					ticker.Stop()
-					t.expired = true
-					return
+					t.Expired = true
+					break F
 				}
+				pool.Timer <- Message{Type: "TIMER", Timer: t}
 			}
 		}
+		// send last message to channel after we break at line 49 or 43
+		pool.Timer <- Message{Type: "TIMER", Timer: t}
 	}()
-	time.Sleep(time.Duration(t.duration) * time.Second)
-	ticker.Stop()
-	t.expired = true
-	t.stop <- true
+}
+
+func (t *Timer) startGameTimerEnded(pool *Pool) bool {
+	return t.Duration == 0 && t.Type == START_GAME
+}
+
+func (t *Timer) queueTimerExpired(pool *Pool) bool {
+	return t.Expired && t.Type == QUEUE
+}
+
+func (t *Timer) startGameTimerStarted(message Message) bool {
+	return message.Type == "START_TIMER" && t.Type == START_GAME
 }

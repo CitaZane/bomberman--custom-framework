@@ -2,6 +2,7 @@ package websocket
 
 import (
 	g "bomberman-dom/game"
+	"fmt"
 	"time"
 )
 
@@ -12,7 +13,7 @@ type Message struct {
 	GameState   *g.GameState `json:"gameState"`
 	Delta       float64      `json:"delta"`
 	PlayerNames []string     `json:"player_names"`
-	StopTimer   bool         `json:"stop_timer"` // indicates whether to stop the timer
+	Timer       *Timer       `json:"timer"`
 }
 
 func (m Message) ExplosionComplete(pool *Pool) {
@@ -87,12 +88,19 @@ func (m Message) AutoGuideWinner(pool *Pool, winner string) {
 
 }
 
-func (m Message) PlayerLeftGame(pool *Pool, playerIndex int, gameState *g.GameState) {
+func (m Message) PlayerLeftGame(pool *Pool, playerIndex int, gameState *g.GameState, timer *Timer) {
 	gameState.Players[playerIndex].Movement = g.Died
 	m.Creator = gameState.Players[playerIndex].Name
 	m.Type = "PLAYER_LEFT"
 	gameState.CheckGameOverState()
-	gameState.ClearGameIfLastPlayerLeft()
+	// gameState.ClearGameIfLastPlayerLeft();
+	if gameOver := gameState.CheckGameOverState(); gameOver {
+		if !timer.Expired {
+			fmt.Println("Stopping timer")
+			timer.stop <- true
+		}
+	}
+
 	pool.Broadcast <- m
 }
 func (m Message) ClearGame(pool *Pool, gameState *g.GameState, playerNames *PlayerNames) {
@@ -100,6 +108,7 @@ func (m Message) ClearGame(pool *Pool, gameState *g.GameState, playerNames *Play
 	m.Type = "CLEAR_GAME"
 	gameState.Clear()
 	playerNames.AddSpectators(pool.Clients) // add spectators to player names
+	m.GameState = gameState
 	pool.Broadcast <- m
 }
 

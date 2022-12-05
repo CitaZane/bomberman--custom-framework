@@ -18,6 +18,7 @@ function renderElem(node) {
   }
 
   // append all children)
+  // console.log("Node", node);
   for (const child of node.children) {
     $el.appendChild(render(child));
   }

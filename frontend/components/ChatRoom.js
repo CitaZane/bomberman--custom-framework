@@ -39,7 +39,7 @@ export function ChatRoom() {
         <ul id="chat">
           {messages.map((message) => {
             let index = lobbyPlayersNames.findIndex(
-              (name) => name === message.creator
+              (name) => name == message.creator
             );
 
             return (

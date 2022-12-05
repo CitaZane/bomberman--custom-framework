@@ -85,7 +85,7 @@ func (pool *Pool) Start() {
 
 	var gameState = game.NewGame()
 	var playerNames = make(PlayerNames, 0) // playerNames is for sending player names to lobby without creating actual players
-	timer := newTimer(5, 1)
+	timer := newTimer(0, 0, None)
 
 	for {
 	S:
@@ -93,20 +93,22 @@ func (pool *Pool) Start() {
 		case client := <-pool.Register:
 			pool.Clients = append(pool.Clients, client)
 			if gameState.State == game.Lobby {
-
 				playerNames.addName(client.ID)
 
-				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames}
-				for _, client := range pool.Clients {
-					client.Conn.WriteJSON(message)
-				}
-
-				if len(pool.Clients) > 1 && timer.expired { //starts the 20 sec timer
-					timer = newTimer(8, 1)
+				if len(pool.Clients) > 1 && timer.Expired { //starts the queue timer
+					timer = newTimer(20, 1, QUEUE)
 					go timer.start(pool)
 				} else if len(pool.Clients) == 4 {
-					timer.stop <- true //stops the 20 second timer
-					go startGame(pool)
+					timer.stop <- true //stops the timer
+					break S
+				}
+
+				message := Message{Type: "JOIN_QUEUE", PlayerNames: playerNames, Timer: timer}
+
+				for _, client := range pool.Clients {
+					if err := client.Conn.WriteJSON(message); err != nil {
+						fmt.Println("Err", err)
+					}
 				}
 
 			} else {
@@ -114,44 +116,41 @@ func (pool *Pool) Start() {
 					Type:      "JOIN_SPECTATOR",
 					Body:      strconv.Itoa(len(pool.Clients) - len(gameState.Players)), //-th in next queue
 					GameState: gameState,
+					Timer:     timer,
 				}
 				client.Conn.WriteJSON(message)
 			}
 
 		case client := <-pool.Unregister:
+			leaverName := client.ID
 			pool.RemoveClient(client)
 			playerNames.removeName(client.ID)
-
 			message := Message{}
 
-			if gameState.State != game.Lobby && gameState.IsPlayer(client.ID) {
-				currentPlayerIndex := gameState.FindPlayer(client.ID)
-				go message.PlayerLeftGame(pool, currentPlayerIndex, gameState)
+			if gameState.State != game.Lobby && gameState.IsPlayer(leaverName) {
+				currentPlayerIndex := gameState.FindPlayer(leaverName)
+				go message.PlayerLeftGame(pool, currentPlayerIndex, gameState, timer)
 			} else {
 				message.Type = "USER_LEFT"
-				message.Body = strconv.Itoa(len(pool.Clients) - 1)
 				message.PlayerNames = playerNames
 
+				if len(pool.Clients) < 2 && gameState.State == game.Lobby && !timer.Expired {
+					timer.stop <- true
+				}
 				for _, client := range pool.Clients {
 					client.Conn.WriteJSON(message)
 				}
-			}
 
+			}
 		case message := <-pool.Broadcast:
-			if gameState.State == game.Lobby {
-				if message.Type == "START_GAME" {
-					gameState.StartGame()
-					gameState.Players = pool.createPlayers()
-					for _, client := range pool.Clients {
-						if err := client.Conn.WriteJSON(message); err != nil {
-							fmt.Println("WEBSOCKET ERROR: ", err)
-							gameState.Clear()
-						}
-					}
-				}
-			} else {
+			if gameState.State != game.Lobby {
 				currentPlayerIndex := gameState.FindPlayer(message.Creator)
 				if !gameState.IsPlayer(message.Creator) { //this is a watcher do not register moves
+					if message.Type == "TEXT_MESSAGE" {
+						for _, client := range pool.Clients {
+							client.Conn.WriteJSON(message)
+						}
+					}
 					break S
 				}
 				player := &gameState.Players[currentPlayerIndex]
@@ -201,41 +200,57 @@ func (pool *Pool) Start() {
 					message.Body = gameState.FindWinner() //send winner name
 				}
 
+				if gameState.State == game.GameOver {
+					message.ActivateGameOverScreen(pool, gameState)
+					gameState.State = game.WalkOfFame
+					go message.AutoGuideWinner(pool, gameState.FindWinner())
+				}
+				message.GameState = gameState
 			}
-			if gameState.State == game.GameOver {
-				message.ActivateGameOverScreen(pool, gameState)
-				gameState.State = game.WalkOfFame
-				go message.AutoGuideWinner(pool, gameState.FindWinner())
-			}
-			message.GameState = gameState
+
 			for _, client := range pool.Clients {
 				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println("WEBSOCKET ERROR: ", err)
+					fmt.Println("WEBSOCKET ERROR  : ", err)
 					gameState.Clear()
 				}
 			}
-		case timerMsg := <-pool.Timer:
-			for _, client := range pool.Clients {
-				if gameState.State == game.Lobby {
-					if len(pool.Clients) < 2 {
-						timer.stop <- true
-						timerMsg.StopTimer = true
-					} else if timerMsg.Body == "0" {
-						go startGame(pool)
-					}
-				}
+		case message := <-pool.Timer:
+			// if start game timer started, initialize game state and start start game countdown
+			if message.Timer.startGameTimerStarted(message) {
+				gameState.StartGame()
+				gameState.Players = pool.createPlayers()
+				message.PlayerNames = playerNames
+				message.Type = "INIT_GAME"
+				message.GameState = gameState
 
-				if err := client.Conn.WriteJSON(timerMsg); err != nil {
-					fmt.Println(err)
+				// if start game timer has ended start the game by setting up eventlisteners in frontend
+			} else if message.Timer.startGameTimerEnded(pool) {
+				message.Type = "START_GAME"
+
+				// if queue timer ended and there are enough players to initialize a game
+				// create start game timer and break out
+			} else if message.Timer.queueTimerExpired(pool) && len(pool.Clients) > 1 {
+				timer = newTimer(10, 1, START_GAME)
+				go timer.start(pool)
+				break S
+
+			} else {
+				message.Type = "TIMER"
+			}
+
+			for _, client := range pool.Clients {
+				if err := client.Conn.WriteJSON(message); err != nil {
+					fmt.Println("TIMER ERROR  : ", err)
 					return
 				}
 			}
+
+			// reset the timer
+			if timer.Expired {
+				timer = newTimer(0, 0, None)
+			}
+
 		}
 
 	}
-}
-
-func startGame(pool *Pool) {
-	fmt.Println("Game starting")
-	pool.Broadcast <- Message{Type: "START_GAME", Body: ""}
 }

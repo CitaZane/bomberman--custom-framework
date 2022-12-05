@@ -19,29 +19,34 @@ export function defineWebSocket(name) {
   ws.onmessage = (e) => {
     const data = JSON.parse(e.data);
     switch (data["type"]) {
-      case "START_GAME":
+      case "INIT_GAME":
+        store.commit("updateLobbyPlayersNames", data["player_names"]);
         store.commit("updateMap", data.gameState.map);
         store.commit("updatePlayers", data.gameState.players);
-        setupGame();
+        store.commit("updateTimer", data.timer.duration);
         window.location.href = window.location.origin + "/#/game";
+        break;
+
+      case "START_GAME":
+        store.commit("updateTimer", 0);
+        setupGame();
         break;
 
       // queue cases
       case "USER_LEFT":
-        if (data["stop_timer"]) {
-          // clear timer
-        }
         store.commit("updateLobbyPlayersNames", data["player_names"]);
         break;
 
       case "JOIN_QUEUE":
         store.commit("updateLobbyPlayersNames", data["player_names"]);
+        store.commit("updateTimer", data.timer.duration);
         window.location.href = window.location.origin + "/#/queue";
         break;
       case "JOIN_SPECTATOR":
         store.commit("updatePlayers", data.gameState.players);
         store.commit("updateMap", data.gameState.map);
-        console.log("Game is already in action. And you are ", data.body, "in list");
+        store.commit("updateTimer", data.timer.duration);
+        // console.log("Game is already in action. And you are ", data.body, "in list");
         window.location.href = window.location.origin + "/#/game";
         break;
       // game  stuff
@@ -71,6 +76,7 @@ export function defineWebSocket(name) {
         store.commit("updateWinner", data.body);
         break;
       case "CLEAR_GAME":
+        store.commit("updateWinner", "");
         store.commit("updateMap", data.gameState.map);
         var isPlayer = data.gameState.players.some((player) => player.name == store.state.currentPlayerName);
         if (isPlayer) {
@@ -80,10 +86,10 @@ export function defineWebSocket(name) {
         }
         break;
       case "TIMER":
-        if (data["stop_timer"]) {
+        if (data.timer.expired) {
           store.commit("updateTimer", 0);
         } else {
-          store.commit("updateTimer", data.body);
+          store.commit("updateTimer", data.timer.duration);
         }
         break;
     }
